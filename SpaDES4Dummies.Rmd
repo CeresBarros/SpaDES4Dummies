@@ -1,0 +1,183 @@
+---
+title: "SpaDES 4 Dummies"
+author: "Ceres"
+date: "November 27, 2017"
+output: html_document
+---
+
+## a VERY simple example of SpaDES awesomeness
+
+This guide will take you through how to start your own model using SpaDES. It assumes you have already installed SpaDES and that it is working in your machine. If you haven't done this yet, please have a look at [this gist](https://gist.github.com/tati-micheletti/1de7505cdd387fe997f127f13eeb4393) to bypass any issues.
+
+
+### The example
+Let's imagine we wnat to understant whether the abundance of a species is statitically related with temperature. Both the abundance data and the temperature data are being constanty updated. Also, we want to have the possibility of analysing the relationship between the two iteratively, without needing to constantly change our script to account for the new data inputs.
+In this example the abundance and temperature data are being updated by a simulation model.
+
+### Before...
+If we use R to develop our species abundance and temperature simulation models in the 'conventional way', we'll probably have a script were everything happens - the simulations and data analysis. At most, we would have a main script that sources others that contain useful functions, or are doing the simulations and data treatment/analysis separately. If you already use R like this, you'll find that the SpaDES way of thinking is similar. So why use it? Because it makes changing, adapting and sharing your code - or modules - much easier. 
+
+Still don't believe me? Okay, let's solve our problem using the conventional way:
+
+```{r the_r_way, include=TRUE}
+library(raster, verbose = FALSE)
+
+## Template raster
+r <- raster(nrows = 100, ncols = 100, xmn = -50, xmx = 50, ymn = -50, ymx = 50)
+
+## SPECIES ABUNDANCE "SIMULATIONS"
+## Our VERY simple "simulation" model merely generates rasters that follows a Gaussian distribution
+abundance_model <- function(r, Time) {
+  abund_outputs <- list()
+  for(t in 1:Time) { 
+    abund_outputs[[t]] <- SpaDES.tools::gaussMap(r, scale = 100, var = 0.03) 
+  }
+  return(abund_outputs)
+}
+
+## Lenght of the simulation (or simply the number of model iterations)
+Time <- 10
+
+## Run the model nad plot results
+abundance <- abundance_model(r = r, Time = Time)
+plot(stack(abundance))
+
+## TEMPERATURE "SIMULATIONS"
+## The temperature simulation model will be almost the same as the vegetation one - remember this is a dummy example ;)
+r <- raster(nrows = 100, ncols = 100, xmn = -50, xmx = 50, ymn = -50, ymx = 50)
+temp_model <- function(r, Time) {
+  temp_outputs <- list()
+  for(t in 1:Time) { 
+    temp_outputs[[t]] <- SpaDES.tools::gaussMap(r, scale = 100, var = 0.1) 
+  }
+  return(temp_outputs)
+}
+
+## Lenght of the simulation (or simply the number of model iterations)
+Time <- 10
+
+## Run the model
+temperature <- temp_model(r = r, Time = Time)
+plot(stack(temperature))
+
+## DATA ANALYSIS
+stats_analysis <- function(Data){
+  lm1 <- lm(abund ~ temp, data = Data)
+  plot(Data$abund ~ Data$temp, xlab = "Temp.", ylab = "Species abundance")
+  abline(a = lm1$coefficients["(Intercept)"], b = lm1$coefficients["temp"], lwd = 2, col = "blue")
+}
+
+par_sets <- par(mfrow = c(2, 5))
+for(t in 1:Time){
+  outputdata <- data.frame(abund = abundance[[t]][], temp = temperature[[t]][])
+  stats_analysis(Data = outputdata)
+}
+
+par(par_sets)
+```
+
+
+### After...
+Let's now transform the example above using the SpaDES approach. We start by creating a *global.R* script (you can call it whatever you want, though) that will load the SpaDES libraries and run SpaDES simulations
+
+```{r the_spades_way, include=TRUE, echo = TRUE}
+library(SpaDES)  ## should automatically download all packages in the SpaDES family and their dependencies
+
+## decide where you're working
+setPaths(cachePath = "cache",
+         inputPath = "inputs",
+         modulePath = "m",
+         outputPath = "outputs")
+getPaths() ## check that this is what you wanted
+
+## Let's create a self-contained module that will simulate the species' abundance for any given period of time and frequency.
+newModule(name = "speciesAbundance", path = getPaths()$modulePath)
+
+```
+
+You will notice that 'newModule' has created a module folder inside */m* that contains both the module .R script template, as well as the documentation templates. It also created the folder */data* where data necessary to the module should be put in, and the folder */tests* that may contain testing scripts. We won't be using neither of them in this example.
+Attention: 'newModule' should only be run once, or separately in the console, otherwise you may lose your module edits by re-running it again.
+
+Now go ahead and open the *speciesAbundance.R* script. I know, I know... It seems confusing and theres a lot of stuff in that template. Let's break it down:
+
+The first "bit" of code is basically defining the module metadata. It will allow you to define who the author is, keyworks and the version, for example. It will also define the inputs that the module requires and the outputs it produces. The inputs for this module are produced in the 'init' event (see below) and the outputs are the abundance rasters. You'll notice that I have remove several parameters that we are not using and (like save parameters) there are no input parameters needed. A good rule of thumb to remember which are input and output parameters is: inputs are all sim$... objects that appear to the *right-hand side* of a "<-", whereas output parameters appear to the *left-hand side*.
+
+Here's how I defined the module:
+
+```{r module_template1, include=TRUE, eval=FALSE}
+defineModuledefineModule(sim, list(
+  name = "speciesAbundance",
+  description = "Species abundance simulator",
+  keywords = c("species, abundance, gaussian, spatial"),
+  authors = person("Mr.", "Me", email = "mr.me@example.com", role = c("aut", "cre")),
+  childModules = character(0),
+  version = list(SpaDES.core = "0.1.0", speciesAbundance = "0.0.1", SpaDES.addins = "0.1.0", SpaDES.tools = "0.1.0"),
+  # spatialExtent = raster::extent(rep(NA_real_, 4)),
+  timeframe = as.POSIXlt(c(NA, NA)),
+  timeunit = "year",
+  citation = list("citation.bib"),
+  documentation = list("README.txt", "speciesAbundance.Rmd"),
+  reqdPkgs = list(),
+  parameters = rbind(
+    # defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
+    defineParameter(".plotInitialTime", "numeric", 1, NA, NA, "This describes the simulation time at which the first plot event should occur"),
+    defineParameter(".plotInterval", "numeric", 1, NA, NA, "This describes the simulation time interval between plot events"),
+    defineParameter(".useCache", "numeric", FALSE, NA, NA, "Should this entire module be run with caching activated? This is generally intended for data-type modules, where stochasticity and time are not relevant")
+  ),
+  inputObjects = bind_rows(
+    #expectsInput("objectName", "objectClass", "input object description", sourceURL, ...),
+    expectsInput(objectName = "r", objectClass = "RasterLayer", desc = "A template raster for abundance and temperature simulations", sourceURL = NA)
+  ),
+  outputObjects = bind_rows(
+    #createsOutput("objectName", "objectClass", "output object description", ...),
+    createsOutput(objectName = "abundRaster", objectClass = "RasterLayer", desc = "Raster layer of species abundance at any given year")
+  )
+))
+
+```
+
+Now the rest of the script determines the event sequence - remember SpaDES = Spatial Descrete Event Simulator - and defines the events themselves. The 'init' event is **mandatory**, the others are not. SpaDES knows how to deal with the 'init' (initialisation) event. For example, it knows that the 'init's' of all active modules will be executed first. The other in which this happens is automatically determined by inter-module dependencies (i.e. if modules require inputs that are the outputs of other modules). If there are no inter-module dependencies the order is determined by the other in which modules are listed in the *global.R* script.
+Since we are only interested in simulating and plotting species abundances, we can go ahead and remove unnecessary events from the script. I have kept the initialisaton, plotting and abundance simulation events.
+
+Let's look at the **event functions** first (those that come after *doEvent.speciesAbundance*). "Init" became "abundanceInit", "Plot" became "abundancePlot" and "event1" became "abundanceSim"
+
+Initialisation function:
+```{r, include = TRUE, eval = FALSE}
+abundanceInit <- function(sim) {
+  ## Template raster
+  sim$r <- raster(nrows = 100, ncols = 100, xmn = -50, xmx = 50, ymn = -50, ymx = 50)
+  
+  ## create storage list of species abundance
+  sim$abundRaster <- list()
+  
+  return(invisible(sim))
+}
+```
+In the initialisation, we are creating a template raster 
+
+
+Abundance simulation event function:
+```{r, include = TRUE, eval = FALSE}
+abundanceSim <- function(sim) {
+  ## Generate species abundances - our "simulation"
+  sim$abundRaster[[time(sim)]] <- sim$abundance_model(ras = sim$r)
+
+  return(invisible(sim))
+}
+```
+
+Plotting event function:
+```{r, include = TRUE, eval = FALSE}
+abundancePlot <- function(sim) {
+  ## plot abundances
+  Plot(sim$abundRaster[[time(sim)]], 
+       title = paste0("Species abundance\nat time ", time(sim)))
+
+  return(invisible(sim))
+}
+```
+
+Note that that I changed the name "event1" to "sim_spAbund" and keep in mind that the name 'init' **should not be changed**
+
+We don't neeed 'save' or '.inputObjects' events
+
