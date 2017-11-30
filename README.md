@@ -5,6 +5,6 @@ This tutorial intends to introduce you to the `SpaDES` `R` modelling platform. I
 It will, however, teach you how to set up your own modules from scratch and make them run together in a simulation.
 All data used in this tuto is randomly generated, so there is no need to download data like in some other existing `SpaDES` modules.
 
-To follow the tuto simply open the *.html* file amd follow the instructions.
+To follow the tuto simply download and open the *.html* file in your browser.
 
 Happy SpaDESing!
