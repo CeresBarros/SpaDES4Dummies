@@ -42,8 +42,8 @@ doEvent.speciesTempLM = function(sim, eventTime, eventType, debug = FALSE) {
       sim <- statsInit(sim)
 
       ## schedule future event(s)
-      sim <- scheduleEvent(sim, P(sim)$statsTimestep, "speciesTempLM", "stats")
-      sim <- scheduleEvent(sim, P(sim)$statsTimestep, "speciesTempLM", "plot")
+      sim <- scheduleEvent(sim, P(sim)$statsTimestep + 0.1, "speciesTempLM", "stats")
+      sim <- scheduleEvent(sim, P(sim)$statsTimestep + 0.1, "speciesTempLM", "plot")
     },
     plot = {
       ## do stuff for this event
@@ -85,11 +85,12 @@ statsPlot <- function(sim) {
 ## Statistical analysis event
 statsAnalysis <- function(sim) {
   
-  yrs <- seq(time(sim) - P(sim)$statsTimestep, time(sim), 1)
+  sim$yrs <- seq(time(sim) - P(sim)$statsTimestep + 1, time(sim), 1)
 
   sim$outputdata[[time(sim)]] <- do.call(rbind.data.frame, 
-                                         lapply(yrs, FUN = function(y){
+                                         lapply(sim$yrs, FUN = function(y){
                                            temp <- data.frame(abund = sim$abundRasters[[y]][], temp = sim$tempRasters[[y]][], year = y)          
+                                           return(temp)
                                          }))
   
   sim$outputLM[[time(sim)]] <- linearModel(Data = sim$outputdata[[time(sim)]])
@@ -97,13 +98,13 @@ statsAnalysis <- function(sim) {
   return(invisible(sim))
 }
 
-
 ## Other functions
 linearModel <- function(Data){
   return(lm1 <- lm(abund ~ temp, data = Data))
 }
 
 plotLMResults <- function(Data, model){
-  plot(Data$abund ~ Data$temp, xlab = "Temp.", ylab = "Species abundance")
+  plot(Data$abund ~ Data$temp, xlab = "Temp.", ylab = "Species abundance", 
+       main = paste("From years", min(Data$year)-0.1, "to", max(Data$year)-0.1, sep = " "))
   abline(a = model$coefficients["(Intercept)"], b = model$coefficients["temp"], lwd = 2, col = "blue")
 }

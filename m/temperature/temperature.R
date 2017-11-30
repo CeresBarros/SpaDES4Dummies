@@ -41,22 +41,22 @@ doEvent.temperature = function(sim, eventTime, eventType, debug = FALSE) {
       sim <- temperatureInit(sim)
       
       ## schedule future event(s)
-      sim <- scheduleEvent(sim = sim, eventTime = start(sim), moduleName = "temperature", eventType = "SimulTemp")
-      sim <- scheduleEvent(sim = sim, eventTime = P(sim)$.plotInitialTime, moduleName = "temperature", eventType = "plot")
+      sim <- scheduleEvent(sim, eventTime = start(sim), moduleName = "temperature", eventType = "SimulTemp")
+      sim <- scheduleEvent(sim, eventTime = P(sim)$.plotInitialTime, moduleName = "temperature", eventType = "plot")
     },
     plot = {
       ## do stuff for this event
       sim <- temperaturePlot(sim)
       
       ## schedule future event(s)
-      sim <- scheduleEvent(sim = sim, eventTime = P(sim)$.plotInterval, moduleName = "temperature", eventType = "plot")
+      sim <- scheduleEvent(sim, eventTime = time(sim) + P(sim)$.plotInterval, moduleName = "temperature", eventType = "plot")
     },
     SimulTemp = {
       ## do stuff for this event
       sim <- temperatureSim(sim)
       
       ## schedule future event(s)
-      sim <- scheduleEvent(sim = sim, eventTime = time(sim)+ P(sim)$simulationTimeStep, moduleName = "temperature", eventType = "SimulTemp")
+      sim <- scheduleEvent(sim, eventTime = time(sim)+ P(sim)$simulationTimeStep, moduleName = "temperature", eventType = "SimulTemp")
     },
     warning(paste("Undefined event type: '", current(sim)[1, "eventType", with = FALSE],
                   "' in module '", current(sim)[1, "moduleName", with = FALSE], "'", sep = ""))
@@ -75,8 +75,8 @@ temperatureInit <- function(sim) {
 ## This is the plotting event funciton
 temperaturePlot <- function(sim) {
   ## plot temperature
-  Plot(sim$tempRasters[[time(sim)]], 
-       title = paste0("Temperature\nat time ", time(sim)))
+  plot(sim$tempRasters[[time(sim)]], 
+       main = paste0("Temperature\nat time ", time(sim)))
   
   return(invisible(sim))
 }
@@ -92,7 +92,7 @@ temperatureSim <- function(sim) {
 ## This is not an event, but a function that we define separately 
 ## and that contains our "simulation model"
 temperature_model <- function(ras) {
-  temp_outputs <- SpaDES.tools::gaussMap(ras, scale = 100, var = 0.01) 
-  return(temp_outputs)
+  temp_ras <- SpaDES.tools::gaussMap(ras, scale = 100, var = 0.01) 
+  return(temp_ras)
 }
 

@@ -22,10 +22,10 @@ defineModule(sim, list(
   ),
   inputObjects = bind_rows(
     #expectsInput("objectName", "objectClass", "input object description", sourceURL, ...),
-    expectsInput("r", "RasterLayer", "A template raster for abundance and speciesAbundance simulations", sourceURL = NA)
   ),
   outputObjects = bind_rows(
     #createsOutput("objectName", "objectClass", "output object description", ...),
+    createsOutput(objectName = "r", objectClass = "RasterLayer", desc = "Template raster"),
     createsOutput("abundRasters", "RasterLayer", "Raster layer of species abundance at any given year")
   )
 ))
@@ -41,22 +41,22 @@ doEvent.speciesAbundance = function(sim, eventTime, eventType, debug = FALSE) {
       sim <- abundanceInit(sim)
       
       ## schedule future event(s)
-      sim <- scheduleEvent(sim = sim, eventTime = start(sim), moduleName = "speciesAbundance", eventType = "SimulAbund")
-      sim <- scheduleEvent(sim = sim, eventTime = P(sim)$.plotInitialTime, moduleName = "speciesAbundance", eventType = "plot")
+      sim <- scheduleEvent(sim, eventTime = start(sim), moduleName = "speciesAbundance", eventType = "SimulAbund")
+      sim <- scheduleEvent(sim, eventTime = P(sim)$.plotInitialTime, moduleName = "speciesAbundance", eventType = "plot")
     },
     plot = {
       ## do stuff for this event
       sim <- abundancePlot(sim)
       
       ## schedule future event(s)
-      sim <- scheduleEvent(sim = sim, eventTime = P(sim)$.plotInterval, moduleName = "speciesAbundance", eventType = "plot")
+      sim <- scheduleEvent(sim, eventTime = time(sim) + P(sim)$.plotInterval, moduleName = "speciesAbundance", eventType = "plot")
     },
     SimulAbund = {
       ## do stuff for this event
       sim <- abundanceSim(sim)
       
       ## schedule future event(s)
-      sim <- scheduleEvent(sim = sim, eventTime = time(sim)+ P(sim)$simulationTimeStep, moduleName = "speciesAbundance", eventType = "SimulAbund")
+      sim <- scheduleEvent(sim, eventTime = time(sim) + P(sim)$simulationTimeStep, moduleName = "speciesAbundance", eventType = "SimulAbund")
     },
     warning(paste("Undefined event type: '", current(sim)[1, "eventType", with = FALSE],
                   "' in module '", current(sim)[1, "moduleName", with = FALSE], "'", sep = ""))
@@ -83,9 +83,8 @@ abundanceInit <- function(sim) {
 ## Plotting event
 abundancePlot <- function(sim) {
   ## plot abundances
-  browser()
-  Plot(sim$abundRasters[[time(sim)]], 
-       title = paste0("Species abundance\nat time ", time(sim)))
+  plot(sim$abundRasters[[time(sim)]], 
+       main = paste0("Species abundance\nat time ", time(sim)))
   
   return(invisible(sim))
 }
@@ -101,6 +100,6 @@ abundanceSim <- function(sim) {
 ## This is not an event, but a function that we define separately 
 ## and that contains our "simulation model"
 abundance_model <- function(ras) {
-  abund_outputs <- SpaDES.tools::gaussMap(ras, scale = 100, var = 0.01) 
-  return(abund_outputs)
+  abund_ras <- SpaDES.tools::gaussMap(ras, scale = 100, var = 0.01) 
+  return(abund_ras)
 }

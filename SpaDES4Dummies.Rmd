@@ -82,7 +82,7 @@ par(par_sets)
 ### After...
 Let's now transform the example above using the SpaDES approach. I like to start by creating a *global.R* script (you can call it whatever you want, though) that will load the SpaDES libraries and run SpaDES simulations.
 
-```{r globalscript, eval=FALSE}
+```{r globalscript}
 suppressMessages(library(SpaDES))  ## should automatically download all packages in the SpaDES family and their dependencies
 
 ## decide where you're working
@@ -93,7 +93,9 @@ setPaths(cachePath = "cache",
 getPaths() ## check that this is what you wanted
 
 ## Let's create a self-contained module that will simulate the species' abundance for any given period of time and frequency.
-# newModule(name = "speciesAbundance", path = getPaths()$modulePath)
+if(!dir.exists(file.path(getPaths()$modulePath, "speciesAbundance"))){
+  newModule(name = "speciesAbundance", path = getPaths()$modulePath)
+}
 
 ```
 
@@ -107,8 +109,8 @@ Now go ahead and open the *speciesAbundance.R* script. I know, I know... It seem
 The first "bit" of code is basically defining the module metadata. It will allow you to define who the author is, keywords that describe your module and the module(s) and package(s) version(s). It will also define the inputs that the module requires and the outputs it produces. Inputs for this module are produced in the `init` event (see below) and the outputs are the abundance rasters (produced during the `abundanceSim` event). 
 You'll notice that I have removed several parameters that we don't need (like save parameters) and that there are no input parameters needed. If you are unsure of what input and output parameters are in the context of a module, a good rule of thumb is that inputs are all `sim$...` objects that appear to the **right-hand side** of a "<-", whereas output parameters appear to the **left-hand side**.
 
-Here's how I defined the module:
 
+Here's how I defined the module:
 ```{r abund_module, eval=FALSE}
 defineModule(sim, list(
   name = "speciesAbundance",
@@ -131,20 +133,22 @@ defineModule(sim, list(
   ),
   inputObjects = bind_rows(
     #expectsInput("objectName", "objectClass", "input object description", sourceURL, ...),
-    expectsInput("r", "RasterLayer", "A template raster for abundance and speciesAbundance simulations", sourceURL = NA)
   ),
   outputObjects = bind_rows(
     #createsOutput("objectName", "objectClass", "output object description", ...),
+    createsOutput(objectName = "r", objectClass = "RasterLayer", desc = "Template raster"),
     createsOutput("abundRasters", "RasterLayer", "Raster layer of species abundance at any given year")
   )
 ))
 
 ```
 
-Now the rest of the script determines the event sequence - remember SpaDES = Spatial Descrete Event Simulator - and defines the events themselves. The `init` (initialisation) event is **mandatory**, the others are not. `SpaDES` knows how to deal with the `init` event. For example, it knows that the `init`'s of all active modules will be executed first. The other in which this happens is automatically determined by inter-module dependencies (i.e. if modules require inputs that are the outputs of other modules). If there are no inter-module dependencies the order is determined by the other in which modules are listed in the *global.R* script.
+Now the rest of the script determines the event sequence - remember SpaDES = Spatial Descrete Event Simulator - and defines the events themselves. The initialisation (`init`) event is **mandatory**, the others are not. SpaDES knows how to deal with an `init` event and "searches" for it. For example, it knows that the initialisations of all active modules will be executed first. The order in which modules (and consequently their initialisations) are executed is automatically determined by inter-module dependencies (i.e. if modules require inputs that are the outputs of other modules) - I told you SpaDES is cool! If there are no inter-module dependencies the order is determined by the other in which modules are listed in the *global.R* script.
+
 Since we are only interested in simulating and plotting species abundances, we can go ahead and remove unnecessary events from the script. I have kept the initialisaton, plotting and abundance simulation events.
 
-Let's look at the **event functions** first (those that come after `doEvent.speciesAbundance`). Note that `Init` became `abundanceInit`, `Plot` became `abundancePlot` and `event1` became `abundanceSim`.
+Let's look at the **event functions** first (those that come after `doEvent.speciesAbundance`). `Init` became `abundanceInit`, `Plot` became `abundancePlot` and `event1` became `abundanceSim`.
+
 
 Initialisation function:
 ```{r abund_module2, eval = FALSE}
@@ -158,35 +162,91 @@ abundanceInit <- function(sim) {
   return(invisible(sim))
 }
 ```
-In the initialisation, we are creating a template raster 
+
+In the initialisation, we are creating a template raster and a storage list for our species abundance outputs (which will also be rasters). Notice how the only argument to `abundanceInit` is the `sim` object, which is where the objects beign created are stored. Always take care to `return()` the `sim` object at the end of an event.
+
 
 Abundance simulation event function:
 ```{r abund_module3, eval = FALSE}
 abundanceSim <- function(sim) {
   ## Generate species abundances - our "simulation"
-  sim$abundRasters[[time(sim)]] <- sim$abundance_model(ras = sim$r)
+  sim$abundRasters[[time(sim)]] <- abundance_model(ras = sim$r)
   
   return(invisible(sim))
 }
 ```
+This event is basically the "prima donna"" of this module. This is where we will generate species abundances. Notice how instead of a loop, we now have the event running the `abundance_model` function (which we'll define separately below) and storing its outputs in the `sim$abundRaster` object. Notice as well that we use `time(sim)` as the identifier of the list slots where outputs are stored. Go ahead and check what `SpaDES.core::time` is doing!
+Again, the sole argument and output to this event function is the `sim` object - notice a pattern? ;)
+
 
 Plotting event function:
 ```{r abund_module4, eval = FALSE}
 abundancePlot <- function(sim) {
   ## plot abundances
-  Plot(sim$abundRasters[[time(sim)]], 
-       title = paste0("Species abundance\nat time ", time(sim)))
+  plot(sim$abundRasters[[time(sim)]], 
+       main = paste0("Species abundance\nat time ", time(sim)))
   
   return(invisible(sim))
 }
 ```
+Yup, you got it. This event simply plots the species abundance rasters that are produced during the `abundanceSim` event. "How does it know that it should plot them **after** the abundance generator?" you ask me puzzled. Good question sir/madam, 5 points for Griffindor!
+The order of events is defined as a `doEvent.<module_name>` function - whose template is automatically created under the `defineModule` function. Shall we have a look?
 
-INTEGRATE 28NOV CHANGES HERE
 
+Scheduling events:
+```{r abund_module5, eval = FALSE}
+doEvent.speciesAbundance = function(sim, eventTime, eventType, debug = FALSE) {
+  switch(
+    eventType,
+    init = {
+      ## do stuff for this event
+      sim <- abundanceInit(sim)
+      
+      ## schedule future event(s)
+      sim <- scheduleEvent(sim, eventTime = start(sim), moduleName = "speciesAbundance", eventType = "SimulAbund")
+      sim <- scheduleEvent(sim, eventTime = P(sim)$.plotInitialTime, moduleName = "speciesAbundance", eventType = "plot")
+    },
+    plot = {
+      ## do stuff for this event
+      sim <- abundancePlot(sim)
+      
+      ## schedule future event(s)
+      sim <- scheduleEvent(sim, eventTime = time(sim) + P(sim)$.plotInterval, moduleName = "speciesAbundance", eventType = "plot")
+    },
+    SimulAbund = {
+      ## do stuff for this event
+      sim <- abundanceSim(sim)
+      
+      ## schedule future event(s)
+      sim <- scheduleEvent(sim, eventTime = time(sim) + P(sim)$simulationTimeStep, moduleName = "speciesAbundance", eventType = "SimulAbund")
+    },
+    warning(paste("Undefined event type: '", current(sim)[1, "eventType", with = FALSE],
+                  "' in module '", current(sim)[1, "moduleName", with = FALSE], "'", sep = ""))
+  )
+  return(invisible(sim))
+}
+```
+Now this one seems complicated... But it's not, trust me.
 
+I encourage you to check what `base::switch` is doing on your own, but if you're lazy here's a dummy explanation: it tells R that the behaviour of your function will change (or switch) depending on what the `eventType`. So we need to define the behaviour of `doEvent` for all the event types we have in this module. In each of them we will execute the event functions and schedule future events with `scheduleEvent`.
 
-***********
+The first one is, obviously, `init` - don´t change the name of this one. We run the initialisation event and schedule the abundance simulation and plotting events. Notice that the `abundanceSim` event will be generated at `start(sim)` (i.e. at the starting time), which basically is the same as running it during the initialisation. The first plotting event will be executed at the time defined by the `.plotInitialTime` parameter, which is store in the `sim` object (and obtained using  `SpaDES.core::P`). 
+
+The plot event type is defined next and besides doing the obvious plotting, it **schedules itself** to occur at a frequency defined by the `.plotInterval` parameter - isn't that cool? I think it is, but I'm only a silly ecologist.
+
+Finally, the `SimulAbund` event is very similar to the plotting one, the only real difference being that it uses the `simulationTimeStep` time step to re-schedule itself.
+Note: Notice how I've scheduled future events to `time(sim) + P(sim)$simulationTimeStep` or `time(sim) + P(sim)$.plotInterval`.
+
+Ok, just one more bit left. The actual species abundances generator function, which I have coded at the end of my *speciesAbundance.R* script:
+```{r abund_module6, eval = FALSE}
+abundance_model <- function(ras) {
+  abund_ras <- SpaDES.tools::gaussMap(ras, scale = 100, var = 0.01) 
+  return(abund_ras)
+}
+```
+
 Now go ahead and repeat the same steps to create a second module that will generate yearly temperatures. Apart from changing the objects and functions names, I have also included the template raster `r` as an input object for the temperature module. This avoids repeating the creation of the template raster, which may not seem like a big deal in our example, but it can be if you're generating heavy objects, or relying on functions that take a while to run.
+
 Here's how my final *temperature.R* script looks like:
 
 ```{r temp_module, eval = FALSE}
@@ -227,25 +287,25 @@ doEvent.temperature = function(sim, eventTime, eventType, debug = FALSE) {
     eventType,
     init = {
       ## do stuff for this event
-      sim <- sim$temperatureInit(sim)
+      sim <- temperatureInit(sim)
       
       ## schedule future event(s)
-      sim <- scheduleEvent(sim = sim, eventTime = start(sim), moduleName = "temperature", eventType = "SimulTemp")
-      sim <- scheduleEvent(sim = sim, eventTime = P(sim)$.plotInitialTime, moduleName = "temperature", eventType = "plot")
+      sim <- scheduleEvent(sim, eventTime = start(sim), moduleName = "temperature", eventType = "SimulTemp")
+      sim <- scheduleEvent(sim, eventTime = P(sim)$.plotInitialTime, moduleName = "temperature", eventType = "plot")
     },
     plot = {
       ## do stuff for this event
-      sim <- sim$temperaturePlot(sim)
+      sim <- temperaturePlot(sim)
       
       ## schedule future event(s)
-      sim <- scheduleEvent(sim = sim, eventTime = P(sim)$.plotInterval, moduleName = "temperature", eventType = "plot")
+      sim <- scheduleEvent(sim, eventTime = time(sim) + P(sim)$.plotInterval, moduleName = "temperature", eventType = "plot")
     },
     SimulTemp = {
       ## do stuff for this event
-      sim <- sim$temperatureSim(sim)
+      sim <- temperatureSim(sim)
       
       ## schedule future event(s)
-      sim <- scheduleEvent(sim = sim, eventTime = time(sim)+ P(sim)$simulationTimeStep, moduleName = "temperature", eventType = "SimulTemp")
+      sim <- scheduleEvent(sim, eventTime = time(sim)+ P(sim)$simulationTimeStep, moduleName = "temperature", eventType = "SimulTemp")
     },
     warning(paste("Undefined event type: '", current(sim)[1, "eventType", with = FALSE],
                   "' in module '", current(sim)[1, "moduleName", with = FALSE], "'", sep = ""))
@@ -264,8 +324,8 @@ temperatureInit <- function(sim) {
 ## This is the plotting event funciton
 temperaturePlot <- function(sim) {
   ## plot temperature
-  Plot(sim$tempRasters[[time(sim)]], 
-       title = paste0("Temperature\nat time ", time(sim)))
+  plot(sim$tempRasters[[time(sim)]], 
+       main = paste0("Temperature\nat time ", time(sim)))
   
   return(invisible(sim))
 }
@@ -273,7 +333,7 @@ temperaturePlot <- function(sim) {
 ## This is the temperature simulation event function
 temperatureSim <- function(sim) {
   ## Generate temperature - our "updated data"
-  sim$tempRasters[[time(sim)]] <- sim$temperature_model(ras = sim$r)
+  sim$tempRasters[[time(sim)]] <- temperature_model(ras = sim$r)
   
   return(invisible(sim))
 }
@@ -281,19 +341,24 @@ temperatureSim <- function(sim) {
 ## This is not an event, but a function that we define separately 
 ## and that contains our "simulation model"
 temperature_model <- function(ras) {
-  temp_outputs <- SpaDES.tools::gaussMap(ras, scale = 100, var = 0.01) 
-  return(temp_outputs)
+  temp_ras <- SpaDES.tools::gaussMap(ras, scale = 100, var = 0.01) 
+  return(temp_ras)
 }
-
 ```
+
 
 Our third and last module will be used to run the statistical analysis at each year, after the abundances and temperatures are generated. Hence, it'll depend on the outputs of the `speciesAbundance` and the `temperature` modules. We'll call it `speciesTempLM`. The interest of keeping the statistical analysis in a separate module is on the fact that it allows us to easily swap and compare different statistical models to analyse our data if we want to - eiher by chaging the module code, or by having other modules with different statistical models. It also allows for greater flexibility when it comes to when the statistical model is supposed to run. For example, imagine that instead of every year, we want to fit it only at every 5 years, using the previous 5 years of data. By having the statistical analysis contained in its own module, we don't need to fiddle with the other module scripts in order to make these changes.
 Finally, I'd like to draw your attention to a few differences in this module's script:
+
 * The frequency of the statistical analysis (and correspondent plots) will be determined by the parameter `statsTimestep`. This parameter also determines the number of data years to be used to fit the linear model. If `statsTimestep` = 5, then the statistical analysis will use the precedent 5 years of data AND the year in which the event is running (a total of 6 years of data);
+
 * The inputs required by the model are specified in `inputObjects` part of `defineModule` - notice how I've respected the names, classes and description of the objects that come from the `speciesAbundance` and the `temperature` modules;
+
 * This time, we have two "extra functions" at the end of the script: the function fitting the linear model and a plotting function.
 
 ```{r stats_module, eval = FALSE}
+# Everything in this file gets sourced during simInit, and all functions and objects
+# are put into the simList.
 defineModule(sim, list(
   name = "speciesTempLM",
   description = "Statistical analysis of species ~ temperature relationships using LM",
@@ -335,12 +400,12 @@ doEvent.speciesTempLM = function(sim, eventTime, eventType, debug = FALSE) {
       sim <- statsInit(sim)
 
       ## schedule future event(s)
-      sim <- scheduleEvent(sim, P(sim)$statsTimestep, "speciesTempLM", "stats")
-      sim <- scheduleEvent(sim, P(sim)$statsTimestep, "speciesTempLM", "plot")
+      sim <- scheduleEvent(sim, P(sim)$statsTimestep + 0.1, "speciesTempLM", "stats")
+      sim <- scheduleEvent(sim, P(sim)$statsTimestep + 0.1, "speciesTempLM", "plot")
     },
     plot = {
       ## do stuff for this event
-      sim <- sim$statsPlot(sim)
+      sim <- statsPlot(sim)
       
       ## schedule future event(s)
       sim <- scheduleEvent(sim, time(sim) + P(sim)$statsTimestep, "speciesTempLM", "plot")
@@ -378,43 +443,49 @@ statsPlot <- function(sim) {
 ## Statistical analysis event
 statsAnalysis <- function(sim) {
   
-  yrs <- seq(time(sim) - P(sim)$statsTimestep, time(sim), 1)
+  sim$yrs <- seq(time(sim) - P(sim)$statsTimestep + 1, time(sim), 1)
 
   sim$outputdata[[time(sim)]] <- do.call(rbind.data.frame, 
-                                         lapply(yrs, FUN = function(y){
+                                         lapply(sim$yrs, FUN = function(y){
                                            temp <- data.frame(abund = sim$abundRasters[[y]][], temp = sim$tempRasters[[y]][], year = y)          
+                                           return(temp)
                                          }))
   
-  sim$outputLM[[time(sim)]] <- stats_analysis(Data = sim$outputdata[[time(sim)]])
+  sim$outputLM[[time(sim)]] <- linearModel(Data = sim$outputdata[[time(sim)]])
   
   return(invisible(sim))
 }
 
-
 ## Other functions
-stats_analysis <- function(Data){
+linearModel <- function(Data){
   return(lm1 <- lm(abund ~ temp, data = Data))
 }
 
 plotLMResults <- function(Data, model){
-  plot(Data$abund ~ Data$temp, xlab = "Temp.", ylab = "Species abundance")
+  plot(Data$abund ~ Data$temp, xlab = "Temp.", ylab = "Species abundance", 
+       main = paste("From years", min(Data$year)-0.1, "to", max(Data$year)-0.1, sep = " "))
   abline(a = model$coefficients["(Intercept)"], b = model$coefficients["temp"], lwd = 2, col = "blue")
 }
-
 ```
+Did you see how the future events where scheduled to `P(sim)$statsTimestep + 0.1`? This forces teh statistic analyses to occur **after** the abundance and temperature rasters are ready.
 
 
 ### Let's play!
-Ok, now that we have our modules ready we can set up the simulation. Let's go back to our *global.R* script.
+Ok, now that we have our modules ready we can set up the simulation. Let's go back to our *global.R* script. 
+The function `simInit` will take a bunch of parameter lists and will prepare a simualtion object that can later be run by the `spades` function. Let's see what these lists consist of:
+
+The first list, `modules`, contains modules we want to activate.
+Then, `times` is a list containing the start and end times of the simulation and what time units we're working with - so it defines the length of the simulation. It's important that the start and ending times are defined in decimals, because `SpaDES` allows decomposing time units into smaller fractions - and we'll take advantage of this feature!
+`parameters` is a list of lists. It contains the values of parameters used by each modules, and well as "global" parameters used by all of them (`.globals`). Note that not all module parameters need to be defined in this way. In fact, a module can use a parameter that is listed inside the module *.R* script (and has a default value set there), but is never listed in `simInit`. An example of this would be `.plotInterval` which used and defined in the `speciesAbundance` and `temerature` modules. Conversely, `.plotInitialTime` is a parameter used and defined in these modules, but whose value we change when running `simInit`.
 
 ```{r globalscript2}
 ## list the modules to use
 modules <- list("speciesAbundance", "temperature", "speciesTempLM")
 
 ## Set simulation and module parameters
-times <- list(start = 1.0, end = 50.0, timeunit = "year")
+times <- list(start = 1.0, end = 10.1, timeunit = "year")
 parameters <- list(
-  .globals = list(simulationTimeStep = 1, .plotInitialTime = 1, .plotInterval = 1),
+  .globals = list(simulationTimeStep = 1, .plotInitialTime = 1.5),
   speciesTempLM = list(statsTimestep = 5)
 )
 
@@ -425,24 +496,32 @@ paths <- getPaths()
 mySim <- simInit(times = times, params = parameters, 
                 modules = modules, paths =  paths)
 ```
+To make sure that plotting always occurs after the abundances are generated, we'll affect this parameter with 1.5.
+
 
 Before starting the simulations we should check if the modules were linked correctly. `moduleDiagram` is a useful function that shows module interdependencies as a network. The direction of the arrows indicates an output to input flow. You can seen that the outputs of the `speciesAbundance` and `tempreature` modules are inputs to the `speciesTempLM` module.
-```{r modulediagram}
-## check how your modules are linked
+
+```{r modulediagram, echo = -1}
+clearPlot()
 moduleDiagram(mySim)
 ```
 
 `objectDiagram` provides yet another way of checking if the modules are linked correctly, by explicitly showing the objects that pass between modules.
-```{r eventdiagram}
+
+```{r eventdiagram, echo = -1}
+clearPlot()
 objectDiagram(mySim)
 ```
 
-
 Ok, everything seems to be correct so far. Let's try to run the simulations. I have used `debug = TRUE` so that `spades` prints the events as they are being executed. In case something fails, we'll know where it stopped.
-```{r spadesrun}
+
+```{r spadesrun, eval = FALSE}
 ## run simulation
+dev() # on Windows and Mac, this opens external device if using Rstudio, it is faster
+clearPlot()
 spades(mySim, debug = TRUE)
 ```
+
 
 
 ### Additional notes
