@@ -4,7 +4,7 @@
 defineModule(sim, list(
   name = "speciesAbundance",
   description = "Species abundance simulator",
-  keywords = c("species, abundance, gaussian, spatial"),
+  keywords = c("species", "abundance", "gaussian", "spatial"),
   authors = person("Mr.", "Me", email = "mr.me@example.com", role = c("aut", "cre")),
   childModules = character(0),
   version = list(SpaDES.core = "0.1.0", speciesAbundance = "0.0.1", SpaDES.addins = "0.1.0", SpaDES.tools = "0.1.0"),
@@ -13,7 +13,7 @@ defineModule(sim, list(
   timeunit = "year",
   citation = list("citation.bib"),
   documentation = list("README.txt", "speciesAbundance.Rmd"),
-  reqdPkgs = list(),
+  reqdPkgs = list("raster"),
   parameters = rbind(
     # defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
     defineParameter("simulationTimeStep", "numeric", 1, NA, NA, "This describes the simulation time step interval"),
@@ -22,14 +22,13 @@ defineModule(sim, list(
   ),
   inputObjects = bind_rows(
     #expectsInput("objectName", "objectClass", "input object description", sourceURL, ...),
+    expectsInput("r", "RasterLayer", "A template raster for abundance and speciesAbundance simulations", sourceURL = NA)
   ),
   outputObjects = bind_rows(
     #createsOutput("objectName", "objectClass", "output object description", ...),
-    createsOutput(objectName = "r", objectClass = "RasterLayer", desc = "Template raster"),
-    createsOutput(objectName = "abundRaster", objectClass = "RasterLayer", desc = "Raster layer of species abundance at any given year")
+    createsOutput("abundRasters", "RasterLayer", "Raster layer of species abundance at any given year")
   )
 ))
-
 
 ## event types
 #   - type `init` is required for initialiazation
@@ -39,22 +38,22 @@ doEvent.speciesAbundance = function(sim, eventTime, eventType, debug = FALSE) {
     eventType,
     init = {
       ## do stuff for this event
-      sim <- sim$abundanceInit(sim)
-
+      sim <- abundanceInit(sim)
+      
       ## schedule future event(s)
       sim <- scheduleEvent(sim = sim, eventTime = start(sim), moduleName = "speciesAbundance", eventType = "SimulAbund")
       sim <- scheduleEvent(sim = sim, eventTime = P(sim)$.plotInitialTime, moduleName = "speciesAbundance", eventType = "plot")
     },
     plot = {
       ## do stuff for this event
-      sim <- sim$abundancePlot(sim)
+      sim <- abundancePlot(sim)
       
       ## schedule future event(s)
       sim <- scheduleEvent(sim = sim, eventTime = P(sim)$.plotInterval, moduleName = "speciesAbundance", eventType = "plot")
     },
-    abundance = {
+    SimulAbund = {
       ## do stuff for this event
-      sim <- sim$abundanceSim(sim)
+      sim <- abundanceSim(sim)
       
       ## schedule future event(s)
       sim <- scheduleEvent(sim = sim, eventTime = time(sim)+ P(sim)$simulationTimeStep, moduleName = "speciesAbundance", eventType = "SimulAbund")
@@ -65,38 +64,43 @@ doEvent.speciesAbundance = function(sim, eventTime, eventType, debug = FALSE) {
   return(invisible(sim))
 }
 
-## This is the 'init' event:
+## event functions
+#   - follow the naming convention `modulenameEventtype()`;
+#   - `modulenameInit()` function is required for initiliazation;
+#   - keep event functions short and clean, modularize by calling subroutines from section below.
+
+## Initialisation Event
 abundanceInit <- function(sim) {
   ## Template raster
   sim$r <- raster(nrows = 100, ncols = 100, xmn = -50, xmx = 50, ymn = -50, ymx = 50)
   
   ## create storage list of species abundance
-  sim$abundRaster <- list()
+  sim$abundRasters <- list()
   
   return(invisible(sim))
 }
 
-## This is the plotting event funciton
+## Plotting event
 abundancePlot <- function(sim) {
   ## plot abundances
-  Plot(sim$abundRaster[[time(sim)]], 
+  browser()
+  Plot(sim$abundRasters[[time(sim)]], 
        title = paste0("Species abundance\nat time ", time(sim)))
-
+  
   return(invisible(sim))
 }
 
-## This is the abundance simulation event function
+## Abundance simulation event
 abundanceSim <- function(sim) {
   ## Generate species abundances - our "simulation"
-  sim$abundRaster[[time(sim)]] <- sim$abundance_model(ras = sim$r)
-
+  sim$abundRasters[[time(sim)]] <- abundance_model(ras = sim$r)
+  
   return(invisible(sim))
 }
 
 ## This is not an event, but a function that we define separately 
-## and that contains our "simualtion model"
+## and that contains our "simulation model"
 abundance_model <- function(ras) {
-  abund_outputs <- SpaDES.tools::gaussMap(ras, scale = 100, var = 0.03) 
+  abund_outputs <- SpaDES.tools::gaussMap(ras, scale = 100, var = 0.01) 
   return(abund_outputs)
 }
-

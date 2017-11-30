@@ -1,5 +1,5 @@
 ---
-title: "speciesAbundance"
+title: "temperature"
 author: ""
 date: "29 November 2017"
 output: pdf_document
@@ -35,7 +35,7 @@ parameters <- list(
   #module1 = list(param1 = value1, param2 = value2),
   #module2 = list(param1 = value1, param2 = value2)
 )
-modules <- list("speciesAbundance")
+modules <- list("temperature")
 objects <- list()
 paths <- list(
   cachePath = cacheDir,
@@ -67,7 +67,7 @@ Write what is saved.
 ## Input data
 
 How to obtain input data, and a description of the data required by the module.
-If `sourceURL` is specified, `downloadData("speciesAbundance", "path/to/modules/dir")` may be sufficient.
+If `sourceURL` is specified, `downloadData("temperature", "path/to/modules/dir")` may be sufficient.
 
 ## Output data
 
