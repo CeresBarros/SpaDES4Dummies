@@ -109,7 +109,9 @@ You will notice that `newModule` has created a module folder inside */m* that co
 **/!\\ Attention /!\\** : `newModule` should only be run once, or separately in the console, otherwise you may lose your module edits by re-running it again - this is why I wrapped it in an `if` statement (smart eh?).
 
 
-Now go ahead and open the *speciesAbundance.R* script. I know, I know... It seems confusing and there's a lot of stuff in that template! Let's break it down:
+Now go ahead and open the *speciesAbundance.R* script. I know, I know... It seems confusing and there's a lot of stuff in that template! 
+
+The first thing you need to know is that **you don't need to run** any of the code inside a module *.R* script. The function `simInit` will do it for you when it sets up the simulation (you'll see this later). But before that, let's go throught the module *.R* script together.
 
 The first "bit" of code is basically defining the module metadata. It will allow you to define who the author is, keywords that describe your module and the module(s) and package(s) version(s). It will also define parameters and inputs that the module requires, and the outputs it produces.
 
