@@ -3,7 +3,6 @@ title: "SpaDES 4 Dummies"
 author: "Ceres Barros"
 date: "November 27, 2017"
 output: html_document
-# output: pdf_document
 ---
 
 ## a VERY simple example of **`SpaDES`** awesomeness
@@ -560,8 +559,7 @@ moduleDiagram(mySim)
 **Object diagram**
 
 `objectDiagram` provides yet another way of checking if the modules are linked correctly, by explicitly showing the objects that pass between modules.
-```{r eventdiagram, echo = -1}
-clearPlot()
+```{r eventdiagram}
 objectDiagram(mySim)
 ```
 
