@@ -1,7 +1,7 @@
 ---
 title: "SpaDES 4 Dummies"
-author: "Ceres Barros"
-date: "November 27, 2017"
+author: "Ceres Barros, Tati Micheletti"
+date: "Updated December 14, 2017"
 output: html_document
 ---
 
