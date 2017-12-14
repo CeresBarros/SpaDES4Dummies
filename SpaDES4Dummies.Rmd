@@ -24,7 +24,6 @@ Still don't believe me? Okay, let's solve our problem using the conventional way
 Create a raster template:
 ```{r the_r_way_raster}
 suppressMessages(library(raster))
-```
 
 r <- raster(nrows = 100, ncols = 100, xmn = -50, xmx = 50, ymn = -50, ymx = 50)
 ```
