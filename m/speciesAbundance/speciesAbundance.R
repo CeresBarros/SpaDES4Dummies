@@ -4,11 +4,15 @@
 defineModule(sim, list(
   name = "speciesAbundance",
   description = "Species abundance simulator",
+<<<<<<< Updated upstream
 <<<<<<< HEAD
   keywords = c("species", "abundance", "gaussian", "spatial","dummy example"),
 =======
   keywords = c("species", "abundance", "gaussian", "spatial","dummyExample"),
 >>>>>>> development
+=======
+  keywords = c("species", "abundance", "gaussian", "spatial","dummyExample"),
+>>>>>>> Stashed changes
   authors = person("Mr.", "Me", email = "mr.me@example.com", role = c("aut", "cre")),
   childModules = character(0),
   version = list(SpaDES.core = "0.1.0", speciesAbundance = "0.0.1", SpaDES.addins = "0.1.0", SpaDES.tools = "0.1.0"),
@@ -103,11 +107,15 @@ abundanceSim <- function(sim) {
 
 ## This is not an event, but a function that we define separately 
 ## and that contains our "simulation model". 
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 ## It is possible to specify it as a separate script (which is worth doing if the function is too big, for example).
 =======
 ## It is possible to specify it as a separate script (which is worth it if the function is too big, for example).
 >>>>>>> development
+=======
+## It is possible to specify it as a separate script (which is worth it if the function is too big, for example).
+>>>>>>> Stashed changes
 abundance_model <- function(ras) {
   abund_ras <- SpaDES.tools::gaussMap(ras, scale = 100, var = 0.01) 
   return(abund_ras)
