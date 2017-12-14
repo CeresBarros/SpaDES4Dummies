@@ -24,6 +24,7 @@ Still don't believe me? Okay, let's solve our problem using the conventional way
 Create a raster template:
 ```{r the_r_way_raster}
 suppressMessages(library(raster))
+```
 
 r <- raster(nrows = 100, ncols = 100, xmn = -50, xmx = 50, ymn = -50, ymx = 50)
 ```
@@ -93,6 +94,7 @@ Let's now solve the same problem using the **`SpaDES`** approach. I like to star
 suppressMessages(library(SpaDES))  ## should automatically download all packages in the SpaDES family and their dependencies
 
 ## decide where you're working
+mainDir <- 'C:/Users/tmichele/Dropbox/Project SpaDES/SpaDES4Dummies/' # SET YOUR MAIN DIRECTORY HERE
 setPaths(cachePath = "cache",
          inputPath = "inputs",
          modulePath = "m",
