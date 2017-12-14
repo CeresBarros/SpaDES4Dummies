@@ -16,23 +16,20 @@ In this example the abundance and temperature data are being updated by a simula
 
 
 ### BEFORE `SpaDES`...
-If we use R to develop our species abundance and temperature simulation models in the 'conventional way', we'll probably have a script were everything happens - the simulations and data analysis. At most, we would have a main script that sources others that contain useful functions, or are doing the simulations and data treatment/analysis separately. If you already use R like this, you'll find that the **`SpaDES`** way of thinking is similar. So why use it? Because it makes changing, adapting and sharing your code - or modules - much easier. 
+If we use R to develop our species abundance and temperature simulation models in the 'conventional way', we'll probably have a script where everything happens - the simulations and data analysis. At most, we would have a main script that sources others that contain useful functions, or are doing the simulations and data treatment/analysis separately. If you already use R like this, you'll find that the **`SpaDES`** way of thinking is similar. So why use it? Because it makes changing, adapting and sharing your code - or modules - much easier. 
 
 Still don't believe me? Okay, let's solve our problem using the conventional way:
 
 #### SETUP
-Load library raster without messages:
-```{r supress}
-suppressMessages(library(raster))
-```
-
 Create a raster template:
 ```{r the_r_way_raster}
+suppressMessages(library(raster))
+
 r <- raster(nrows = 100, ncols = 100, xmn = -50, xmx = 50, ymn = -50, ymx = 50)
 ```
 
 #### SPECIES ABUNDANCE "SIMULATIONS"
-Our VERY simple "simulation" model (in form of a function) generates rasters that follows a Gaussian distribution
+Our VERY simple "simulation" model (in form of a function) generates rasters that follow a Gaussian distribution
 ```{r the_r_way_simulation_function_AB}
 abundance_model <- function(r, Time) {
   abund_outputs <- list()
@@ -43,7 +40,7 @@ abundance_model <- function(r, Time) {
 }
 ```
 
-Set the lenght of the simulation (or simply the number of model iterations), run it and plot results (all ABUNDANCE plots together):
+Set the length of the simulation (or simply the number of model iterations), run it and plot results (all ABUNDANCE plots together):
 ```{r the_r_way_simulation_length}
 Time <- 10
 abundance <- abundance_model(r = r, Time = Time)
@@ -69,8 +66,8 @@ plot(stack(temperature))
 ```
 
 #### DATA ANALYSIS
-Now we analyze if species abundance and temperature are correlated.  
-First we create the data analysis funtion (a simple linear model):
+Now we analyse if species abundance and temperature are correlated.  
+First we create the data analysis function (a simple linear model):
 ```{r data_analysis_model}
 stats_analysis <- function(Data){
   lm1 <- lm(abund ~ temp, data = Data)
@@ -79,7 +76,7 @@ stats_analysis <- function(Data){
 }
 ```
 
-Then we create a loop to analyze each plot of our time-series:
+Then we create a loop to analyse each plot of our time-series:
 ```{r data_analysis, echo=-1}
 par(mfrow = c(2, 4)) # This plots in 2 lines and 4 columns
 for(t in 1:Time){
@@ -96,7 +93,6 @@ Let's now solve the same problem using the **`SpaDES`** approach. I like to star
 suppressMessages(library(SpaDES))  ## should automatically download all packages in the SpaDES family and their dependencies
 
 ## decide where you're working
-mainDir <- file.path("path", "to", "my", "modules") # SET YOUR MAIN DIRECTORY HERE
 setPaths(cachePath = "cache",
          inputPath = "inputs",
          modulePath = "m",
@@ -127,9 +123,9 @@ I know, I know... It seems confusing and there's a lot of stuff in that template
 **1. [Defining the Module](#anchor1):** this is where you **define** your module (or the module's metadata) (e.g. module author(s), time units, basic parameters, general inputs and outputs, etc.);  
 **2. [Event functions](#anchor2):** these are the "actions" (or events) that will happen in your module (i.e. species reproduction, plotting, saving parameters) - simply put, **WHAT** the module will do;  
 **3. [Scheduling Events](#anchor3):** this is how SpaDES schedules when each event is going to happen - in which order (e.g. during the simulation, when will SpaDES plot a graph) - simply put, **WHEN** the module will do;  
-**4. [Aditional functions](#anchor4):** any aditional functions needed (e.g. this is used to keep the coding of your module as clear and straightforward as possible);  
+**4. [Aditional functions](#anchor4):** any additional functions needed (e.g. this is used to keep the coding of your module as clear and straightforward as possible);  
 
-The first thing you need to know is that **you won't need to run** any of the code inside a module's *.R* script. The function `simInit` will "call" your model when it sets up the simulation. But don't worry about `simInit` yet, you will see this later in detail. So let's go throught the module *.R* script together.  
+The first thing you need to know is that **you won't need to run** any of the code inside a module's *.R* script. The function `simInit` will "call" your model when it sets up the simulation. But don't worry about `simInit` yet, you will see this later in detail. So let's go through the module *.R* script together.  
 
 ####**1. Defining the Module**{#anchor1}
 
@@ -184,7 +180,7 @@ Since we are only interested in simulating and plotting species abundances, we c
 
 Let's look at the **event functions** (`doEvent.moduleName`, in our dummy example, `doEvent.speciesAbundance` function) first. The event functions were renamed from the template as to reflect my module's actions. Therefore, `Init` became `abundanceInit`, `Plot` became `abundancePlot` and `event1` became `abundanceSim`.
 
-#####*Initialization function* 
+#####*Initialisation function* 
 
 The initialisation (`init`) event can be seen as the starting point of the module, and is **mandatory**. The other `events` are not. **`SpaDES`** knows how to deal with an `init` event and "searches" for it before doing anything else.
 
@@ -231,7 +227,7 @@ abundancePlot <- function(sim) {
 
 ####**3.Scheduling events**{#anchor3}
 
-The order in which each of the *modules* (and consequently their initializations) are executed is automatically determined by inter-module dependencies (i.e. module inputs that are the outputs of other modules). Afterall, we don't want the plotting to occur before the generation of species abundances. If there are no inter-module dependencies the order is determined by the other in which the modules are listed in the *global.R* script **and/or** by the way we schedule the events - I told you **`SpaDES`** is cool!
+The order in which each of the *modules* (and consequently their initialisations) are executed is automatically determined by inter-module dependencies (i.e. module inputs that are the outputs of other modules). After all, we don't want the plotting to occur before the generation of species abundances. If there are no inter-module dependencies the order is determined by the other in which the modules are listed in the *global.R* script **and/or** by the way we schedule the events - I told you **`SpaDES`** is cool!
 
 So let's go back to our dummy example. Now that we've defined our event functions, we need to set the order in which they will happen for this module. For example, we don't want the plotting to occur before the generation of species abundances, so we'll schedule all `abundancePlot` events to occur slightly after the `abundanceSim` events:
 
@@ -287,7 +283,7 @@ It is similar to the plotting event, with an important difference being that it 
 
 ####**4. Additional functions**{#anchor4}
 
-Ok, just one more bit left. Events may also rely on other funcitons that can either be sourced from other scripts, or defined at the end of the module script. This is the case for the species abundances generator function, which I have coded at the end of my *speciesAbundance.R* script:
+Ok, just one more bit left. Events may also rely on other functions that can either be sourced from other scripts, or defined at the end of the module script. This is the case for the species abundances generator function, which I have coded at the end of my *speciesAbundance.R* script:
 
 ```{r abund_module6, eval = FALSE}
 abundance_model <- function(ras) {
@@ -489,7 +485,7 @@ doEvent.speciesTempLM = function(sim, eventTime, eventType, debug = FALSE) {
   return(invisible(sim))
 }
 
-## template initialization
+## template initialisation
 statsInit <- function(sim) {
   ## create outputs storage lists
   sim$outputdata <- list()
@@ -546,7 +542,7 @@ Then, `times` is a list containing the start and end times of the simulation and
 
 `parameters` is a list of lists. It contains the values of parameters used by each modules, and well as "global" parameters used by all of them (`.globals`). Note that not all module parameters need to be defined in this way. In fact, a module can use a parameter that is listed inside the module *.R* script (and has a default value set there), but is never listed in its `simInit`. An example of this would be `.plotInterval` which is used and defined in the `speciesAbundance` and `temperature` modules. Conversely, `.plotInitialTime` is a parameter used and defined in these modules, but whose value we change when running `simInit`.  
 
-To make sure that plotting always occurs after the abundances are generated, I have changed `.plotInitialTime` to 1.5. Since `.plotInterval` remains unchanged (remember, that is its defined within the module scripts), all plots will occur at the "half" year (1.5, 2.5, 3.5, etc...) 
+To make sure that plotting always occurs after the abundances are generated, I have changed `.plotInitialTime` to 1.5. Since `.plotInterval` remains unchanged (remember, that is its defined within the module scripts), all plots will occur at the "half" year (1.5, 2.5, 3.5, etc.) 
 Finally, `paths` contains the directory paths that we set earlier.
 
 ```{r globalscript2}
@@ -607,6 +603,6 @@ Try now playing around with other models, parameters and new modules to further 
 
 ### Additional notes
 
-**`SpaDES`** is an extremely powerful package, whose potential goes well beyond what has been discussed in this dummy example. If you don't feel so dummy any more and want to explore it further, have a look at the [LCC2005](https://github.com/PredictiveEcology/SpaDES-modules/blob/master/modules/LCC2005/LCC2005.Rmd) and the [wolfALps](https://htmlpreview.github.io/?https://github.com/PredictiveEcology/SpaDES-modules/blob/master/modules/wolfAlps/wolfAlps.html) module tutorials. Also, do go to the [**`SpaDES`** webpage](http://predictiveecology.org/) to find further information about the plataform, as well as upcoming workshops and publications.  
+**`SpaDES`** is an extremely powerful package, whose potential goes well beyond what has been discussed in this dummy example. If you don't feel so dummy any more and want to explore it further, have a look at the [LCC2005](https://github.com/PredictiveEcology/SpaDES-modules/blob/master/modules/LCC2005/LCC2005.Rmd) and the [wolfALps](https://htmlpreview.github.io/?https://github.com/PredictiveEcology/SpaDES-modules/blob/master/modules/wolfAlps/wolfAlps.html) module tutorials. Also, do go to the [**`SpaDES`** webpage](http://predictiveecology.org/) to find further information about the platform, as well as upcoming workshops and publications.  
 
 
