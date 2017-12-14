@@ -38,4 +38,8 @@ objectDiagram(mySim)
 ## run simulation
 dev() # on Windows and Mac, this opens external device if using Rstudio, it is faster
 clearPlot()
+<<<<<<< HEAD
 spades(mySim, debug = TRUE)
+=======
+spades(mySim, debug = TRUE)
+>>>>>>> development
