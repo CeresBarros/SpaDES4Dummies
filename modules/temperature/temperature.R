@@ -7,7 +7,7 @@ defineModule(sim, list(
   keywords = c("temperature", "gaussian", "spatial"),
   authors = person("Mr.", "Me", email = "mr.me@example.com", role = c("aut", "cre")),
   childModules = character(0),
-  version = list(SpaDES.core = "0.1.0", speciesAbundance = "0.0.1", temperature = "0.0.1", SpaDES.addins = "0.1.0", SpaDES.tools = "0.1.0"),
+  version = numeric_version("0.0.1"),
   spatialExtent = raster::extent(rep(NA_real_, 4)),
   timeframe = as.POSIXlt(c(NA, NA)),
   timeunit = "year",
