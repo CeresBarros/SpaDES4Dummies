@@ -4,7 +4,7 @@ library(SpaDES)  ## should automatically download all packages in the SpaDES fam
 mainDir <- '~/SpaDES4Dummies/' # SET YOUR MAIN DIRECTORY HERE.
 setPaths(cachePath = "cache",
          inputPath = "inputs",
-         modulePath = "m",
+         modulePath = "modules",
          outputPath = "outputs")
 
 getPaths() ## check that this is what you wanted
