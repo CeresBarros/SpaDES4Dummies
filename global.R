@@ -39,9 +39,3 @@ objectDiagram(mySim)
 dev() # on Windows and Mac, this opens external device if using Rstudio, it is faster
 clearPlot()
 spades(mySim, debug = TRUE)
-
-## TO INCLUDE IN DUMMY??
-## zip Module for posterior sharing from a github repo
-zipModule(name = "speciesAbundance", path = paths$modulePath)
-zipModule(name = "temperature", path = paths$modulePath)
-zipModule(name = "speciesTempLM", path = paths$modulePath)
