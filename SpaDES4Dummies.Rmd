@@ -22,8 +22,8 @@ Still don't believe me? Okay, let's solve our problem using the conventional way
 
 #### SETUP
 Create a raster template:
-```{r the_r_way_raster}
-suppressMessages(library(raster))
+```{r the_r_way_raster, message = FALSE, warning = FALSE}
+library(raster)
 
 r <- raster(nrows = 100, ncols = 100, xmn = -50, xmx = 50, ymn = -50, ymx = 50)
 ```
@@ -89,17 +89,16 @@ That's it. You have your model. But what if you need to include new data? You wo
 
 ### AFTER  `SpaDES`...
 Let's now solve the same problem using the **`SpaDES`** approach. I like to start by creating a *global.R* script (you can call it whatever you want, though) that will load the **`SpaDES`** libraries and run **`SpaDES`** simulations. The *global.R* script for this dummy example can be found on the root of SpaDES4Dummies Project. 
-```{r globalscript}
-suppressMessages(library(SpaDES))  ## should automatically download all packages in the SpaDES family and their dependencies
+```{r globalscript, message=FALSE, warning=FALSE}
+library(SpaDES)  ## should automatically download all packages in the SpaDES family and their dependencies
 
-## decide where you're working
-mainDir <- 'C:/Users/tmichele/Dropbox/Project SpaDES/SpaDES4Dummies/' # SET YOUR MAIN DIRECTORY HERE
+## Create and set paths inside the current working directory
 setPaths(cachePath = "cache",
          inputPath = "inputs",
          modulePath = "modules",
          outputPath = "outputs")
 
-getPaths() ## check that this is what you wanted
+# getPaths() ## allows you to retrieve the paths once they are created
 
 ## Let's create a self-contained module that will simulate the species' abundance for any given period of time and frequency.
 if(!dir.exists(file.path(getPaths()$modulePath, "speciesAbundance"))){
@@ -107,7 +106,7 @@ if(!dir.exists(file.path(getPaths()$modulePath, "speciesAbundance"))){
 }
 ```
 
-You will notice that `newModule` has created a module folder (`speciesAbundance`) inside */m* that contains both the module *.R* script template, as well as the documentation template (the *.Rmd* file). Although we will not be discussing the *.Rmd* file, please bear in mind that this is a **fundamental** part of creating a reproducible and transparent module - check out the [Guide to Reproducible Code in Ecology and Evolution](http://www.britishecologicalsociety.org/wp-content/uploads/2017/12/guide-to-reproducible-code.pdf) from the British Ecological Society). The documentation should contain not only the description of the module, but also some simple examples of what it can do.
+You will notice that `newModule` has created a module folder (`speciesAbundance`) inside */modules* that contains both the module *.R* script template, as well as the documentation template (the *.Rmd* file). Although we will not be discussing the *.Rmd* file, please bear in mind that this is a **fundamental** part of creating a reproducible and transparent module - check out the [Guide to Reproducible Code in Ecology and Evolution](http://www.britishecologicalsociety.org/wp-content/uploads/2017/12/guide-to-reproducible-code.pdf) from the British Ecological Society). The documentation should contain not only the description of the module, but also some simple examples of what it can do.
 
 `newModule` also created the folder */data* where data necessary to the module should be put in, and the folder */tests* that may contain testing scripts. We won't be using either of them in this example. 
 
@@ -124,7 +123,7 @@ I know, I know... It seems confusing and there's a lot of stuff in that template
 **1. [Defining the Module](#anchor1):** this is where you **define** your module (or the module's metadata) (e.g. module author(s), time units, basic parameters, general inputs and outputs, etc.);  
 **2. [Event functions](#anchor2):** these are the "actions" (or events) that will happen in your module (i.e. species reproduction, plotting, saving parameters) - simply put, **WHAT** the module will do;  
 **3. [Scheduling Events](#anchor3):** this is how SpaDES schedules when each event is going to happen - in which order (e.g. during the simulation, when will SpaDES plot a graph) - simply put, **WHEN** the module will do;  
-**4. [Aditional functions](#anchor4):** any additional functions needed (e.g. this is used to keep the coding of your module as clear and straightforward as possible);  
+**4. [Additional functions](#anchor4):** any additional functions needed (e.g. this is used to keep the coding of your module as clear and straightforward as possible);  
 
 The first thing you need to know is that **you won't need to run** any of the code inside a module's *.R* script. The function `simInit` will "call" your model when it sets up the simulation. But don't worry about `simInit` yet, you will see this later in detail. So let's go through the module *.R* script together.  
 
@@ -200,7 +199,7 @@ abundanceInit <- function(sim) {
 
 #####*Abundance simulation event function*
 
-This event is basically the "prima donna"" of this module. This is where we will generate species abundances. Notice how instead of a loop, we now have the event running the `abundance_model` function (which we'll define separately below) and storing its outputs in the `sim$abundRaster` object. Notice as well that we use `time(sim)` as the identifier of the list slots where outputs are stored. Go ahead and check what `SpaDES.core::time` is doing!
+This event is basically the 'prima donna' of this module. This is where we will generate species abundances. Notice how instead of a loop, we now have the event running the `abundance_model` function (which we'll define separately below) and storing its outputs in the `sim$abundRaster` object. Notice as well that we use `time(sim)` as the identifier of the list slots where outputs are stored. Go ahead and check what `SpaDES.core::time` is doing!
 Again, the sole argument and output to this event function is the `sim` object - notice a pattern? ;)
 ```{r abund_module3, eval = FALSE}
 abundanceSim <- function(sim) {
