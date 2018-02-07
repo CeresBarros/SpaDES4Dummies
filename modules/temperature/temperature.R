@@ -1,6 +1,7 @@
 
 # Everything in this file gets sourced during simInit, and all functions and objects
 # are put into the simList.
+#HA!
 defineModule(sim, list(
   name = "temperature",
   description = "Temperature simulator",
