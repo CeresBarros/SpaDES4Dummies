@@ -77,7 +77,7 @@ statsInit <- function(sim) {
 ## Plotting event
 statsPlot <- function(sim) {
 
-  plotLMResults(Data = sim$outputdata[[time(sim)]], model = sim$outputLM[[time(sim)]])
+  plotLMResults(Data = sim$outputdata[[as.character(time(sim))]], model = sim$outputLM[[as.character(time(sim))]])
   
   return(invisible(sim))
 }
@@ -87,13 +87,14 @@ statsAnalysis <- function(sim) {
   
   sim$yrs <- seq(time(sim) - P(sim)$statsTimestep + 1, time(sim), 1)
 
-  sim$outputdata[[time(sim)]] <- do.call(rbind.data.frame, 
+  sim$outputdata[[as.character(time(sim))]] <- do.call(rbind.data.frame, 
                                          lapply(sim$yrs, FUN = function(y){
-                                           temp <- data.frame(abund = sim$abundRasters[[y]][], temp = sim$tempRasters[[y]][], year = y)          
+                                           temp <- data.frame(abund = sim$abundRasters[[y]][], 
+                                                              temp = sim$tempRasters[[y]][], year = y)          
                                            return(temp)
                                          }))
   
-  sim$outputLM[[time(sim)]] <- linearModel(Data = sim$outputdata[[time(sim)]])
+  sim$outputLM[[as.character(time(sim))]] <- linearModel(Data = sim$outputdata[[as.character(time(sim))]])
   
   return(invisible(sim))
 }

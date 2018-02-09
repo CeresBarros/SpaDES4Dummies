@@ -21,7 +21,7 @@ defineModule(sim, list(
     defineParameter(".plotInterval", "numeric", 1, NA, NA, "This describes the simulation time interval between plot events")
   ),
   inputObjects = bind_rows(
-    #expectsInput("objectName", "objectClass", "input object description", sourceURL, ...),
+    # expectsInput("objectName", "objectClass", "input object description", sourceURL, ...),
   ),
   outputObjects = bind_rows(
     #createsOutput("objectName", "objectClass", "output object description", ...),
@@ -83,7 +83,7 @@ abundanceInit <- function(sim) {
 ## Plotting event
 abundancePlot <- function(sim) {
   ## plot abundances
-  plot(sim$abundRasters[[time(sim)]], 
+  plot(sim$abundRasters[[as.character(time(sim))]], 
        main = paste0("Species abundance\nat time ", time(sim)))
   
   return(invisible(sim))
@@ -92,7 +92,7 @@ abundancePlot <- function(sim) {
 ## Abundance simulation event
 abundanceSim <- function(sim) {
   ## Generate species abundances - our "simulation"
-  sim$abundRasters[[time(sim)]] <- abundance_model(ras = sim$r)
+  sim$abundRasters[[as.character(time(sim))]] <- abundance_model(ras = sim$r)
   
   return(invisible(sim))
 }
