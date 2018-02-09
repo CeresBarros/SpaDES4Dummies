@@ -75,7 +75,7 @@ temperatureInit <- function(sim) {
 ## This is the plotting event funciton
 temperaturePlot <- function(sim) {
   ## plot temperature
-  plot(sim$tempRasters[[time(sim)]], 
+  plot(sim$tempRasters[[as.character(time(sim))]], 
        main = paste0("Temperature\nat time ", time(sim)))
   
   return(invisible(sim))
@@ -84,7 +84,7 @@ temperaturePlot <- function(sim) {
 ## This is the temperature simulation event function
 temperatureSim <- function(sim) {
   ## Generate temperature - our "updated data"
-  sim$tempRasters[[time(sim)]] <- temperature_model(ras = sim$r)
+  sim$tempRasters[[as.character(time(sim))]] <- temperature_model(ras = sim$r)
   
   return(invisible(sim))
 }

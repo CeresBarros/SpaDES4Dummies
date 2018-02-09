@@ -31,10 +31,10 @@ r <- raster(nrows = 100, ncols = 100, xmn = -50, xmx = 50, ymn = -50, ymx = 50)
 #### SPECIES ABUNDANCE "SIMULATIONS"
 Our VERY simple "simulation" model (in form of a function) generates rasters that follow a Gaussian distribution
 ```{r the_r_way_simulation_function_AB}
-abundance_model <- function(r, Time) {
+abundance_model <- function(ras, Time) {
   abund_outputs <- list()
   for(t in 1:Time) { 
-    abund_outputs[[t]] <- SpaDES.tools::gaussMap(r, scale = 100, var = 0.03) 
+    abund_outputs[[t]] <- SpaDES.tools::gaussMap(ras, scale = 100, var = 0.03) 
   }
   return(abund_outputs)
 }
@@ -44,6 +44,7 @@ Set the length of the simulation (or simply the number of model iterations), run
 ```{r the_r_way_simulation_length}
 Time <- 10
 abundance <- abundance_model(r = r, Time = Time)
+quickPlot::dev()
 plot(stack(abundance))
 ```
 
@@ -70,15 +71,19 @@ Now we analyse if species abundance and temperature are correlated.
 First we create the data analysis function (a simple linear model):
 ```{r data_analysis_model}
 stats_analysis <- function(Data){
-  lm1 <- lm(abund ~ temp, data = Data)
-  plot(Data$abund ~ Data$temp, xlab = "Temperature", ylab = "Species abundance")
-  abline(a = lm1$coefficients["(Intercept)"], b = lm1$coefficients["temp"], lwd = 2, col = "blue")
+  if(all(c("abund", "temp") %in% colnames(Data))) {
+    lm1 <- lm(abund ~ temp, data = Data)
+    plot(Data$abund ~ Data$temp, xlab = "Temperature", ylab = "Species abundance")
+    abline(a = lm1$coefficients["(Intercept)"], b = lm1$coefficients["temp"], lwd = 2, col = "blue")
+  } else{
+    stop("Data must contain 'abund' and 'temp' columns")
+  }
 }
 ```
 
 Then we create a loop to analyse each plot of our time-series:
 ```{r data_analysis, echo=-1}
-par(mfrow = c(2, 4)) # This plots in 2 lines and 4 columns
+par(mfrow = c(2, 5)) # This plots in 2 lines and 4 columns
 for(t in 1:Time){
   outputdata <- data.frame(abund = abundance[[t]][], temp = temperature[[t]][])
   stats_analysis(Data = outputdata)
@@ -204,7 +209,7 @@ Again, the sole argument and output to this event function is the `sim` object -
 ```{r abund_module3, eval = FALSE}
 abundanceSim <- function(sim) {
   ## Generate species abundances - our "simulation"
-  sim$abundRasters[[time(sim)]] <- abundance_model(ras = sim$r)
+  sim$abundRasters[[as.character(time(sim))]] <- abundance_model(ras = sim$r)
   
   return(invisible(sim))
 }
@@ -216,7 +221,7 @@ What does this event do? Yup, you got it. This event simply plots the species ab
 ```{r abund_module4, eval = FALSE}
 abundancePlot <- function(sim) {
   ## plot abundances
-  plot(sim$abundRasters[[time(sim)]], 
+  plot(sim$abundRasters[[as.character(time(sim))]], 
        main = paste0("Species abundance\nat time ", time(sim)))
   
   return(invisible(sim))
@@ -376,7 +381,7 @@ temperatureInit <- function(sim) {
 ## This is the plotting event funciton
 temperaturePlot <- function(sim) {
   ## plot temperature
-  plot(sim$tempRasters[[time(sim)]], 
+  plot(sim$tempRasters[[as.character(time(sim))]], 
        main = paste0("Temperature\nat time ", time(sim)))
   
   return(invisible(sim))
@@ -385,7 +390,7 @@ temperaturePlot <- function(sim) {
 ## This is the temperature simulation event function
 temperatureSim <- function(sim) {
   ## Generate temperature - our "updated data"
-  sim$tempRasters[[time(sim)]] <- temperature_model(ras = sim$r)
+  sim$tempRasters[[as.character(time(sim))]] <- temperature_model(ras = sim$r)
   
   return(invisible(sim))
 }
@@ -497,7 +502,7 @@ statsInit <- function(sim) {
 ## Plotting event
 statsPlot <- function(sim) {
 
-  plotLMResults(Data = sim$outputdata[[time(sim)]], model = sim$outputLM[[time(sim)]])
+  plotLMResults(Data = sim$outputdata[[as.character(time(sim))]], model = sim$outputLM[[as.character(time(sim))]])
   
   return(invisible(sim))
 }
@@ -507,13 +512,13 @@ statsAnalysis <- function(sim) {
   
   sim$yrs <- seq(time(sim) - P(sim)$statsTimestep + 1, time(sim), 1)
 
-  sim$outputdata[[time(sim)]] <- do.call(rbind.data.frame, 
+  sim$outputdata[[as.character(time(sim))]] <- do.call(rbind.data.frame, 
                                          lapply(sim$yrs, FUN = function(y){
                                            abundTemp <- data.frame(abund = sim$abundRasters[[y]][], temp = sim$tempRasters[[y]][], year = y)          
                                            return(abundTemp)
                                          }))
   
-  sim$outputLM[[time(sim)]] <- linearModel(Data = sim$outputdata[[time(sim)]])
+  sim$outputLM[[as.character(time(sim))]] <- linearModel(Data = sim$outputdata[[as.character(time(sim))]])
   
   return(invisible(sim))
 }
@@ -593,7 +598,7 @@ I have used `debug = TRUE` so that `spades` prints the events as they are being 
 ## run simulation
 dev() # on Windows and Mac, this opens external device if using Rstudio, it is faster
 clearPlot()
-spades(mySim, debug = TRUE)
+mySim2 <- spades(mySim, debug = TRUE)
 ```
 
 Try now playing around with other models, parameters and new modules to further explore all the `SpaDES` flexibility! The more complex your project gets, the easier it is to turn *on* and *off* different modules, run different statistical analysis, and include more data  when using `SpaDES` than before!  
