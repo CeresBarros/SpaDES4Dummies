@@ -2,7 +2,10 @@
 title: "SpaDES 4 Dummies"
 author: "Ceres Barros, Tati Micheletti"
 date: "Updated December 14, 2017"
-output: html_document
+output:
+  html_document:
+    toc : TRUE
+    toc_float: TRUE
 ---
 
 ## a VERY simple example of **`SpaDES`** awesomeness
