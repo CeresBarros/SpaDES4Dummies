@@ -47,7 +47,7 @@ doEvent.temperature = function(sim, eventTime, eventType, debug = FALSE) {
     plot = {
       ## do stuff for this event
       sim <- temperaturePlot(sim)
-      
+
       ## schedule future event(s)
       sim <- scheduleEvent(sim, eventTime = time(sim) + P(sim)$.plotInterval, moduleName = "temperature", eventType = "plot")
     },
