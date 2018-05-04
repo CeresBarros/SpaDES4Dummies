@@ -3,7 +3,7 @@
 # please specify the package you need to run the sim function in the test files.
 
 # to test all the test files in the tests folder:
-test_dir("C:/Ceres/OneDrive/GitHub/SpaDES4Dummies/m/speciesAbundance/tests/testthat")
+test_dir("D:/GitHub/SpaDES4Dummies/modules/speciesAbundance/tests/testthat")
 
 # Alternative, you can use test_file to test individual test file, e.g.:
-test_file("C:/Ceres/OneDrive/GitHub/SpaDES4Dummies/m/speciesAbundance/tests/testthat/test-template.R")
+test_file("D:/GitHub/SpaDES4Dummies/modules/speciesAbundance/tests/testthat/test-template.R")

@@ -7,8 +7,8 @@ defineModule(sim, list(
   keywords = c("temperature", "gaussian", "spatial"),
   authors = person("Mr.", "Me", email = "mr.me@example.com", role = c("aut", "cre")),
   childModules = character(0),
-  version = numeric_version("0.0.1"),
-  spatialExtent = raster::extent(rep(NA_real_, 4)),
+  version = list(SpaDES.core = "0.1.1.9011", speciesAbundance = "0.0.1"),
+  # spatialExtent = raster::extent(rep(NA_real_, 4)),
   timeframe = as.POSIXlt(c(NA, NA)),
   timeunit = "year",
   citation = list("citation.bib"),
@@ -42,14 +42,8 @@ doEvent.temperature = function(sim, eventTime, eventType, debug = FALSE) {
       
       ## schedule future event(s)
       sim <- scheduleEvent(sim, eventTime = start(sim), moduleName = "temperature", eventType = "SimulTemp")
-      sim <- scheduleEvent(sim, eventTime = P(sim)$.plotInitialTime, moduleName = "temperature", eventType = "plot")
-    },
-    plot = {
-      ## do stuff for this event
-      sim <- temperaturePlot(sim)
-
-      ## schedule future event(s)
-      sim <- scheduleEvent(sim, eventTime = time(sim) + P(sim)$.plotInterval, moduleName = "temperature", eventType = "plot")
+      sim <- scheduleEvent(sim, eventTime = P(sim)$.plotInitialTime, moduleName = "temperature", 
+                           eventType = "tempPlot", eventPriority = .normal()+1)
     },
     SimulTemp = {
       ## do stuff for this event
@@ -57,6 +51,14 @@ doEvent.temperature = function(sim, eventTime, eventType, debug = FALSE) {
       
       ## schedule future event(s)
       sim <- scheduleEvent(sim, eventTime = time(sim)+ P(sim)$simulationTimeStep, moduleName = "temperature", eventType = "SimulTemp")
+    },
+    tempPlot = {
+      ## do stuff for this event
+      sim <- temperaturePlot(sim)
+
+      ## schedule future event(s)
+      sim <- scheduleEvent(sim, eventTime = time(sim) + P(sim)$.plotInterval, moduleName = "temperature", 
+                           eventType = "tempPlot", eventPriority = .normal()+1)
     },
     warning(paste("Undefined event type: '", current(sim)[1, "eventType", with = FALSE],
                   "' in module '", current(sim)[1, "moduleName", with = FALSE], "'", sep = ""))
@@ -72,19 +74,20 @@ temperatureInit <- function(sim) {
   return(invisible(sim))
 }
 
-## This is the plotting event funciton
-temperaturePlot <- function(sim) {
-  ## plot temperature
-  plot(sim$tempRasters[[as.character(time(sim))]], 
-       main = paste0("Temperature\nat time ", time(sim)))
-  
-  return(invisible(sim))
-}
-
 ## This is the temperature simulation event function
 temperatureSim <- function(sim) {
   ## Generate temperature - our "updated data"
   sim$tempRasters[[as.character(time(sim))]] <- temperature_model(ras = sim$r)
+  
+  return(invisible(sim))
+}
+
+## This is the plotting event funciton
+temperaturePlot <- function(sim) {
+  ## plot temperature
+  Plot(sim$tempRasters[[as.character(time(sim))]], 
+       title = paste0("Temperature\nat time ", time(sim)),
+       new = TRUE)
   
   return(invisible(sim))
 }
@@ -96,3 +99,11 @@ temperature_model <- function(ras) {
   return(temp_ras)
 }
 
+
+.inputObjects <- function(sim) {
+  if(!suppliedElsewhere(sim$r)) {
+    ## make template raster if not supplied elsewhere.
+    sim$r <- raster(nrows = 100, ncols = 100, xmn = -50, xmx = 50, ymn = -50, ymx = 50)
+  }
+  return(invisible(sim))
+}
