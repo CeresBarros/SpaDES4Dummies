@@ -26,6 +26,6 @@ linearModel <- function(Data){
 
 plotLMResults <- function(Data, model){
   plot(Data$abund ~ Data$temp, xlab = "Temp.", ylab = "Species abundance",
-       main = paste("From years", min(Data$year)-0.1, "to", max(Data$year)-0.1, sep = " "))
+       main = paste("From years", min(Data$year), "to", max(Data$year), sep = " "))
   abline(a = model$coefficients["(Intercept)"], b = model$coefficients["temp"], lwd = 2, col = "blue")
 }
