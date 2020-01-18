@@ -6,6 +6,8 @@ output:
   html_document:
     toc : TRUE
     toc_float: TRUE
+editor_options: 
+  chunk_output_type: console
 ---
 
 ## a VERY simple example of **`SpaDES`** awesomeness
@@ -24,10 +26,15 @@ If we use R to develop our species abundance and temperature simulation models i
 Still don't believe me? Okay, let's solve our problem using the conventional way:
 
 #### SETUP
-Create a raster template:
-```{r the_r_way_raster, message = FALSE, warning = FALSE}
+Load the necessary packages
+```{r loadPkgs, message = FALSE, warning = FALSE}
 library(raster)
+library(quickPlot)
+library(SpaDES.tools)
+```
 
+And now create a raster template:
+```{r the_r_way_raster, message = FALSE, warning = FALSE}
 r <- raster(nrows = 100, ncols = 100, xmn = -50, xmx = 50, ymn = -50, ymx = 50)
 ```
 
@@ -37,7 +44,7 @@ Our VERY simple "simulation" model (in form of a function) generates rasters tha
 abundance_model <- function(ras, Time) {
   abund_outputs <- list()
   for(t in 1:Time) { 
-    abund_outputs[[t]] <- SpaDES.tools::gaussMap(ras, scale = 100, var = 0.03) 
+    abund_outputs[[t]] <- gaussMap(ras, scale = 100, var = 0.03) 
   }
   return(abund_outputs)
 }
@@ -47,7 +54,7 @@ Set the length of the simulation (or simply the number of model iterations), run
 ```{r the_r_way_simulation_length}
 Time <- 10
 abundance <- abundance_model(r = r, Time = Time)
-quickPlot::dev()
+dev()
 plot(stack(abundance))
 ```
 
@@ -57,7 +64,7 @@ The temperature simulation model will be similar to the vegetation one - remembe
 temp_model <- function(r, Time) {
   temp_outputs <- list()
   for(t in 1:Time) { 
-    temp_outputs[[t]] <- SpaDES.tools::gaussMap(r, scale = 100, var = 0.1) 
+    temp_outputs[[t]] <- gaussMap(r, scale = 100, var = 0.1) 
   }
   return(temp_outputs)
 }
@@ -294,11 +301,18 @@ It is similar to the plotting event, with an important difference being that it 
 
 ####**4. Additional functions**{#anchor4}
 
-Events may usually rely on other functions that can either be sourced from other scripts, or defined at the end of the module script. This is the case for the species abundances generator function, which I have coded at the end of my *speciesAbundance.R* script:
+Ok, just one more bit left. Events may also rely on other functions that can either be sourced from other scripts, or defined at the end of the module script. This is the case for the species abundances generator function, which I have coded in a separate script called *abundance_model.R*. Scripts with accessory functions like these go into module's *R/* folder. 
 
-```{r abund_module6, eval = FALSE}
+Note that I have added the decription of the function it's parameters, returning value and what other package functions it relies on following the R-package documentation style.
+
+```{r abund_module7, eval = FALSE}
+#' Accessory function to speciesAbundance module
+
+#' @param ras a raster layer used as template.
+#' @return a fake abundance raster generated as a Gaussian map with scale = 100 and variance = 0.01
+#' @import SpaDES.tools gaussMap 
 abundance_model <- function(ras) {
-  abund_ras <- SpaDES.tools::gaussMap(ras, scale = 100, var = 0.01) 
+  abund_ras <- gaussMap(ras, scale = 100, var = 0.01) 
   return(abund_ras)
 }
 ```
@@ -415,21 +429,12 @@ temperatureSim <- function(sim) {
   
   return(invisible(sim))
 }
-
-## This is the plotting event funciton
-temperaturePlot <- function(sim) {
-  ## plot temperature
-  Plot(sim$tempRasters[[as.character(time(sim))]], 
-       title = paste0("Temperature\nat time ", time(sim)),
-       new = TRUE)
-  
-  return(invisible(sim))
-}
+```
 
 ## This is not an event, but a function that we define separately 
 ## and that contains our "simulation model"
 temperature_model <- function(ras) {
-  temp_ras <- SpaDES.tools::gaussMap(ras, scale = 100, var = 0.01) 
+  temp_ras <- gaussMap(ras, scale = 100, var = 0.01) 
   return(temp_ras)
 }
 
@@ -458,7 +463,7 @@ Finally, I'd like to draw your attention to a few differences in this module's s
 
 * This module **requires inputs**. They are specified in `inputObjects` part of `defineModule` - notice how I've respected the names, classes and description of the objects that come from the `speciesAbundance` and the `temperature` modules;
 
-* This time, we have **two additional functions** at the end of the script: the function fitting the linear model and a plotting function.
+* This time, we have **two additional functions** in a separate script (*R/linear_model_functions.R*): the function fitting the linear model and a plotting function.
 
 Here's the full module's script.
 Notice how the future events where scheduled to `P(sim)$statsTimestep + 0.1`. This forces the statistic analyses to occur **after** the abundance and temperature rasters are ready.
@@ -562,26 +567,45 @@ statsAnalysis <- function(sim) {
                                            return(temp)
                                          }))
   
-  sim$outputLM[[as.character(time(sim))]] <- linearModel(Data = sim$outputdata[[as.character(time(sim))]])
+  sim$outputLM[[as.character(time(sim))]] <- linear_model(Data = sim$outputdata[[as.character(time(sim))]])
   
   return(invisible(sim))
 }
+```
 
-## Other functions
+And the script with the accessory functions:
+
+```{r stats_module2, eval = FALSE}
+## Accessory functions to speciesTempLM module
+
+#' Accessory function to speciesTempLM module that calculates a
+#'  linear regression between species abundances and temperature
+#'
+#' @param Data a data.frame or data.table that contains an \code{abund}
+#'   column and a \code{temp} column with abundance and temperature values 
+#'   in each location, respectively.
+#' @return a linear model (\code{lm}) object fitted with the formula:
+#'  \code{abund ~ temp}
+
 linearModel <- function(Data){
   return(lm1 <- lm(abund ~ temp, data = Data))
 }
 
+
+#' Accessory function to speciesTempLM module that plots the
+#'  fitted linear regression between species abundances and temperature
+#'
+#' @param Data a data.frame or data.table that contains an \code{abund}
+#'   column and a \code{temp} column with abundance and temperature values 
+#'   in each location, respectively.
+#' @param model a linear model (\code{lm}) object fitted with the formula:
+#'  \code{abund ~ temp}
+#' @return a plot
+
 plotLMResults <- function(Data, model){
-  plot1 <- ggplot(data = Data, aes(x = temp, y = abund)) +
-    geom_point() +
-    geom_abline(slope = model$coefficients["temp"], 
-                intercept = model$coefficients["(Intercept)"],
-                col = "blue", size = 1) +
-    theme_bw() +
-    labs(x = "Temp.", y = "Species abundance", 
-         title = paste("From years", min(Data$year)-0.1, "to", max(Data$year)-0.1, sep = " "))
-  Plot(plot1, new = TRUE, title = "Stats. plot")
+  plot(Data$abund ~ Data$temp, xlab = "Temp.", ylab = "Species abundance", 
+       main = paste("From years", min(Data$year)-0.1, "to", max(Data$year)-0.1, sep = " "))
+  abline(a = model$coefficients["(Intercept)"], b = model$coefficients["temp"], lwd = 2, col = "blue")
 }
 
 
@@ -603,6 +627,8 @@ plotLMResults <- function(Data, model){
   return(invisible(sim))
 }
 ```
+
+
 
 ### Let's play!
 

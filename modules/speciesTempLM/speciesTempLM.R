@@ -96,43 +96,7 @@ statsAnalysis <- function(sim) {
                                            return(temp)
                                          }))
   
-  sim$outputLM[[as.character(time(sim))]] <- linearModel(Data = sim$outputdata[[as.character(time(sim))]])
-  
-  return(invisible(sim))
-}
-
-## Other functions
-linearModel <- function(Data){
-  return(lm1 <- lm(abund ~ temp, data = Data))
-}
-
-plotLMResults <- function(Data, model){
-  plot1 <- ggplot(data = Data, aes(x = temp, y = abund)) +
-    geom_point() +
-    geom_abline(slope = model$coefficients["temp"], 
-                intercept = model$coefficients["(Intercept)"],
-                col = "blue", size = 1) +
-    theme_bw() +
-    labs(x = "Temp.", y = "Species abundance", 
-         title = paste("From years", min(Data$year)-0.1, "to", max(Data$year)-0.1, sep = " "))
-  Plot(plot1, new = TRUE, title = "Stats. plot")
-}
-
-
-.inputObjects <- function(sim) {
-  if(!suppliedElsewhere(sim$abundRasters)) {
-    ## make dummy abundance raster list if not supplied elsewhere.
-    r <- raster(nrows = 100, ncols = 100, xmn = -50, xmx = 50, ymn = -50, ymx = 50)
-    sim$abundRasters <- lapply(seq(start(sim):end(sim), 1), 
-                               SpaDES.tools::gaussMap(x = sim$r, scale = 100, var = 0.01))
-    }
-  
-  if(!suppliedElsewhere(sim$tempRasters)) {
-    ## make dummy temperature raster list if not supplied elsewhere.
-    r <- raster(nrows = 100, ncols = 100, xmn = -50, xmx = 50, ymn = -50, ymx = 50)
-    sim$tempRasters <- lapply(seq(start(sim):end(sim), 1),
-                              SpaDES.tools::gaussMap(x = sim$r, scale = 100, var = 0.01))
-    }
+  sim$outputLM[[as.character(time(sim))]] <- linear_model(Data = sim$outputdata[[as.character(time(sim))]])
   
   return(invisible(sim))
 }
