@@ -88,11 +88,3 @@ temperatureSim <- function(sim) {
   
   return(invisible(sim))
 }
-
-## This is not an event, but a function that we define separately 
-## and that contains our "simulation model"
-temperature_model <- function(ras) {
-  temp_ras <- SpaDES.tools::gaussMap(ras, scale = 100, var = 0.01) 
-  return(temp_ras)
-}
-

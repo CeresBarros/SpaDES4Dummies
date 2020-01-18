@@ -15,21 +15,21 @@ if(!dir.exists(file.path(getPaths()$modulePath, "speciesAbundance"))){
 }
 
 ## list the modules to use
-modules <- list("speciesAbundance", "temperature", "speciesTempLM")
+simModules <- list("speciesAbundance", "temperature", "speciesTempLM")
 
 ## Set simulation and module parameters
-times <- list(start = 1.0, end = 10.1, timeunit = "year")
-parameters <- list(
+simTimes <- list(start = 1.0, end = 10.1, timeunit = "year")
+simParams <- list(
   .globals = list(simulationTimeStep = 1, .plotInitialTime = 1.5),
   speciesTempLM = list(statsTimestep = 5)
 )
 
 ## make a list of directory paths
-paths <- getPaths()
+simPaths <- getPaths()
 
 ## Simulation setup
-mySim <- simInit(times = times, params = parameters, 
-                 modules = modules, paths =  paths)
+mySim <- simInit(times = simTimes, params = simParams, 
+                 modules = simModules, paths = simPaths)
 
 moduleDiagram(mySim)
 

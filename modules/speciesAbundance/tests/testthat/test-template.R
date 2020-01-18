@@ -4,12 +4,12 @@
 #    `test-functionName.R` format so that your can directly call `moduleCoverage`
 #    to calculate module coverage information.
 #    `functionName` is a function's name in your module (e.g., `speciesAbundanceEvent1`).
-# 2. Copy this file to the tests folder (i.e., `C:/Ceres/OneDrive/GitHub/SpaDES4Dummies/m/speciesAbundance/tests/testthat`).
+# 2. Copy this file to the tests folder (i.e., `C:/Ceres/GitHub/SpaDES4Dummies/modules/speciesAbundance/tests/testthat`).
 
 # 3. Modify the test description based on the content you are testing:
 test_that("test Event1 and Event2.", {
   module <- list("speciesAbundance")
-  path <- list(modulePath = "C:/Ceres/OneDrive/GitHub/SpaDES4Dummies/m",
+  path <- list(modulePath = "C:/Ceres/GitHub/SpaDES4Dummies/modules",
                outputPath = file.path(tempdir(), "outputs"))
   parameters <- list(
     #.progress = list(type = "graphical", interval = 1),

@@ -1,7 +1,7 @@
 ---
 title: "speciesAbundance"
 author: ""
-date: "29 November 2017"
+date: "17 January 2020"
 output: pdf_document
 ---
 
@@ -21,14 +21,13 @@ For help writing in R Markdown, see http://rmarkdown.rstudio.com/.
 # Usage
 
 ```{r module_usage}
-library(igraph)
-library(SpaDES.core)
+library(SpaDES)
 
-moduleDir <- file.path("C:/Ceres/OneDrive/GitHub/SpaDES4Dummies/m")
-inputDir <- file.path(moduleDir, "inputs") %>% reproducible::checkPath(create = TRUE)
-outputDir <- file.path(moduleDir, "outputs")
-cacheDir <- file.path(outputDir, "cache")
+setPaths(modulePath = file.path("C:/Ceres/GitHub/SpaDES4Dummies/modules"))
+getPaths() # shows where the 4 relevant paths are
+
 times <- list(start = 0, end = 10)
+
 parameters <- list(
   #.progress = list(type = "text", interval = 1), # for a progress bar
   ## If there are further modules, each can have its own set of parameters:
@@ -37,17 +36,13 @@ parameters <- list(
 )
 modules <- list("speciesAbundance")
 objects <- list()
-paths <- list(
-  cachePath = cacheDir,
-  modulePath = moduleDir,
-  inputPath = inputDir,
-  outputPath = outputDir
-)
+inputs <- list()
+outputs <- list()
 
 mySim <- simInit(times = times, params = parameters, modules = modules,
-                 objects = objects, paths = paths)
+                 objects = objects)
 
-spades(mySim)
+mySimOut <- spades(mySim)
 ```
 
 # Events
@@ -76,4 +71,3 @@ Description of the module outputs.
 # Links to other modules
 
 Describe any anticipated linkages to other modules.
-
