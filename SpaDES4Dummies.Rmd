@@ -346,7 +346,6 @@ This may not seem like a big deal in our example, but it can be if you're genera
 Here's how my final *temperature.R* script looks like:
 
 ```{r temp_module, eval = FALSE}
-
 # Everything in this file gets sourced during simInit, and all functions and objects
 # are put into the simList.
 defineModule(sim, list(
@@ -429,15 +428,6 @@ temperatureSim <- function(sim) {
   
   return(invisible(sim))
 }
-```
-
-## This is not an event, but a function that we define separately 
-## and that contains our "simulation model"
-temperature_model <- function(ras) {
-  temp_ras <- gaussMap(ras, scale = 100, var = 0.01) 
-  return(temp_ras)
-}
-
 
 .inputObjects <- function(sim) {
   if(!suppliedElsewhere(sim$r)) {
@@ -445,6 +435,21 @@ temperature_model <- function(ras) {
     sim$r <- raster(nrows = 100, ncols = 100, xmn = -50, xmx = 50, ymn = -50, ymx = 50)
   }
   return(invisible(sim))
+}
+```
+
+Again, the accessory `temperature_model` function is coded in a separate script *R/temperature_model.R*:
+
+```{r temp_module2, eval = FALSE}
+#' Accessory function to temperature module
+
+#' @param ras a raster layer used as template.
+#' @return a fake temperature raster generated as a Gaussian map with scale = 100 and variance = 0.01
+#' @import SpaDES.tools gaussMap 
+
+temperature_model <- function(ras) {
+  temp_ras <- gaussMap(ras, scale = 100, var = 0.01) 
+  return(temp_ras)
 }
 ```
 
@@ -469,7 +474,6 @@ Here's the full module's script.
 Notice how the future events where scheduled to `P(sim)$statsTimestep + 0.1`. This forces the statistic analyses to occur **after** the abundance and temperature rasters are ready.
 
 ```{r stats_module, eval = FALSE}
-
 # Everything in this file gets sourced during simInit, and all functions and objects
 # are put into the simList.
 defineModule(sim, list(
@@ -571,6 +575,24 @@ statsAnalysis <- function(sim) {
   
   return(invisible(sim))
 }
+
+.inputObjects <- function(sim) {
+  if(!suppliedElsewhere(sim$abundRasters)) {
+    ## make dummy abundance raster list if not supplied elsewhere.
+    r <- raster(nrows = 100, ncols = 100, xmn = -50, xmx = 50, ymn = -50, ymx = 50)
+    sim$abundRasters <- lapply(seq(start(sim):end(sim), 1), 
+                               SpaDES.tools::gaussMap(x = sim$r, scale = 100, var = 0.01))
+    }
+  
+  if(!suppliedElsewhere(sim$tempRasters)) {
+    ## make dummy temperature raster list if not supplied elsewhere.
+    r <- raster(nrows = 100, ncols = 100, xmn = -50, xmx = 50, ymn = -50, ymx = 50)
+    sim$tempRasters <- lapply(seq(start(sim):end(sim), 1),
+                              SpaDES.tools::gaussMap(x = sim$r, scale = 100, var = 0.01))
+    }
+  
+  return(invisible(sim))
+}
 ```
 
 And the script with the accessory functions:
@@ -607,27 +629,7 @@ plotLMResults <- function(Data, model){
        main = paste("From years", min(Data$year)-0.1, "to", max(Data$year)-0.1, sep = " "))
   abline(a = model$coefficients["(Intercept)"], b = model$coefficients["temp"], lwd = 2, col = "blue")
 }
-
-
-.inputObjects <- function(sim) {
-  if(!suppliedElsewhere(sim$abundRasters)) {
-    ## make dummy abundance raster list if not supplied elsewhere.
-    r <- raster(nrows = 100, ncols = 100, xmn = -50, xmx = 50, ymn = -50, ymx = 50)
-    sim$abundRasters <- lapply(seq(start(sim):end(sim), 1), 
-                               SpaDES.tools::gaussMap(x = sim$r, scale = 100, var = 0.01))
-    }
-  
-  if(!suppliedElsewhere(sim$tempRasters)) {
-    ## make dummy temperature raster list if not supplied elsewhere.
-    r <- raster(nrows = 100, ncols = 100, xmn = -50, xmx = 50, ymn = -50, ymx = 50)
-    sim$tempRasters <- lapply(seq(start(sim):end(sim), 1),
-                              SpaDES.tools::gaussMap(x = sim$r, scale = 100, var = 0.01))
-    }
-  
-  return(invisible(sim))
-}
 ```
-
 
 
 ### Let's play!
@@ -646,21 +648,21 @@ Finally, `paths` contains the directory paths that we set earlier.
 
 ```{r globalscript2, results=FALSE, warning=FALSE, message=FALSE}
 ## list the modules to use
-modules <- list("speciesAbundance", "temperature", "speciesTempLM")
+simModules <- list("speciesAbundance", "temperature", "speciesTempLM")
 
 ## Set simulation and module parameters
-times <- list(start = 1.0, end = 10.1, timeunit = "year")
-parameters <- list(
-  .globals = list(simulationTimeStep = 1L, .plotInitialTime = 1),
+simTimes <- list(start = 1.0, end = 10.1, timeunit = "year")
+simParams <- list(
+  .globals = list(simulationTimeStep = 1, .plotInitialTime = 1.5),
   speciesTempLM = list(statsTimestep = 5)
 )
 
 ## make a list of directory paths
-paths <- getPaths()
+simPaths <- getPaths()
 
 ## Simulation setup
-mySim <- simInit(times = times, params = parameters, 
-                modules = modules, paths =  paths)
+mySim <- simInit(times = simTimes, params = simParams, 
+                 modules = simModules, paths = simPaths)
 ```
 
 ####Have you set up your simulation correctly?
