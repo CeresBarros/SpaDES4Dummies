@@ -7,13 +7,13 @@ defineModule(sim, list(
   keywords = c("linear model"),
   authors = person("Mr.", "Me", email = "mr.me@example.com", role = c("aut", "cre")),
   childModules = character(0),
-  version = numeric_version("0.0.1"),
-  spatialExtent = raster::extent(rep(NA_real_, 4)),
+  version = list(SpaDES.core = "0.1.1.9011", speciesAbundance = "0.0.1"),
+  # spatialExtent = raster::extent(rep(NA_real_, 4)),
   timeframe = as.POSIXlt(c(NA, NA)),
   timeunit = "year",
   citation = list("citation.bib"),
   documentation = list("README.txt", "speciesTempLM.Rmd"),
-  reqdPkgs = list("raster"),
+  reqdPkgs = list("raster", "ggplot2"),
   parameters = rbind(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
     defineParameter("statsTimestep", "numeric", 1, NA, NA, "This describes the how often the statitiscal analysis will be done")
@@ -43,14 +43,16 @@ doEvent.speciesTempLM = function(sim, eventTime, eventType, debug = FALSE) {
 
       ## schedule future event(s)
       sim <- scheduleEvent(sim, P(sim)$statsTimestep + 0.1, "speciesTempLM", "stats")
-      sim <- scheduleEvent(sim, P(sim)$statsTimestep + 0.1, "speciesTempLM", "plot")
+      sim <- scheduleEvent(sim, P(sim)$statsTimestep + 0.1, "speciesTempLM", 
+                           "statsPlot", eventPriority = .normal()+1)
     },
-    plot = {
+    statsPlot = {
       ## do stuff for this event
       sim <- statsPlot(sim)
       
       ## schedule future event(s)
-      sim <- scheduleEvent(sim, time(sim) + P(sim)$statsTimestep, "speciesTempLM", "plot")
+      sim <- scheduleEvent(sim, time(sim) + P(sim)$statsTimestep, "speciesTempLM",
+                           "statsPlot", eventPriority = .normal()+1)
     },
     stats = {
       ## do stuff for this event
@@ -105,7 +107,32 @@ linearModel <- function(Data){
 }
 
 plotLMResults <- function(Data, model){
-  plot(Data$abund ~ Data$temp, xlab = "Temp.", ylab = "Species abundance",
-       main = paste("From years", min(Data$year)-0.1, "to", max(Data$year)-0.1, sep = " "))
-  abline(a = model$coefficients["(Intercept)"], b = model$coefficients["temp"], lwd = 2, col = "blue")
+  plot1 <- ggplot(data = Data, aes(x = temp, y = abund)) +
+    geom_point() +
+    geom_abline(slope = model$coefficients["temp"], 
+                intercept = model$coefficients["(Intercept)"],
+                col = "blue", size = 1) +
+    theme_bw() +
+    labs(x = "Temp.", y = "Species abundance", 
+         title = paste("From years", min(Data$year)-0.1, "to", max(Data$year)-0.1, sep = " "))
+  Plot(plot1, new = TRUE, title = "Stats. plot")
+}
+
+
+.inputObjects <- function(sim) {
+  if(!suppliedElsewhere(sim$abundRasters)) {
+    ## make dummy abundance raster list if not supplied elsewhere.
+    r <- raster(nrows = 100, ncols = 100, xmn = -50, xmx = 50, ymn = -50, ymx = 50)
+    sim$abundRasters <- lapply(seq(start(sim):end(sim), 1), 
+                               SpaDES.tools::gaussMap(x = sim$r, scale = 100, var = 0.01))
+    }
+  
+  if(!suppliedElsewhere(sim$tempRasters)) {
+    ## make dummy temperature raster list if not supplied elsewhere.
+    r <- raster(nrows = 100, ncols = 100, xmn = -50, xmx = 50, ymn = -50, ymx = 50)
+    sim$tempRasters <- lapply(seq(start(sim):end(sim), 1),
+                              SpaDES.tools::gaussMap(x = sim$r, scale = 100, var = 0.01))
+    }
+  
+  return(invisible(sim))
 }
