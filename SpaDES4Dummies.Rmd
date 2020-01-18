@@ -429,6 +429,16 @@ temperatureSim <- function(sim) {
   return(invisible(sim))
 }
 
+## This is the plotting event funciton
+temperaturePlot <- function(sim) {
+  ## plot temperature
+  Plot(sim$tempRasters[[as.character(time(sim))]], 
+       title = paste0("Temperature\nat time ", time(sim)),
+       new = TRUE)
+  
+  return(invisible(sim))
+}
+
 .inputObjects <- function(sim) {
   if(!suppliedElsewhere(sim$r)) {
     ## make template raster if not supplied elsewhere.

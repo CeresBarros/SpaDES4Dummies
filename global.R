@@ -28,9 +28,12 @@ if(!dir.exists(file.path(getPaths()$modulePath, "speciesTempLM"))){
 simModules <- list("speciesAbundance", "temperature", "speciesTempLM")
 
 ## Set simulation and module parameters
-simTimes <- list(start = 1.0, end = 10.1, timeunit = "year")
+simTimes <- list(start = 1, end = 10, timeunit = "year")
 simParams <- list(
-  .globals = list(simulationTimeStep = 1, .plotInitialTime = 1.5),
+  speciesAbundance = list(simulationTimeStep = 1, 
+                     .plotInitialTime = 1.5),
+  temperature = list(simulationTimeStep = 1, 
+                     .plotInitialTime = 1.5),
   speciesTempLM = list(statsTimestep = 5)
 )
 

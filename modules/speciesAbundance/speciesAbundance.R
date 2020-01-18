@@ -15,6 +15,8 @@ defineModule(sim, list(
   reqdPkgs = list(),
   parameters = rbind(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
+    defineParameter("simulationTimeStep", "numeric", 1, NA, NA, 
+                    "This describes the simulation time step interval"),
     defineParameter(".plotInitialTime", "numeric", NA, NA, NA,
                     "Describes the simulation time at which the first plot event should occur."),
     defineParameter(".plotInterval", "numeric", NA, NA, NA,
@@ -58,6 +60,7 @@ doEvent.speciesAbundance = function(sim, eventTime, eventType, debug = FALSE) {
       sim <- abundanceSim(sim)
       
       ## schedule future event(s)
+      browser()
       sim <- scheduleEvent(sim, eventTime = time(sim) + P(sim)$simulationTimeStep, moduleName = "speciesAbundance", eventType = "SimulAbund")
     },
     abundPlot = {

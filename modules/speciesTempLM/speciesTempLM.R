@@ -42,8 +42,8 @@ doEvent.speciesTempLM = function(sim, eventTime, eventType, debug = FALSE) {
       sim <- statsInit(sim)
 
       ## schedule future event(s)
-      sim <- scheduleEvent(sim, P(sim)$statsTimestep + 0.1, "speciesTempLM", "stats")
-      sim <- scheduleEvent(sim, P(sim)$statsTimestep + 0.1, "speciesTempLM", 
+      sim <- scheduleEvent(sim, P(sim)$statsTimestep, "speciesTempLM", "stats")
+      sim <- scheduleEvent(sim, P(sim)$statsTimestep, "speciesTempLM", 
                            "statsPlot", eventPriority = .normal()+1)
     },
     statsPlot = {
@@ -87,6 +87,7 @@ statsPlot <- function(sim) {
 ## Statistical analysis event
 statsAnalysis <- function(sim) {
   
+  browser()
   sim$yrs <- seq(time(sim) - P(sim)$statsTimestep + 1, time(sim), 1)
 
   sim$outputdata[[as.character(time(sim))]] <- do.call(rbind.data.frame, 
