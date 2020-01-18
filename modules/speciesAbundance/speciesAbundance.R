@@ -2,22 +2,31 @@
 # are put into the simList. To use objects and functions, use sim$xxx.
 defineModule(sim, list(
   name = "speciesAbundance",
-  description = "Species abundance simulator",
-  keywords = c("species", "abundance", "gaussian", "spatial","dummy example"),
-  authors = person("Mr.", "Me", email = "mr.me@example.com", role = c("aut", "cre")),
+  description = "",
+  keywords = "",
+  authors = structure(list(list(given = c("First", "Middle"), family = "Last", role = c("aut", "cre"), email = "email@example.com", comment = NULL)), class = "person"),
   childModules = character(0),
   version = list(SpaDES.core = "0.1.1.9011", speciesAbundance = "0.0.1"),
   # spatialExtent = raster::extent(rep(NA_real_, 4)),
   timeframe = as.POSIXlt(c(NA, NA)),
   timeunit = "year",
   citation = list("citation.bib"),
-  documentation = list("README.txt", "speciesAbundance.Rmd"),
-  reqdPkgs = list("raster"),
+  documentation = deparse(list("README.txt", "speciesAbundance.Rmd")),
+  reqdPkgs = list(),
   parameters = rbind(
-    # defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
-    defineParameter("simulationTimeStep", "numeric", 1, NA, NA, "This describes the simulation time step interval"),
-    defineParameter(".plotInitialTime", "numeric", 1, NA, NA, "This describes the simulation time at which the first plot event should occur"),
-    defineParameter(".plotInterval", "numeric", 1, NA, NA, "This describes the simulation time interval between plot events")
+    #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
+    defineParameter(".plotInitialTime", "numeric", NA, NA, NA,
+                    "Describes the simulation time at which the first plot event should occur."),
+    defineParameter(".plotInterval", "numeric", NA, NA, NA,
+                    "Describes the simulation time interval between plot events."),
+    defineParameter(".saveInitialTime", "numeric", NA, NA, NA,
+                    "Describes the simulation time at which the first save event should occur."),
+    defineParameter(".saveInterval", "numeric", NA, NA, NA,
+                    "This describes the simulation time interval between save events."),
+    defineParameter(".useCache", "logical", FALSE, NA, NA,
+                    paste("Should this entire module be run with caching activated?",
+                          "This is generally intended for data-type modules, where stochasticity",
+                          "and time are not relevant"))
   ),
   inputObjects = bind_rows(
     # expectsInput("objectName", "objectClass", "input object description", sourceURL, ...),
@@ -30,7 +39,7 @@ defineModule(sim, list(
 ))
 
 ## event types
-#   - type `init` is required for initialiazation
+#   - type `init` is required for initialization
 
 doEvent.speciesAbundance = function(sim, eventTime, eventType, debug = FALSE) {
   switch(
@@ -66,8 +75,6 @@ doEvent.speciesAbundance = function(sim, eventTime, eventType, debug = FALSE) {
 }
 
 ## event functions
-#   - follow the naming convention `modulenameEventtype()`;
-#   - `modulenameInit()` function is required for initiliazation;
 #   - keep event functions short and clean, modularize by calling subroutines from section below.
 
 ## Initialisation Event function

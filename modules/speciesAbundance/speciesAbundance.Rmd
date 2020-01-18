@@ -1,7 +1,7 @@
 ---
 title: "speciesAbundance"
 author: ""
-date: "04 May 2018"
+date: "17 January 2020"
 output: pdf_document
 ---
 
@@ -22,6 +22,9 @@ For help writing in R Markdown, see http://rmarkdown.rstudio.com/.
 
 ```{r module_usage}
 library(SpaDES)
+
+setPaths(modulePath = file.path("C:/Ceres/GitHub/SpaDES4Dummies/modules"))
+getPaths() # shows where the 4 relevant paths are
 
 setPaths(modulePath = file.path("D:/GitHub/SpaDES4Dummies/modules"))
 getPaths() # shows where the 4 relevant paths are
@@ -71,4 +74,3 @@ Description of the module outputs.
 # Links to other modules
 
 Describe any anticipated linkages to other modules.
-
