@@ -2,10 +2,11 @@ library(SpaDES)  ## should automatically download all packages in the SpaDES fam
 
 ## decide where you're working
 mainDir <- '~/SpaDES4Dummies/' # SET YOUR MAIN DIRECTORY HERE.
-setPaths(cachePath = "cache",
-         inputPath = "inputs",
-         modulePath = "modules",
-         outputPath = "outputs")
+# mainDir <- getwd()
+setPaths(cachePath = file.path(mainDir, "cache"),
+         inputPath = file.path(mainDir, "inputs"),
+         modulePath = file.path(mainDir, "modules"),
+         outputPath = file.path(mainDir, "outputs"))
 
 getPaths() ## check that this is what you wanted
 
@@ -13,6 +14,15 @@ getPaths() ## check that this is what you wanted
 if(!dir.exists(file.path(getPaths()$modulePath, "speciesAbundance"))){
   newModule(name = "speciesAbundance", path = getPaths()$modulePath)
 }
+
+if(!dir.exists(file.path(getPaths()$modulePath, "temperature"))){
+  newModule(name = "temperature", path = getPaths()$modulePath)
+}
+
+if(!dir.exists(file.path(getPaths()$modulePath, "speciesTempLM"))){
+  newModule(name = "speciesTempLM", path = getPaths()$modulePath)
+}
+
 
 ## list the modules to use
 simModules <- list("speciesAbundance", "temperature", "speciesTempLM")
