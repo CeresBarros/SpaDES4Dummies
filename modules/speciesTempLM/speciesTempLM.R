@@ -94,18 +94,7 @@ statsAnalysis <- function(sim) {
                                            return(temp)
                                          }))
   
-  sim$outputLM[[as.character(time(sim))]] <- linearModel(Data = sim$outputdata[[as.character(time(sim))]])
+  sim$outputLM[[as.character(time(sim))]] <- linear_model(Data = sim$outputdata[[as.character(time(sim))]])
   
   return(invisible(sim))
-}
-
-## Other functions
-linearModel <- function(Data){
-  return(lm1 <- lm(abund ~ temp, data = Data))
-}
-
-plotLMResults <- function(Data, model){
-  plot(Data$abund ~ Data$temp, xlab = "Temp.", ylab = "Species abundance",
-       main = paste("From years", min(Data$year)-0.1, "to", max(Data$year)-0.1, sep = " "))
-  abline(a = model$coefficients["(Intercept)"], b = model$coefficients["temp"], lwd = 2, col = "blue")
 }
