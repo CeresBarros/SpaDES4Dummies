@@ -7,13 +7,13 @@ defineModule(sim, list(
   keywords = c("linear model"),
   authors = person("Mr.", "Me", email = "mr.me@example.com", role = c("aut", "cre")),
   childModules = character(0),
-  version = numeric_version("0.0.1"),
-  spatialExtent = raster::extent(rep(NA_real_, 4)),
+  version = list(SpaDES.core = "0.1.1.9011", speciesAbundance = "0.0.1"),
+  # spatialExtent = raster::extent(rep(NA_real_, 4)),
   timeframe = as.POSIXlt(c(NA, NA)),
   timeunit = "year",
   citation = list("citation.bib"),
   documentation = list("README.txt", "speciesTempLM.Rmd"),
-  reqdPkgs = list("raster"),
+  reqdPkgs = list("raster", "ggplot2"),
   parameters = rbind(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
     defineParameter("statsTimestep", "numeric", 1, NA, NA, "This describes the how often the statitiscal analysis will be done")
@@ -43,14 +43,16 @@ doEvent.speciesTempLM = function(sim, eventTime, eventType, debug = FALSE) {
 
       ## schedule future event(s)
       sim <- scheduleEvent(sim, P(sim)$statsTimestep + 0.1, "speciesTempLM", "stats")
-      sim <- scheduleEvent(sim, P(sim)$statsTimestep + 0.1, "speciesTempLM", "plot")
+      sim <- scheduleEvent(sim, P(sim)$statsTimestep + 0.1, "speciesTempLM", 
+                           "statsPlot", eventPriority = .normal()+1)
     },
-    plot = {
+    statsPlot = {
       ## do stuff for this event
       sim <- statsPlot(sim)
       
       ## schedule future event(s)
-      sim <- scheduleEvent(sim, time(sim) + P(sim)$statsTimestep, "speciesTempLM", "plot")
+      sim <- scheduleEvent(sim, time(sim) + P(sim)$statsTimestep, "speciesTempLM",
+                           "statsPlot", eventPriority = .normal()+1)
     },
     stats = {
       ## do stuff for this event
