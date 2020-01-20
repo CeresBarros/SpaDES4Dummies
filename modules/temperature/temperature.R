@@ -16,9 +16,12 @@ defineModule(sim, list(
   reqdPkgs = list("raster"),
   parameters = rbind(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
-    defineParameter("simulationTimeStep", "numeric", 1, NA, NA, "This describes the simulation time step interval"),
-    defineParameter(".plotInitialTime", "numeric", 1, NA, NA, "This describes the simulation time at which the first plot event should occur"),
-    defineParameter(".plotInterval", "numeric", 1, NA, NA, "This describes the simulation time interval between plot events")
+    defineParameter("simulationTimeStep", "numeric", 1, NA, NA, 
+                    "This describes the simulation time step interval"),
+    defineParameter(".plotInitialTime", "numeric", 1, NA, NA, 
+                    "This describes the simulation time at which the first plot event should occur"),
+    defineParameter(".plotInterval", "numeric", 1, NA, NA,
+                    "This describes the simulation time interval between plot events")
   ),
   inputObjects = bind_rows(
     #expectsInput("objectName", "objectClass", "input object description", sourceURL, ...),
@@ -43,14 +46,15 @@ doEvent.temperature = function(sim, eventTime, eventType, debug = FALSE) {
       ## schedule future event(s)
       sim <- scheduleEvent(sim, eventTime = start(sim), moduleName = "temperature", eventType = "SimulTemp")
       sim <- scheduleEvent(sim, eventTime = P(sim)$.plotInitialTime, moduleName = "temperature", 
-                           eventType = "tempPlot", eventPriority = .normal()+1)
+                           eventType = "tempPlot", eventPriority = .normal()+0.5)
     },
     SimulTemp = {
       ## do stuff for this event
       sim <- temperatureSim(sim)
       
       ## schedule future event(s)
-      sim <- scheduleEvent(sim, eventTime = time(sim)+ P(sim)$simulationTimeStep, moduleName = "temperature", eventType = "SimulTemp")
+      sim <- scheduleEvent(sim, eventTime = time(sim)+ P(sim)$simulationTimeStep, moduleName = "temperature", 
+                           eventType = "SimulTemp")
     },
     tempPlot = {
       ## do stuff for this event
@@ -58,7 +62,7 @@ doEvent.temperature = function(sim, eventTime, eventType, debug = FALSE) {
 
       ## schedule future event(s)
       sim <- scheduleEvent(sim, eventTime = time(sim) + P(sim)$.plotInterval, moduleName = "temperature", 
-                           eventType = "tempPlot", eventPriority = .normal()+1)
+                           eventType = "tempPlot", eventPriority = .normal()+0.5)
     },
     warning(paste("Undefined event type: '", current(sim)[1, "eventType", with = FALSE],
                   "' in module '", current(sim)[1, "moduleName", with = FALSE], "'", sep = ""))
@@ -85,9 +89,12 @@ temperatureSim <- function(sim) {
 ## This is the plotting event funciton
 temperaturePlot <- function(sim) {
   ## plot temperature
-  Plot(sim$tempRasters[[as.character(time(sim))]], 
-       title = paste0("Temperature\nat time ", time(sim)),
-       new = TRUE)
+  plotTitle <- paste("Temperature\nat time",
+                      names(sim$tempRasters)[length(sim$tempRasters)])
+  tempPlot <- sim$tempRasters[[length(sim$tempRasters)]] 
+  Plot(tempPlot, 
+       title = plotTitle, 
+       new = TRUE, addTo = "tempPlot")
   
   return(invisible(sim))
 }

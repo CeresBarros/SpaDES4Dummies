@@ -13,7 +13,7 @@ defineModule(sim, list(
   timeunit = "year",
   citation = list("citation.bib"),
   documentation = list("README.txt", "speciesTempLM.Rmd"),
-  reqdPkgs = list("raster", "ggplot2"),
+  reqdPkgs = list("raster", "ggplot2", "data.table", "reshape2"),
   parameters = rbind(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
     defineParameter("statsTimestep", "numeric", 1, NA, NA, "This describes the how often the statitiscal analysis will be done")
@@ -42,9 +42,18 @@ doEvent.speciesTempLM = function(sim, eventTime, eventType, debug = FALSE) {
       sim <- statsInit(sim)
 
       ## schedule future event(s)
-      sim <- scheduleEvent(sim, P(sim)$statsTimestep, "speciesTempLM", "stats")
       sim <- scheduleEvent(sim, P(sim)$statsTimestep, "speciesTempLM", 
-                           "statsPlot", eventPriority = .normal()+1)
+                           "stats", eventPriority = .normal()+2)
+      sim <- scheduleEvent(sim, P(sim)$statsTimestep, "speciesTempLM", 
+                           "statsPlot", eventPriority = .normal()+2.5)
+    },
+    stats = {
+      ## do stuff for this event
+      sim <- statsAnalysis(sim)
+      
+      ## schedule future event(s)
+      sim <- scheduleEvent(sim, time(sim) + P(sim)$statsTimestep, "speciesTempLM", 
+                           "stats", eventPriority = .normal()+2)
     },
     statsPlot = {
       ## do stuff for this event
@@ -52,14 +61,7 @@ doEvent.speciesTempLM = function(sim, eventTime, eventType, debug = FALSE) {
       
       ## schedule future event(s)
       sim <- scheduleEvent(sim, time(sim) + P(sim)$statsTimestep, "speciesTempLM",
-                           "statsPlot", eventPriority = .normal()+1)
-    },
-    stats = {
-      ## do stuff for this event
-      sim <- statsAnalysis(sim)
-      
-      ## schedule future event(s)
-      sim <- scheduleEvent(sim, time(sim) + P(sim)$statsTimestep, "speciesTempLM", "stats")
+                           "statsPlot", eventPriority = .normal()+2.5)
     },
     warning(paste("Undefined event type: '", current(sim)[1, "eventType", with = FALSE],
                   "' in module '", current(sim)[1, "moduleName", with = FALSE], "'", sep = ""))
@@ -70,34 +72,54 @@ doEvent.speciesTempLM = function(sim, eventTime, eventType, debug = FALSE) {
 ## template initialization
 statsInit <- function(sim) {
   ## create outputs storage lists
-  sim$outputdata <- list()
   sim$outputLM <- list()
-  
-  return(invisible(sim))
-}
-
-## Plotting event
-statsPlot <- function(sim) {
-
-  plotLMResults(Data = sim$outputdata[[as.character(time(sim))]], model = sim$outputLM[[as.character(time(sim))]])
   
   return(invisible(sim))
 }
 
 ## Statistical analysis event
 statsAnalysis <- function(sim) {
+  ## get all species abundances data available
+  abundData <- data.table(getValues(stack(sim$abundRasters)))
+  abundData[, pixID := 1:nrow(abundData)]
+  abundData <- melt.data.table(abundData, id.var = "pixID",
+                               variable.name = "year", value.name = "abund")
+  abundData[, year := as.numeric(sub("X", "", year))]
   
-  browser()
-  sim$yrs <- seq(time(sim) - P(sim)$statsTimestep + 1, time(sim), 1)
+  ## get all temperature data available
+  tempData <- data.table(getValues(stack(sim$tempRasters)))
+  tempData[, pixID := 1:nrow(tempData)]
+  tempData <- melt.data.table(tempData, id.var = "pixID",
+                               variable.name = "year", value.name = "temp")
+  tempData[, year := as.numeric(sub("X", "", year))] 
+  
+  ## merge per year  
+  setkey(abundData, pixID, year)
+  setkey(tempData, pixID, year)
+  sim$outputdata <- abundData[tempData]
+  
+  sim$outputLM[[as.character(time(sim))]] <- linearModel(Data = sim$outputdata)
+  return(invisible(sim))
+}
 
-  sim$outputdata[[as.character(time(sim))]] <- do.call(rbind.data.frame, 
-                                         lapply(sim$yrs, FUN = function(y){
-                                           temp <- data.frame(abund = sim$abundRasters[[y]][], 
-                                                              temp = sim$tempRasters[[y]][], year = y)          
-                                           return(temp)
-                                         }))
+## Plotting event
+statsPlot <- function(sim) {
+  model <- sim$outputLM[[as.character(time(sim))]]
   
-  sim$outputLM[[as.character(time(sim))]] <- linear_model(Data = sim$outputdata[[as.character(time(sim))]])
+  modelPlot <- ggplot(sim$outputdata) + 
+    geom_point(aes(x = temp, y = abund)) +
+    geom_abline(intercept = model$coefficients["(Intercept)"], 
+                slope = model$coefficients["temp"], size = 2, col = "blue") +
+    theme_bw() +
+    labs(x = "Temp.", y = "Species abundance")
+  
+  plotTitle <- paste("abundance ~ temperature\n",
+                     "years", range(sim$outputdata$year)[1],
+                     "to", range(sim$outputdata$year)[2])
+  Plot(modelPlot, 
+       title = plotTitle, 
+       new = TRUE, addTo = "modelPlot")
   
   return(invisible(sim))
 }
+
