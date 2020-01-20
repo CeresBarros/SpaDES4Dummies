@@ -31,9 +31,9 @@ simModules <- list("speciesAbundance", "temperature", "speciesTempLM")
 simTimes <- list(start = 1, end = 10, timeunit = "year")
 simParams <- list(
   speciesAbundance = list(simulationTimeStep = 1, 
-                     .plotInitialTime = 1.5),
+                     .plotInitialTime = 1),
   temperature = list(simulationTimeStep = 1, 
-                     .plotInitialTime = 1.5),
+                     .plotInitialTime = 1),
   speciesTempLM = list(statsTimestep = 5)
 )
 
