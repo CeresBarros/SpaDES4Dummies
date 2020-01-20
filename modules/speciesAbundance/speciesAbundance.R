@@ -12,23 +12,15 @@ defineModule(sim, list(
   timeunit = "year",
   citation = list("citation.bib"),
   documentation = deparse(list("README.txt", "speciesAbundance.Rmd")),
-  reqdPkgs = list(),
+  reqdPkgs = list("raster", "quickPlot"),
   parameters = rbind(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
     defineParameter("simulationTimeStep", "numeric", 1, NA, NA, 
                     "This describes the simulation time step interval"),
-    defineParameter(".plotInitialTime", "numeric", NA, NA, NA,
+    defineParameter(".plotInitialTime", "numeric", 1, NA, NA,
                     "Describes the simulation time at which the first plot event should occur."),
-    defineParameter(".plotInterval", "numeric", NA, NA, NA,
-                    "Describes the simulation time interval between plot events."),
-    defineParameter(".saveInitialTime", "numeric", NA, NA, NA,
-                    "Describes the simulation time at which the first save event should occur."),
-    defineParameter(".saveInterval", "numeric", NA, NA, NA,
-                    "This describes the simulation time interval between save events."),
-    defineParameter(".useCache", "logical", FALSE, NA, NA,
-                    paste("Should this entire module be run with caching activated?",
-                          "This is generally intended for data-type modules, where stochasticity",
-                          "and time are not relevant"))
+    defineParameter(".plotInterval", "numeric", 1, NA, NA,
+                    "Describes the simulation time interval between plot events.")
   ),
   inputObjects = bind_rows(
     # expectsInput("objectName", "objectClass", "input object description", sourceURL, ...),
@@ -51,17 +43,19 @@ doEvent.speciesAbundance = function(sim, eventTime, eventType, debug = FALSE) {
       sim <- abundanceInit(sim)
       
       ## schedule future event(s)
-      sim <- scheduleEvent(sim, eventTime = start(sim), moduleName = "speciesAbundance", eventType = "SimulAbund")
+      sim <- scheduleEvent(sim, eventTime = start(sim), moduleName = "speciesAbundance", 
+                           eventType = "SimulAbund")
       sim <- scheduleEvent(sim, eventTime = P(sim)$.plotInitialTime, 
-                           moduleName = "speciesAbundance", eventType = "abundPlot",  eventPriority = .normal()+1)
+                           moduleName = "speciesAbundance", eventType = "abundPlot",
+                           eventPriority = .normal()+0.5)
     },
     SimulAbund = {
       ## do stuff for this event
       sim <- abundanceSim(sim)
       
       ## schedule future event(s)
-      browser()
-      sim <- scheduleEvent(sim, eventTime = time(sim) + P(sim)$simulationTimeStep, moduleName = "speciesAbundance", eventType = "SimulAbund")
+      sim <- scheduleEvent(sim, eventTime = time(sim) + P(sim)$simulationTimeStep, 
+                           moduleName = "speciesAbundance", eventType = "SimulAbund")
     },
     abundPlot = {
       ## do stuff for this event
@@ -69,7 +63,8 @@ doEvent.speciesAbundance = function(sim, eventTime, eventType, debug = FALSE) {
       
       ## schedule future event(s)
       sim <- scheduleEvent(sim, eventTime = time(sim) + P(sim)$.plotInterval, 
-                           moduleName = "speciesAbundance", eventType = "abundPlot", eventPriority = .normal()+1)
+                           moduleName = "speciesAbundance", eventType = "abundPlot", 
+                           eventPriority = .normal()+0.5)
     },
     warning(paste("Undefined event type: '", current(sim)[1, "eventType", with = FALSE],
                   "' in module '", current(sim)[1, "moduleName", with = FALSE], "'", sep = ""))
@@ -99,9 +94,12 @@ abundanceSim <- function(sim) {
 ## Plotting event function 
 abundancePlot <- function(sim) {
   ## plot abundances
-  Plot(sim$abundRasters[[as.character(time(sim))]], 
-       title = paste0("Species abundance\nat time ", time(sim)),
-       new = TRUE)
+  plotTitle <- paste("Species abundance\nat time",
+                      names(sim$abundRasters)[length(sim$abundRasters)])
+  abundPlot <- sim$abundRasters[[length(sim$abundRasters)]] 
+  Plot(abundPlot, 
+       title = plotTitle, 
+       new = TRUE, addTo = "abundPlot")
   
   return(invisible(sim))
 }
