@@ -8,4 +8,6 @@ All data used in this tuto is randomly generated, so there is no need to downloa
 
 You'll find the tutorial [here](https://htmlpreview.github.io/?https://github.com/CeresBarros/SpaDES4Dummies/blob/master/SpaDES4Dummies.html).
 
+[SpaDES installation](https://github.com/PredictiveEcology/SpaDES/wiki/Installation), [caching and debugging](http://spades-workshops.predictiveecology.org/articles/09c-CachingAndDebugging.html)
+
 Happy SpaDESing!
