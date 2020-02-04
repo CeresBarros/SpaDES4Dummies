@@ -4,8 +4,10 @@ author: "Ceres Barros, Tati Micheletti"
 date: "Updated January 31st, 2020"
 output: 
   html_document:
+    theme: lumen
     toc: true
-    toc_float: true
+    toc_float:
+      collapsed: false
     toc_depth: 4
 editor_options: 
   chunk_output_type: console
@@ -647,6 +649,8 @@ linearModel <- function(Data){
 
 ### Let's play!
 
+#### Simulation setup in "global" script
+
 OK, now that we have our modules ready we can set up the simulation. Let's go back to our *global.R* script.  
 
 The function `simInit` will take a bunch of parameter lists and will prepare a simulation object that can later be run by the `spades` function. Let's see what these lists consist of:
@@ -655,11 +659,9 @@ The first list, `modules`, contains modules we want to activate.
 
 Then, `times` is a list containing the start and end times of the simulation and what time units we're working with - so it defines the length of the simulation. It's important that the start and ending times are defined in decimals, because **`SpaDES`** allows decomposing time units into smaller fractions - and we'll take advantage of this feature!
 
-`parameters` is a list of lists. It contains the values of parameters used by each modules, and well as "global" parameters used by all of them (`.globals`). Note that not all module parameters need to be defined in this way. In fact, a module can use a parameter that is listed inside the module *.R* script (and has a default value set there), but is never listed in its `simInit`. An example of this would be `.plotInterval` which is used and defined in the `speciesAbundance` and `temperature` modules. Conversely, `.plotInitialTime` is a parameter used and defined in these modules, but whose value we change when running `simInit`.  
+`parameters` is a list of lists. It contains the values of parameters used by each modules. Note that not all module parameters need to be defined in this way. In fact, a module can use a parameter that is listed inside the module *.R* script (and has a default value set there), but is never listed in the `simInit`. An example of this would be `.plotInterval` which is used and defined in the `speciesAbundance` and `temperature` modules, but not passed to the `simInit` function. Conversely, `.plotInitialTime` is a parameter used and defined in these modules, but whose value we pass when running `simInit` (try changing the value ;)).  
 
 Finally, `paths` contains the directory paths that we set earlier.
-
-#### Simulation setup in "global" script
 
 ```{r globalscript2, results=FALSE, warning=FALSE, message=FALSE}
 ## list the modules to use
@@ -690,7 +692,6 @@ mySim <- simInit(times = simTimes, params = simParams,
 
 Before starting the simulations we should check if the modules were linked correctly.
 
-This is not working for this exercise when using SpaDES.core 0.1.1.9011
 **Module diagram**
 
 `moduleDiagram` is a useful function that shows module inter-dependencies as a network. The direction of the arrows indicates an output to input flow. You can see that an output from `speciesAbundance` (specifically our `r` raster) is an input for `temperature`. In a similar way, the outputs of the `speciesAbundance` and `temperature` modules are inputs to the `speciesTempLM` module.
