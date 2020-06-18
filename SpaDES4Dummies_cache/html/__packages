@@ -4,9 +4,5 @@ raster
 quickPlot
 ggplot2
 SpaDES.tools
-SpaDES
 reproducible
 SpaDES.core
-SpaDES.addins
-data.table
-reshape2

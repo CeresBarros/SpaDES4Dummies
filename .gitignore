@@ -2,7 +2,5 @@
 .Rhistory
 .RData
 .Ruserdata
-modules/*/data/*
-
-## don't ignore
-!modules/*/data/CHECKSUMS.txt
+cache/
+*_cache/

@@ -23,10 +23,7 @@ For help writing in R Markdown, see http://rmarkdown.rstudio.com/.
 ```{r module_usage}
 library(SpaDES)
 
-setPaths(modulePath = file.path("C:/Ceres/GitHub/SpaDES4Dummies/modules"))
-getPaths() # shows where the 4 relevant paths are
-
-setPaths(modulePath = file.path("D:/GitHub/SpaDES4Dummies/modules"))
+setPaths(modulePath = file.path("~/GitHub/SpaDES4Dummies/modules"))
 getPaths() # shows where the 4 relevant paths are
 
 times <- list(start = 0, end = 10)

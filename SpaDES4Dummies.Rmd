@@ -38,6 +38,7 @@ library(raster)
 library(quickPlot)
 library(ggplot2)
 library(SpaDES.tools)
+library(SpaDES.core)
 ```
 
 And now create a raster template:
