@@ -1,0 +1,231 @@
+## Everything in this file and any files in the R directory are sourced during `simInit()`;
+## all functions and objects are put into the `simList`.
+## To use objects, use `sim$xxx` (they are globally available to all modules).
+## Functions can be used inside any function that was sourced in this module;
+## they are namespaced to the module, just like functions in R packages.
+## If exact location is required, functions will be: `sim$.mods$<moduleName>$FunctionName`.
+defineModule(sim, list(
+  name = "projectSpeciesDist",
+  description = "",
+  keywords = "",
+  authors = structure(list(list(given = c("First", "Middle"), family = "Last", role = c("aut", "cre"), email = "email@example.com", comment = NULL)), class = "person"),
+  childModules = character(0),
+  version = list(projectSpeciesDist = "0.0.0.9000"),
+  timeframe = as.POSIXlt(c(NA, NA)),
+  timeunit = "year",
+  citation = list("citation.bib"),
+  documentation = list("README.md", "projectSpeciesDist.Rmd"), ## same file
+  reqdPkgs = list("SpaDES.core (>=1.0.10.9006)", "ggplot2",
+                  "data.table", "dismo"),
+  parameters = bindrows(
+    #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
+    defineParameter("predVars", "character", c("BIO1", "BIO4", "BIO12", "BIO15"), NA, NA,
+                    "Predictors used in Maxent model (see dismo::maxent)."),
+    defineParameter(".plots", "character", "screen", NA, NA,
+                    "Used by Plots function, which can be optionally used here"),
+    defineParameter(".plotInitialTime", "numeric", start(sim), NA, NA,
+                    "Describes the simulation time at which the first plot event should occur."),
+    ## .seed is optional: `list('init' = 123)` will `set.seed(123)` for the `init` event only.
+    defineParameter(".seed", "list", list(), NA, NA,
+                    "Named list of seeds to use for each event (names)."),
+    defineParameter(".useCache", "logical", FALSE, NA, NA,
+                    "Should caching of events or module be used?")
+  ),
+  inputObjects = bindrows(
+    #expectsInput("objectName", "objectClass", "input object description", sourceURL, ...),
+    expectsInput("climateDT", "data.table", 
+                 desc = paste("A data.table with as many columns as the climate covariates", 
+                              "used in the species distribution model and 'year' column describing",
+                              "the simulation year to which the data corresponds.")),
+    expectsInput("sppAbundanceDT", "data.table", 
+                 desc = paste("A species abundance data. Converted to presence/absence data, if not binary")),
+  ),
+  outputObjects = bindrows(
+    #createsOutput("objectName", "objectClass", "output object description", ...),
+    createsOutput(objectName = "sppDistProj", objectClass = "SpatRaster",
+                  desc = paste("Species distribution projections - raw predictions.",
+                               "Each layer corresponds to a prediciton year")),
+    createsOutput(objectName = "evalOut", objectClass = "ModelEvaluation", 
+                  desc = paste("`sdmOut` model evaluation statistics. Model evaluated on the 20% of",
+                               "the data. See `?dismo::evaluation`.")),
+    createsOutput(objectName = "sdmData", objectClass = "data.table", 
+                  desc = "Input data used to fit `sdmOut`."),
+    createsOutput(objectName = "sdmOut", objectClass = "MaxEnt",
+                  desc = paste("Fitted species distribution model, using MaxEnt. Model fitted on 80%",
+                               "of `sdmData`, with remaining 0% used for evaluation. See `?dismo::maxent`."))
+  )
+))
+
+## event types
+#   - type `init` is required for initialization
+
+doEvent.projectSpeciesDist = function(sim, eventTime, eventType) {
+  switch(
+    eventType,
+    init = {
+      ### check for more detailed object dependencies:
+      ### (use `checkObject` or similar)
+      
+      # do stuff for this event
+      sim <- SDMInit(sim)
+      
+      # schedule future event(s)
+      sim <- scheduleEvent(sim, start(sim), "projectSpeciesDist", "fitSDM")
+      sim <- scheduleEvent(sim, start(sim), "projectSpeciesDist", "projSDM")
+      sim <- scheduleEvent(sim, P(sim)$.plotInitialTime, "projectSpeciesDist", "plotProjSDM")
+      
+    },
+    fitSDM = {
+      # ! ----- EDIT BELOW ----- ! #
+      sim <- fitSDMEvent(sim)
+      # ! ----- STOP EDITING ----- ! #
+    },
+    projSDM = {
+      # ! ----- EDIT BELOW ----- ! #
+      sim <- projSDMEvent(sim)
+      
+      sim <- scheduleEvent(sim, time(sim) + 1L, "projectSpeciesDist", "projSDM")
+      # ! ----- STOP EDITING ----- ! #
+    },
+    plotProjSDM = {
+      # ! ----- EDIT BELOW ----- ! #
+      plotProjEvent(sim)
+      
+      sim <- scheduleEvent(sim, time(sim) + 1L, "projectSpeciesDist", "plotProjSDM")
+      
+      # ! ----- STOP EDITING ----- ! #
+    },
+    warning(paste("Undefined event type: \'", current(sim)[1, "eventType", with = FALSE],
+                  "\' in module \'", current(sim)[1, "moduleName", with = FALSE], "\'", sep = ""))
+  )
+  return(invisible(sim))
+}
+
+## event functions
+#   - keep event functions short and clean, modularize by calling subroutines from section below.
+
+### template initialization
+SDMInit <- function(sim) {
+  # # ! ----- EDIT BELOW ----- ! #
+  ## at this point we can only have the following columns
+  if (!identical(sort(names(sim$sppAbundanceDT)), sort(c("cell", "x", "y", "sppAbund", "year")))) {
+    stop(paste("sim$sppAbundanceDT can only have the following columns at the start of year 1:\n",
+               paste(c("cell", "x", "y", "sppAbund", "year"), collapse = ", ")))
+  }
+  
+  if (length(setdiff(sim$climateDT$cell, sim$sppAbundanceDT$cell)) > 0 ||
+      length(setdiff(sim$sppAbundanceDT$cell, sim$climateDT$cell)) > 0) {
+    stop("'cell' columns in `climateDT` and `sppAbundanceDT` have different values")
+  }
+  
+  ## a few data cleaning steps to make sure we have presences and absences:
+  sppAbundanceDT <- copy(sim$sppAbundanceDT)
+  if (min(range(sppAbundanceDT$sppAbund)) < 0) {
+    sppAbundanceDT[sppAbund < 0, sppAbund := 0]
+  }
+  
+  if (max(range(sppAbundanceDT$sppAbund)) > 1) {
+    message("Species data is > 1. Converting to presence/absence")
+    sppAbundanceDT[sppAbund > 0, sppAbund := 1]
+  }
+  
+  ## join the two datasets
+  sim$sdmData <- sim$climateDT[year == time(sim)][sppAbundanceDT[, .(cell, sppAbund, year)], on = .(cell, year)]
+  setnames(sim$sdmData, "sppAbund", "presAbs")
+  
+  # ! ----- STOP EDITING ----- ! #
+  return(invisible(sim))
+}
+
+fitSDMEvent <- function(sim) {
+  # ! ----- EDIT BELOW ----- ! #
+  browser()
+  
+  ## break data into training and testing subsets
+  group <- kfold(sim$sdmData, 5)
+  trainData <- sim$sdmData[group != 1, ]
+  testData <-  sim$sdmData[group == 1, ]
+  
+  predVars <- P(sim)$predVars
+  sim$sdmOut <- maxent(x = as.data.frame(trainData[, ..predVars]), 
+                       p = trainData$presAbs)
+  
+  ## set threshold of presence/absence
+  sim$evalOut <- evaluate(p = testData[presAbs == 1, ..predVars],
+                          a = testData[presAbs == 0, ..predVars],
+                          model = sim$sdmOut)
+  ## save the threshold of presence/absence in an internal object to this module
+  mod$thresh <- threshold(sim$evalOut, 'spec_sens')
+  
+  # ! ----- STOP EDITING ----- ! #
+  return(invisible(sim))
+}
+
+projSDMEvent <- function(sim) {
+  browser()
+  # ! ----- EDIT BELOW ----- ! #
+  ## predict across the full data and make a map
+  preds <- predict(sim$sdmOut, as.data.frame(sim$sdmData[year == time(sim), ..predVars]),
+                   progress = '')
+  sppDistProj <- replace(sim$studyAreaRas, which(!is.na(sim$studyAreaRas[])), preds)
+  names(sppDistProj) <- paste0("year", time(sim))
+  
+  if (is.null(sim$sppDistProj)) {
+    sim$sppDistProj <- sppDistProj
+  } else {
+    sim$sppDistProj <- rast(list(sim$sppDistProj, sppDistProj))
+  }
+  
+  # ! ----- STOP EDITING ----- ! #
+  return(invisible(sim))
+}
+
+plotProjEvent <- function(sim) {
+  # ! ----- EDIT BELOW ----- ! #
+  browser()
+  checkPath(file.path(outputPath(sim), "figures"), create = TRUE)
+  
+  if (any(!is.na(P(sim)$.plots))) {
+    ## response plot
+    ## we can't use Plots to plot and save SDM predictions with dismo.
+    ## these are only saved to disk
+    notScreen <- setdiff(P(sim)$.plots, "screen")
+    if (any(notScreen != "png")) {
+      warning(paste(currentModule(sim), "only saves to PNG at the moment."))
+    } 
+    png(file.path(outputPath(sim), "figures", "SDMresponsePlot.png"))
+    response(sim$sdmOut)
+    dev.off()
+    
+    ## species projections
+    clearPlot()
+    rawValsPlot <- sim$sppDistProj[[paste0("year", time(sim))]]
+    Plots(rawValsPlot, fn = plotSpatRaster, types = P(sim)$.plots,
+          usePlot = TRUE, filename = file.path(outputPath(sim), "figures", "baselineProjRawVals"), 
+          plotTitle = paste("Maxent raw values -", "year", time(sim)),
+          xlab = "Longitude", y = "Latitude")
+    PAsPlot <- sim$sppDistProj[[paste0("year", time(sim))]] > mod$thresh
+    Plots(PAsPlot, fn = plotSpatRaster, types = P(sim)$.plots,
+          usePlot = TRUE, filename = file.path(outputPath(sim), "figures", "baselineProjPA"), 
+          plotTitle = paste("Presence/absence -", "year", time(sim)),
+          xlab = "Longitude", y = "Latitude")
+  }
+  
+  # ! ----- STOP EDITING ----- ! #
+  return(invisible(sim))
+}
+
+.inputObjects <- function(sim) {
+  #cacheTags <- c(currentModule(sim), "function:.inputObjects") ## uncomment this if Cache is being used
+  dPath <- asPath(getOption("reproducible.destinationPath", dataPath(sim)), 1)
+  message(currentModule(sim), ": using dataPath '", dPath, "'.")
+  
+  # ! ----- EDIT BELOW ----- ! #
+  ## check that necessary objects are in the simList or WILL BE supplied  by another module
+  if (!suppliedElsewhere("climateDT") | !suppliedElsewhere("sppAbundanceDT") ) {
+    stop("Please provide `climateDT` and `sppAbundanceDT`")
+  }
+  
+  # ! ----- STOP EDITING ----- ! #
+  return(invisible(sim))
+}

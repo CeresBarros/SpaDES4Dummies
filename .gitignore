@@ -3,6 +3,10 @@
 .RData
 .Ruserdata
 modules/*/data/*
+cache/*
+outputs/*
+inputs/*
 
 ## don't ignore
 !modules/*/data/CHECKSUMS.txt
+!inputs/CHECKSUMS.txt
