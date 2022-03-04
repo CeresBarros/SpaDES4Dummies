@@ -7,6 +7,9 @@ cache/*
 outputs/*
 inputs/*
 
+*_cache
+*_files
+
 ## don't ignore
 !modules/*/data/CHECKSUMS.txt
 !inputs/CHECKSUMS.txt
