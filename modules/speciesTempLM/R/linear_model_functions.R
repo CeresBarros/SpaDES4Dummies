@@ -10,5 +10,6 @@
 #'  \code{abund ~ temp}
 
 linearModel <- function(Data){
-  return(lm1 <- lm(abund ~ temp, data = Data))
+  lm1 <- lm(abund ~ temp, data = Data)
+  return(lm1)
 }
