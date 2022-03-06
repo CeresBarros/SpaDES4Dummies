@@ -129,8 +129,9 @@ SDMInit <- function(sim) {
     sppAbundanceDT[sppAbund > 0, sppAbund := 1]
   }
   
-  ## join the two datasets
-  sim$sdmData <- sim$climateDT[year == time(sim)][sppAbundanceDT[, .(cell, sppAbund, year)], on = .(cell, year)]
+  ## join the two datasets - note that there are no input species abundances beyond year 1
+  sim$sdmData <- merge(sim$climateDT, sppAbundanceDT[, .(cell, sppAbund, year)], 
+                       by = c("cell", "year"), all = TRUE)
   setnames(sim$sdmData, "sppAbund", "presAbs")
   
   # ! ----- STOP EDITING ----- ! #
@@ -139,12 +140,16 @@ SDMInit <- function(sim) {
 
 fitSDMEvent <- function(sim) {
   # ! ----- EDIT BELOW ----- ! #
-  browser()
-  
   ## break data into training and testing subsets
-  group <- kfold(sim$sdmData, 5)
-  trainData <- sim$sdmData[group != 1, ]
-  testData <-  sim$sdmData[group == 1, ]
+  dataForFitting <- sim$sdmData[year == time(sim)]
+  
+  if (nrow(dataForFitting) == 0) {
+    stop(paste("No data for year", time(sim), "provided to fit the model"))
+  }
+  
+  group <- kfold(dataForFitting, 5)
+  trainData <- dataForFitting[group != 1, ]
+  testData <-  dataForFitting[group == 1, ]
   
   predVars <- P(sim)$predVars
   sim$sdmOut <- maxent(x = as.data.frame(trainData[, ..predVars]), 
@@ -162,10 +167,16 @@ fitSDMEvent <- function(sim) {
 }
 
 projSDMEvent <- function(sim) {
-  browser()
   # ! ----- EDIT BELOW ----- ! #
   ## predict across the full data and make a map
-  preds <- predict(sim$sdmOut, as.data.frame(sim$sdmData[year == time(sim), ..predVars]),
+  dataForPredicting <- sim$sdmData[year == time(sim)]
+  
+  if (nrow(dataForPredicting) == 0) {
+    stop(paste("No data for year", time(sim), "provided to calculate predictions"))
+  }
+  
+  predVars <- P(sim)$predVars
+  preds <- predict(sim$sdmOut, as.data.frame(dataForPredicting[, ..predVars]),
                    progress = '')
   sppDistProj <- replace(sim$studyAreaRas, which(!is.na(sim$studyAreaRas[])), preds)
   names(sppDistProj) <- paste0("year", time(sim))
@@ -182,7 +193,6 @@ projSDMEvent <- function(sim) {
 
 plotProjEvent <- function(sim) {
   # ! ----- EDIT BELOW ----- ! #
-  browser()
   checkPath(file.path(outputPath(sim), "figures"), create = TRUE)
   
   if (any(!is.na(P(sim)$.plots))) {
@@ -201,12 +211,12 @@ plotProjEvent <- function(sim) {
     clearPlot()
     rawValsPlot <- sim$sppDistProj[[paste0("year", time(sim))]]
     Plots(rawValsPlot, fn = plotSpatRaster, types = P(sim)$.plots,
-          usePlot = TRUE, filename = file.path(outputPath(sim), "figures", "baselineProjRawVals"), 
+          usePlot = TRUE, filename = file.path(outputPath(sim), "figures", paste0("projRawVals_Year", time(sim))), 
           plotTitle = paste("Maxent raw values -", "year", time(sim)),
           xlab = "Longitude", y = "Latitude")
     PAsPlot <- sim$sppDistProj[[paste0("year", time(sim))]] > mod$thresh
     Plots(PAsPlot, fn = plotSpatRaster, types = P(sim)$.plots,
-          usePlot = TRUE, filename = file.path(outputPath(sim), "figures", "baselineProjPA"), 
+          usePlot = TRUE, filename = file.path(outputPath(sim), "figures", paste0("projPA_Year", time(sim))), 
           plotTitle = paste("Presence/absence -", "year", time(sim)),
           xlab = "Longitude", y = "Latitude")
   }
