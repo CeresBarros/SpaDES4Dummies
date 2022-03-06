@@ -51,8 +51,8 @@ defineModule(sim, list(
                  desc = paste("Same as `baselineClimateURLs` but refering to projected climate layers.",
                               "Variable names in 'vars' need to the same as in `baselineClimateURLs`",
                               "and P(sim)$projClimateURLs. Years should correspond to simulation years.",
-                              "Defaults to 2081-2100 projections using the CanESM5 climate model at 2.5",
-                              "minutes, obtained from Worldclim.")),
+                              "Defaults to 2081-2100 projections using the CanESM5 climate model and the",
+                              "SSP 585 climate scenario, at 2.5 minutes, obtained from Worldclim.")),
     expectsInput("studyAreaRas", objectClass = "SpatRaster", 
                  desc = "A binary raster of the study area")
   ),
@@ -213,7 +213,7 @@ climatePlot <- function(sim) {
   
   if (!suppliedElsewhere(sim$studyAreaRas)) {
     ## code check: did the user supply a study area?
-    stop("Please supply a 'studyAreaRas' RasterLayer")
+    stop("Please supply a 'studyAreaRas' SpatRaster")
   }
   
   if (!is(sim$studyAreaRas, "SpatRaster")) {
