@@ -139,7 +139,7 @@ abundancePlot <- function(sim) {
   
   if (!suppliedElsewhere(sim$studyAreaRas)) {
     ## code check: did the user supply a study area?
-    stop("Please supply a 'studyAreaRas' RasterLayer")
+    stop("Please supply a 'studyAreaRas' SpatRaster")
   }
   
   # ! ----- STOP EDITING ----- ! #
