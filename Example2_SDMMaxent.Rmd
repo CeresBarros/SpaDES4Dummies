@@ -39,7 +39,7 @@ Often, these analyses are run only once for a given set of species, baseline and
 
 With the above in mind, in this example we created three modules that source and pre-process data ('data modules') and a module that fits an SDM and iteratively forecasts species distributions (we call it a 'simulation module', although the simulation only involves predicting from a statistical model). The idea is that we could, for instance, provide different data sources to one of the data modules and only update the parts of the simulation that are affected by this change (i.e. presumably the other data module steps with not be affected). Or, we could develop a second simulation module using a different SDM approach and swap the two modules to inspect which provides better predictions.
 
-Our data modules are *speciesAbundanceData* and *climateData*. The simulation module is *projectSpeciesDist*. We start by creating a "global" `.R` script to set up and control the simulation. In this example this script is called `Example2_SDMMaxent.R`. The script begins with a few lines of code that ensure necessary packages are installed and loaded (see [Reproducible package installation]), defines the necessary folder directories for the simulation and creates the modules in the `modules/` folder:
+Our data modules are *speciesAbundanceData* and *climateData*. The simulation module is *projectSpeciesDist*. We start by creating an `.R` script to set up and control the simulation. In this example this script is called `Example2_SDMMaxent.R`. The script begins with a few lines of code that ensure necessary packages are installed and loaded (see [Reproducible package installation]). It then defines the necessary folder directories for the simulation and creates the modules in the `modules/` folder:
 
 ```{r globalscript, eval = FALSE}
 ## Get necessary R packages, but don't load any
@@ -47,7 +47,7 @@ if (!require("Require")) install.packages("Require")
 Require::Require("PredictiveEcology/SpaDES.install@development")
 SpaDES.install::installSpaDES(ask = TRUE)
 
-## decide where you're wtorking
+## decide where you're working
 mainDir <- "."
 
 # mainDir <- getwd()
@@ -100,25 +100,23 @@ if (!dir.exists(file.path(simPaths$modulePath, "projectSpeciesDist"))){
 
 Notice how we protect the `newModule` call with an `if` statement that first detects whether the module directory exists already. This is necessary to prevent overwriting existing modules should this script be run a second time in the same location (see [Protect yourself and others from common mistakes/problems]).
 
-`setPaths` will create the project folder directories in case they to not exist, but will not overwrite existing ones with empty new folders.
+`setPaths` will create the project folder directories in case they do not exist (no overwriting occurs in case they do).
 
-Finally, we do not load any R packages yet, as we will later use `Require` to make sure all module dependencies are installed prior to running the simulation (see [Reproducible package installation]). Because `Require` may attempt to install missing packages and because installing packages should be done in a clean R session, we will only load any packages after all the installation steps are complete.
+Finally, note that we do not load any R packages yet, as we will later use `Require` to make sure all module dependencies are installed before running the simulation (see [Reproducible package installation]). Because `Require` may attempt to install missing packages and because installing packages should be done in a clean R session, we will only load any packages after all the installation steps are complete.
 
 ### Data modules
 
-The next two sections show our two data modules `.R` scripts and highlight particularly important aspects of each script. We assume you are already familiar with the different parts of a module `.R` script; if not, see [Example 1](https://htmlpreview.github.io/?https://github.com/CeresBarros/SpaDES4Dummies/blob/master/Example1_DummyModel.html). We do not discuss the module `.Rmd` files, which should document each module in detail (see [Module documentation (module .Rmd)]).
+The next two sections show our two data modules `.R` scripts. We assume you are already familiar with the different parts of a module `.R` script; if not, see [Example 1](https://htmlpreview.github.io/?https://github.com/CeresBarros/SpaDES4Dummies/blob/master/Example1_DummyModel.html). We do not discuss the module `.Rmd` files, which should document each module in detail (see [Module documentation -- module .Rmd]).
 
 #### *speciesAbundanceData* module:
 
-This module downloads freely available spatial layers of *Picea glauca* percent cover (% cover) across Canada and pre-processes them to match a user-supplied study area raster (note that we use the new `terra` package throughout this example, since the `raster` package will soon be discontinued). The main outputs of this module are the processed spatial raster layer of *Picea glauca* % cover (`sppAbundanceRas`), and its equivalent in the form of a `data.table`. The `data.table` contains added information about the year of the simulation during which the data should be used (here only the first year, as it is used to fit the SDM). We opted to export the information in two formats for demonstrational purposes, but also because we could envision that this model (i.e. group of modules) could save the species distribution projections for several points in time in the more compact format of a `data.table` -- large raster layers can consume a considerable amount of disk space.
+This module downloads freely available spatial layers of *Picea glauca* percent cover (% cover) across Canada and pre-processes them to match a user-supplied study area raster. We use the new `terra` package throughout this example, since the `raster` package will soon be discontinued.
+
+The `prepInputs` function downloads the % cover layer from the Canadian National Forest Inventory data server using the URL supplied by `sppAbundURL` and processes it to match the study area raster (`studyAreaRas`) supplied by the user. The module then outputs *Picea glauca* % cover as a raster (`sppAbundanceRas`) and as a `data.table` (`sppAbundanceDT`). The `data.table` contains added information about the year of the simulation during which the data should be used (here, only the first year when SDM fitting happens).
+
+We export species % cover in two formats (a raster and a table) for demonstrational purposes, but also because we could envision that this model (i.e. group of modules) could save the species distribution projections for several points in time in a more compact format of a `data.table` -- large raster layers can consume a considerable amount of disk space (see [Coding for the future]].
 
 ```{r dataModule1, eval = FALSE}
-## Everything in this file and any files in the R directory are sourced during `simInit()`;
-## all functions and objects are put into the `simList`.
-## To use objects, use `sim$xxx` (they are globally available to all modules).
-## Functions can be used inside any function that was sourced in this module;
-## they are namespaced to the module, just like functions in R packages.
-## If exact location is required, functions will be: `sim$.mods$<moduleName>$FunctionName`.
 defineModule(sim, list(
   name = "speciesAbundanceData",
   description = paste("Data module to prepare tree species cover data for species distribution modelling.", 
@@ -264,19 +262,17 @@ abundancePlot <- function(sim) {
 
 #### *climateData* module:
 
-This module downloads and processes freely available spatial layers of four bioclimatic variables used to fit the SDM of *Picea glauca* in the study area supplied by the user. The module uses an different way to download data. It relies on two input `data.tables` that contain the URLs for each climate covariate, one for baseline conditions, the other for projected climate conditions, both containing information about when each layer should be used during the simulation (the "year "column).
+This module downloads and processes freely available spatial layers of four bioclimatic variables used to fit the SDM of *Picea glauca* in the study area.
 
-We have only supplied one set of default baseline climate conditions (`baselineClimateURLs`) and climate projections (`projClimateURLs`) data sources, both of which are pre-processed to match the study area raster layer and then compiled in the `climateDT` object. These layers are downloaded from WorldClim at 2.5 minutes resolution. The baseline climate data correspond to the 1970-2000 period, which aligns well with the species % cover data year (2001). The climate projections are for the 2081-2100 period, and and come from the CanESM5 climate model under the SSP 585 climate scenario. We encourage providing different (or additional) URLs referring to projections for other climate periods, other climate models and other climate scenarios (see [WorldClim](https://www.worldclim.org/data/cmip6/cmip6climate.html) for a list of climate projections).
+The module uses a different way to download data. It relies on two input `data.tables` that contain the URLs for each climate covariate, one for baseline conditions, the other for projected climate conditions, both containing information about when each layer should be used during the simulation (the "year "column).
 
-When providing URLs to obtain data for several projection periods, pay special attention to the "year" column of `projClimateURLs` -- the URLs need to correspond to the simulation year during which they will be used (not necessarily the actual climate year, unless the simulation years follow the same numbering).
+We have only supplied one set of data sources for default baseline climate conditions (`baselineClimateURLs`) and for climate projections (`projClimateURLs`), all of which are downloaded from WorldClim at 2.5 minutes resolution. The baseline climate data correspond to the 1970-2000 period, which aligns well with the species % cover data year (2001). The climate projections are for the 2081-2100 period, and and come from the CanESM5 climate model under the SSP 585 climate scenario. We encourage providing different (or additional) URLs referring to projections for other climate periods, other climate models and other climate scenarios (see [WorldClim](https://www.worldclim.org/data/cmip6/cmip6climate.html) for a list of climate projections).
+
+If providing other URLs to obtain different climate data, pay special attention to the "year" column of `projClimateURLs` -- the URLs need to correspond to the simulation year during which they will be used (not necessarily the actual climate year, unless the simulation years follow the same numbering).
+
+Like in the `speciesAbundanceData` module, the `prepInputs` function processes the cliamte layers to match the study area raster (`studyAreaRas`) and compiles all climate data in the `climateDT` object and as raster layer objects (`baselineClimateRas` and `projClimateRas`) -- the module's outputs.
 
 ```{r dataModule2, eval = FALSE}
-## Everything in this file and any files in the R directory are sourced during `simInit()`;
-## all functions and objects are put into the `simList`.
-## To use objects, use `sim$xxx` (they are globally available to all modules).
-## Functions can be used inside any function that was sourced in this module;
-## they are namespaced to the module, just like functions in R packages.
-## If exact location is required, functions will be: `sim$.mods$<moduleName>$FunctionName`.
 defineModule(sim, list(
   name = "climateData",
   description = paste("Data module to prepare climate data for species distribution modelling.", 
@@ -523,35 +519,29 @@ climatePlot <- function(sim) {
 
 We draw your attention to a few particular aspects of the data modules:
 
--   How we took care to define the data classes of the parameters, expected inputs and module outputs in their respective metadata sections;
+-   How we took care to define the data classes of parameters, expected inputs and module outputs in their respective metadata sections;
 
--   How we added additional R packages necessary to run the module;
+-   How we added additional R packages necessary to run the module to the metadata;
 
--   How we added default values for parameters and inputs explicitly used by the modules (others like `.plotInterval` were left as `NA`). The exception to this is the `studyAreaRas` input object for which we do not provide a default. However, we added a code check in `.inputObject` that stops interrupts R if this object is not in `sim`.
+-   How we added default values for parameters and inputs explicitly used by the modules (others like `.plotInterval` were left as `NA`). The exception was the `studyAreaRas` input object for which we do not provide a default. However, we added a code check in `.inputObject` that stops interrupts R if this object is not in `sim` (see [Protect yourself and others from common mistakes/problems])
 
--   How we use the function `prepInputs` to do most of the heavy-lifting of downloading data and spatial pre-processing. This function is able to recognize whether the data has already been downloaded, and can cache all spatial processing tasks (see [Caching]). In some cases (e.g. Code block \@ref(code:dataModule2)) we wrap `prepInputs` in a `Map` call to loop through several URLs and download and pre-process many data layers. This `Map` call can itself be cached with `Cache`.
+-   How we use the function `prepInputs` to do most of the heavy-lifting of downloading data and spatial pre-processing. This function is able to recognize whether the data has already been downloaded, and can cache all spatial processing tasks (see [Caching]). In some cases, we wrapped `prepInputs` in a `Map` call to loop through several URLs and download and pre-process many data layers. This `Map` call can also be cached with `Cache`.
 
--   How we use the function `Plots` to control plotting to the screen device and/or save to image files depending on the `P(sim)$.plots` argument. Note that `Plots` works best with plotting functions that output `ggplot` objects, or that are compatible with `quickPlot::Plot`.
+-   How we use the function `Plots` to control plotting to the screen device and/or save to image files depending on the `P(sim)$.plots` argument. Note that `Plots` works best with functions that output `ggplot` objects, or that are compatible with `quickPlot::Plot`.
 
--   The fact that neither module depends on the other. This is not a required feature of data modules, but just so happens to be the case in this example. In fact, in more complex modelling frameworks we often have several data modules that depend on each other (e.g., [LandR *Biomass_speciesData*](https://github.com/PredictiveEcology/Biomass_speciesData) sources and processes tree species percent cover data that is used by [LandR *Biomass_borealDataPrep*](https://github.com/PredictiveEcology/Biomass_borealDataPrep) to estimate several parameters for the forest landscape simulation model [LandR *Biomass_core*](https://github.com/PredictiveEcology/Biomass_core)).
+-   The fact that neither module depends on the other. This is not a required feature of data modules, but just so happens to be the case in this example. In fact, in more complex modelling frameworks, like the LandR model [@BarrosEtAlinreview], we often have several data modules that depend on each other (e.g., [LandR *Biomass_speciesData*](https://github.com/PredictiveEcology/Biomass_speciesData) sources and processes tree species percent cover data that is used by [LandR *Biomass_borealDataPrep*](https://github.com/PredictiveEcology/Biomass_borealDataPrep) to estimate several parameters for the forest landscape simulation model [LandR *Biomass_core*](https://github.com/PredictiveEcology/Biomass_core)).
 
 -   How we export objects created within the module functions to `sim`. Without doing so, these objects are lost after the function is executed.
 
-#### Simulation module
+#### "Simulation" module
 
-The Code block \@ref(code:simulationModule) shows the `.R` script for the *projectSpeciesDist* module. This module depends entirely on the other two, as we did not provide any default input objects in the `.inputObjects` function. This is, of course, not good practice, but again we warn the user early on (in the `.inputObjects` function) if the module cannot find the necessary inputs.
+We show below the `.R` script for the *projectSpeciesDist* module. This module depends entirely on the other two, as we did not provide any default input objects in the `.inputObjects` function. This is, of course, not good practice, but again we warn the user early on (in the `.inputObjects` function) if the module cannot find the necessary inputs.
 
-This module fits an SDM using MaxEnt via the `dismo` package. We highly recommend having a look at [this guide](https://rspatial.org/raster/sdm/index.html) to learn about fitting SDMs with `dismo` and more.
+This module fits a machine learning SDM using the MaxEnt algorithm implemented in the `dismo` package. We recommend having a look at [this guide](https://rspatial.org/raster/sdm/index.html) to learn about fitting SDMs with `dismo` and more. Before fitting the SDM, the module converts any non-binary species data into presences and absences.
 
-The module converts any non-binary species data into presences and absences to model species occurrence probabilities.
+The main outputs are species distribution projections in the form of plots and a stacked raster layer (`sppDistProj`) and the fitted SDM object.
 
 ```{r simulationModule, eval = FALSE}
-## Everything in this file and any files in the R directory are sourced during `simInit()`;
-## all functions and objects are put into the `simList`.
-## To use objects, use `sim$xxx` (they are globally available to all modules).
-## Functions can be used inside any function that was sourced in this module;
-## they are namespaced to the module, just like functions in R packages.
-## If exact location is required, functions will be: `sim$.mods$<moduleName>$FunctionName`.
 defineModule(sim, list(
   name = "projectSpeciesDist",
   description = "",
@@ -791,21 +781,21 @@ plotProjEvent <- function(sim) {
 
 We draw your attention to:
 
--   The fact that we could have chosen to save species projections outputs in `sppAbundanceDT` with different year values. In this case we would have also changed this object's name, since MaxEnt is not modelling species abundance, but probability of occurrence.
+-   As we said earlier, we could have added yearly projected values to the `sppAbundanceDT` table. In this case we probably would have changed this object's name, since MaxEnt is not modelling species abundance, but probability of occurrence. We suggest this as an exercise to do on your own
 
 -   How links with the data modules are established by declaring data modules' output objects as expected inputs for this module.
 
 -   How the `fitSDM` event does not schedule itself (the SDM only needs to be fitted once).
 
--   How, unlike `fitSDM`, the `projSDM` event schedules itself so that model projections are executed for each year of the simulation, provided that there is corresponding environmental data - notice how the functions `fitSDMEvent` and `projSDMEvent` both check that there is data for the current year of the simulation (`time(sim)`).
+-   How, unlike `fitSDM`, the `projSDM` event schedules itself so that model projections are executed for each year of the simulation, provided that there is corresponding environmental data -- notice how the functions `fitSDMEvent` and `projSDMEvent` both check that there is data for the current year of the simulation (`time(sim)`).
 
--   How the fitted model object (`sdmOut`) is exported to `sim` (via `sim$sdmOut <- sdmOut`). so the model can be used by other events and inspected by the user after the simulation is finished.
+-   How the fitted model object (`sdmOut`) and it's evaluation (`evalOut`) are both module outputs. This way these objects can not only be used by other events, but also inspected by the user after the simulation is finished (see [Transparent models]).
 
 ## **Running the model**
 
 ### Ensuring all packages are installed
 
-After the modules are created, we go back to the `Example2_SDMMaxent.R` script to set up and run the simulation. The first line in Code block \@ref(code:simulationPkgs) ensures that all module dependencies (and their dependencies and so on) are installed in `.libPaths`. If not it will attempt to install missing packages. Only then do we load `SpaDES` (necessary to run the simulation).
+After the modules are created, we go back to the `Example2_SDMMaxent.R` script to set up and run the simulation. The first line of code ensures that all module dependencies (and their dependencies and so on) are installed in `.libPaths()`. If not it will attempt to install missing packages. Only then do we load `SpaDES` (necessary to run the simulation).
 
 ```{r simulationPkgs, eval = FALSE}
 ## this line can be used to make sure all packages are installed
@@ -822,7 +812,11 @@ library(SpaDES)
 library(SpaDES)
 ```
 
-Note: `makeSureAllPackagesInstalled` may fail to install if other packages have been loaded already, so we recommend running this line from a clean R session. We also recommend restarting the R session in case `makeSureAllPackagesInstalled` does install any packages. Sometimes Windows presents problems when many packages are installed and further package installations fail. If you see errors like this:
+**/!\\\\ Attention /!\\\\**
+
+`makeSureAllPackagesInstalled` may fail to install if other packages have been loaded already, so we recommend running this line from a clean R session. We also recommend restarting the R session *after* `makeSureAllPackagesInstalled` installs packages.
+
+Windows can present problems when many packages are installed and further package installations fail. If you see errors like this after restarting R:
 
     Installing: glue
     Detaching is fraught with many potential problems; you may have to restart your session if things aren't working
@@ -840,13 +834,19 @@ Note: `makeSureAllPackagesInstalled` may fail to install if other packages have 
     ERROR: failed to lock directory ‘~\R\win-library\4.0’ for modifying
     Try removing ‘~\R\win-library\4.0/00LOCK’
 
-after restarting R, go ahead and delete the problematic file/folder and try again. Sometimes `Require` is unable to automatically install a package and a manual installation from a clean session is the only solution. For example, in the example above, `Require` only detected that `glue` was missing during the `simInit` call, which meant that other packages had been loaded already and the installation failed. This problem persisted even after we avoided loading `terra` before running `simInit` (we make the study area objects prefixing functions with `terra::`), so `glue` had to be manually installed.
+go ahead and delete the problematic file/folder and try again.
 
-### Simulation setup
+Sometimes `Require` may still unable to automatically install a package and a manual installation from a clean session is the only solution. In the error above, `Require` only detected that `glue` was missing during the `simInit` call, which meant that other packages had been loaded already causing failure when `Require` attempted the installation. This problem persisted even after we avoided loading `terra` before running `simInit` (we make the study area objects prefixing functions with `terra::`), so `glue` had to be manually installed.
 
-The simulation folder directories were already set up before creating the modules, but it is still necessary to create a few list objects that will be passed to the `simInit` function to initialize the simulation. These define the modules used in the simulation (`simModules`), the start and end of the simulation (`simTimes`), the parameter lists passed to each module (`simParams`) and necessary external input objects (`simObjects`) like the study area (`studyAreaRas`).
+### Simulation set-up
 
-We also define a few useful global options, like `reproducible.cachePath` and `reproducible.destinationPath` which determine the cache directory and where downloaded and processed data will be stored, and `reproducible.useCache` and `reproducible.useTerra` which will activate caching and the use of the `terra` package across all `Cache` and `prepInputs` function calls.
+The simulation folder directories were already set up before creating the modules, but it is still necessary to create a few lists that will be passed to the `simInit` function, which initializes the simulation. These lists define the modules used in the simulation (`simModules`), the start and end of the simulation (`simTimes`), the parameters passed to each module (`simParams`) and external input objects (`simObjects`) like the study area (`studyAreaRas`).
+
+We also define a few useful global options:
+
+-   `reproducible.cachePath` and `reproducible.destinationPath` define the cache directory and the directory where downloaded and processed data will be stored;
+
+-   `reproducible.useCache` and `reproducible.useTerra`, which will activate caching and the use of the `terra` package across all `Cache` and `prepInputs` function calls.
 
 ```{r simulationSetup, warning = FALSE, message = FALSE}
 ## a few important options:
@@ -892,25 +892,25 @@ mySim <- simInit(times = simTimes, params = simParams,
                  paths = simPaths)
 ```
 
-We advise having a look and the module linkage diagrams produced by `moduleDiagram` (Fig. \@ref(fig:moduleDiagram)) and `objectDiagram` (Fig. \@ref(fig:objectDiagram)) to assess whether modules are linked as expected.
+Before running the simulation we look at the module linkage diagrams produced by `moduleDiagram` (Fig. \@ref(fig:moduleDiagram)) and `objectDiagram` (Fig. \@ref(fig:objectDiagram)) to assess whether modules are linked as expected.
 
 ```{r moduleDiagramsCode, eval = FALSE}
 moduleDiagram(mySim)
 objectDiagram(mySim)
 ```
 
-```{r moduleDiagram, echo = FALSE, fig.align = 'center', fig.cap = "Module network diagram"}
+```{r moduleDiagram, echo = FALSE, fig.align = 'center', fig.cap = "Module network diagram."}
 clearPlot()
 moduleDiagram(mySim)
 ```
 
-```{r objectDiagram, echo = FALSE, fig.align = 'center', fig.cap = "Module diagram showing object inter-dependecies"}
+```{r objectDiagram, echo = FALSE, fig.align = 'center', fig.cap = "Module diagram showing module inter-dependencies with object names."}
 objectDiagram(mySim)
 ```
 
 ### Simulation runs
 
-To run the simulation, we call `spades` on the output `simList` (called `mySim` here) generated by `simInit`. We also passed the argument `debug = TRUE` so that the progress of the simulation is printed in detail. This helps diagnosing problems when the simulation fails, but also seeing what events are being executed and when particular cache calls are activated (and computations by-passed).
+To run the simulation, we call `spades` on the output `simList` (called `mySim` here) generated by `simInit`. We also pass the argument `debug = TRUE,` so that the progress of the simulation is printed in detail. This helps diagnosing problems when the simulation fails, but also seeing which events are being executed and when particular cache calls are activated.
 
 ```{r runSimulation, eval = FALSE}
 ## run simulation
@@ -918,21 +918,21 @@ clearPlot(force = TRUE)   ## this forces wiping the graphics device and opening 
 spades(mySim, debug = TRUE)
 ```
 
-Try to execute the `spades` call a second time to see how much faster it runs now that many of the operations have been cached. Notice also, how the `init` events are retrieved from the cache (see [Caching]).
+Try to execute the `spades` call a second time to see how much faster it runs now that many of the operations have been cached. Notice also, how the `init` events are retrieved from the cache thanks to the `.useCache` parameters passed to the modules (see also [Caching]).
 
 Here are some outputs of the model:
 
-```{r figSimulationFig, fig.align = 'center', out.width = "50%", fig.cap = "**Simulation plots**: Raw values predictions of species probability of occurence for (left to right:) baseline climate conditions (i.e. first year of simulation) and under climate conditions projected for 2081-2100 (i.e. the second year)"}
+```{r figSimulationFig, echo = FALSE, fig.align = 'center', out.width = "50%", fig.cap = "**Simulation plots**: Raw predicted values of species probability of occurence for: (left to right) baseline climate conditions (first year of simulation) and 2081-2100 climate conditions (second year of simulation)."}
 knitr::include_graphics(c("outputs/figures/projRawVals_Year1.png", "outputs/figures/projRawVals_Year2.png"))
 ```
 
-```{r figSimulationFig2, fig.align = 'center', out.width = "50%", fig.cap = "**Simulation plots**: Preditions of *Picea glauca* presences/absences for (left to right:) baseline climate conditions (i.e. first year of simulation) and under climate conditions projected for 2081-2100 (i.e. the second year"}
+```{r figSimulationFig2, echo = FALSE, fig.align = 'center', out.width = "50%", fig.cap = "**Simulation plots**: Predictions of *Picea glauca* presences/absences for: (left to right) baseline climate conditions and 2081-2100 climate conditions."}
 knitr::include_graphics(c("outputs/figures/projPA_Year1.png", "outputs/figures/projPA_Year2.png"))
 ```
 
 ## **Caching**
 
-In this example, we relied on caching to avoid having to repeat computationally intensive operations. Running the `simInit` and `spades` calls twice (even after restarting R session) was much faster and `SpaDES` informed us of instances where cached objects were being retrieved:
+In this example, we relied on caching to avoid having to repeat computationally intensive operations. Running the `simInit` and `spades` calls a second time (even after restarting R session) was faster and `SpaDES` informed us of instances where cached objects were being retrieved:
 
     (...)
     Mar05 19:56:53 clmtDt 1         climateData init      1            
@@ -940,23 +940,29 @@ In this example, we relied on caching to avoid having to repeat computationally 
     Mar05 19:56:53 clmtDt      loaded cached result from previous Map call
     (...)
 
-Caching in `SpaDES` is offered via the `reproducible`, and can be generally broken down into two types: explicitly coded by the module developer, or internal to `SpaDES` functions.
+Caching in `SpaDES` is managed by the `reproducible` package, and can be generally broken down into two types: explicitly coded by the module developer, or internal to `SpaDES` functions.
 
 ### Explicitly caching operations
 
-Throughout the data modules we explicitly cached several data preparation operations using the functions `Cache` and `prepInputs` from the reproducible package. In brief, `Cache` searches for a stored (i.e. cached) output of a given function call; if it does not find it, `Cache` executes the function call and saves its output and information about the function inputs and the function's code; if it does find it, it compares the present inputs and function code against their cached counterparts. If any of them do not match, the function call is executed again and re-cached. `prepInputs` calls `Cache` internally at several points, notably to cache several spatial processing tasks (e.g. re-projecting and cropping spatial layers to a study area raster). Another great feature of `prepInputs` is that when a source URL for an object is supplied (as we did to obtain species % cover and climate layers), it checks whether the data have already been downloaded (and potentially extracted from an archive folder -- `.zip`) before doing so. This is not exactly the same think as caching, but also avoids unnecessary downloads that can be time consuming.
+Throughout the data modules we explicitly cached several data preparation operations using the functions `Cache` and `prepInputs` from the `reproducible` package.
+
+In brief, `Cache` searches for a stored (i.e. cached) output of a given function call; if it does not find it, `Cache` executes the function call, saves its output and saves information about the function inputs and the function's code. If it does find it, `Cache` compares the present inputs and function code against their cached counterparts. In case of a mismatch, the function call is executed again and re-cached.
+
+`prepInputs` calls `Cache` internally at several points, notably to cache spatial processing tasks (e.g. projecting and cropping spatial layers to a study area raster). Another great feature of `prepInputs` is that when it has a source URL for the target file (as when we used `prepInputs` to download species % cover and climate layers), it first checks whether the data have already been downloaded (and potentially extracted from an archive folder -- `.zip` file). This is not the same thing as caching, but also avoids unnecessary downloads that can be time consuming.
 
 Note that caching operations involving stochasticity should be avoided, as it will prevent new random outputs from being generated.
 
 We recommend exploring the examples available in the `Cache` and `prepInputs` R documentation to learn more about their capabilities. In particular, read about `showCache`, `clearCache` and the argument `userTags`, which allow consulting and deleting cached files.
 
-**/!\\ Attention /!\\** `Cache` does not deal well with the `apply` family of functions, which is why we used `Map` (instead of `mapply`) to iteratively apply `prepInputs` to several climate layer URLs.
+**/!\\ Attention /!\\**
+
+`Cache` does not deal well with the `apply` family of functions, which is why we used `Map` (instead of `mapply`) to iteratively apply `prepInputs` to several climate layer URLs.
 
 ### Implicit caching of events
 
-`SpaDES` offers implicit caching of events via the global parameter `.useCache`, which comes in the template modules generated by `newModule`. In addition to turning caching on/off at the module level, this parameter can control the caching of particular events. In our example, we cached data preparation events across all modules (`.inputObjects` and `init`), but not the events that fitted the SDM and generated projections. In truth, because none of the modules simulate any stochastic processes, we could have cached all events. We call this "implict" caching, because the developper does not need to add any caching mechanisms inside the module. `SpaDES` will automatically read the value of the `.useCache` parameter and activate caching in the module accordingly.
+`SpaDES` offers implicit caching of events via the global parameter `.useCache`, which comes in the template modules generated by `newModule`. We call this "implicit" caching, because the developer does not need to add any caching mechanisms to the module code. `SpaDES` automatically reads the value of the `.useCache` parameter and activates caching in the module accordingly.
 
-Note that loading cached events produces a slightly different message from the loading of other cached operations (above):
+`.useCache` can be used to turn all caching on/off at the module level, or to cache of particular events (in their entirety). In our example, we cached data preparation events across all modules (the `.inputObjects` and `init` events in this example), but not the events that fitted the SDM and generated projections. In truth, because none of the modules simulate any stochastic processes, we could have cached all events. Loading cached events produced a slightly different message from loading of other cached operations (see above):
 
     Mar05 19:58:34 spcsbn 1         speciesAbundanceData init      1            
     Mar05 19:58:34 spcsbn   ...(Object to retrieve (bffbc48cc055c846.rds))
@@ -964,56 +970,82 @@ Note that loading cached events produces a slightly different message from the l
 
 ### Controlling caching without changing module code
 
-In addition to the `.useCache` parameter, which controls caching at the module level. The user can turn caching on/off via two additional mechanisms:
+In addition to the , which controls caching at the module level.
 
--   via the option `options("reproducible.useCache")` -- setting this option to `TRUE` or `FALSE` in the global environment (`.GlobalEnv`) will affect *all* caching, inside and outside `SpaDES` modules.
+The user can turn caching on/off without caching module code via three different mechanisms:
 
--   via the argument `spades(.useCache = ...)` -- this argument behaves in the same way as the `.useCache` module parameter, but superceeds it across all modules (i.e. if the a module's `.useCache` is `TRUE` but `spades(..., .useCache = FALSE)`, caching will be turned off)
+-   via the `.useCache` parameter -- as explained above ([Implicit caching of events]), setting this parameter to `TRUE` or `FALSE` activates or deactivates all caching inside a module;
+
+-   via `options("reproducible.useCache")` -- setting this option to `TRUE` or `FALSE` in the global environment (`.GlobalEnv`) will affect *all* caching (inside and outside `SpaDES` modules and the simulation);
+
+-   via the argument `spades(.useCache = ...)` -- this argument behaves in the same way as the `.useCache` module parameter, but supersedes it across *all* modules (i.e. if `spades(..., .useCache = FALSE)`, caching will be turned off even if a module's `.useCache` is `TRUE`).
 
 ## **Best practices**
 
 ### Reproducible package installation
 
-When sharing code it is good practice to provide the users with a list of necessary packages (e.g. by listing the sequence of `library` calls at the start of a script). We go a step further and advise users to provide code that automatically installs all necessary packages at the start of their controller script. In addition all modules should contain a full list of packages that they depend on, and any particular versions necessary. If `options("spades.useRequire")` is set to `TRUE` (the default), `SpaDES` will automatically attempt to install any packages listed across all modules if they are not installed in `.libPaths()`, or if the installed version (or branch if installing from GitHub) does not correspond to what is listed in the module `.R`. Users can go a step further and use the `Require::pkgSnapshot()` to save a list of installed packages that can be used later by `Require` to install all necessary packages in another machine (Code block \@ref(code:pkgSnapshot)).
+When sharing code, it is good practice to provide other users with a list of necessary packages (e.g. by listing the sequence of `library` calls at the start of a script). We go a step further and advise users to provide code that automatically installs all necessary packages at the start of their controller script. In addition all modules should contain a full list of packages that they depend on, and any particular versions necessary. If `options("spades.useRequire")` is set to `TRUE` (the default), `SpaDES` will automatically attempt to install any packages listed across all modules if they are not installed in `.libPaths()`, or if the installed version (or branch if installing from GitHub) does not correspond to what is listed in the module `.R` script. Users can also use `Require::pkgSnapshot()` to save a list of installed packages that can be used later by `Require` to install all necessary packages in another machine (see example below).
 
-Please beware that package installation should be done as much as possible from a clean R session especially in the context of a `SpaDES`-based project, where each module has several different dependencies, that have dependencies of their own (see, for instance, how we delayed package loading until after all modules were in place and had their dependencies checked in Code block \@ref(code:globalscript))
+Please beware that package installation should be done as much as possible from a clean R session especially in the context of a `SpaDES`-based project, where each module can potentially have many different dependencies, which have dependencies of their own (see, for instance, how we delayed package loading until after all modules were in place and had their dependencies checked in `Example2_SDMMaxent.R`)
 
 ```{r pkgSnapshot, eval = FALSE}
 Require::pkgSnapshot("pkgsnapshot.txt")
 
 ## on another machine:
 Require::Require(packageVersionFile = "pkgsnapshot.txt")
-```
 
-See `?Require::pkgSnapshot()` for more examples.
+## See ?Require::pkgSnapshot() for more examples.
+```
 
 ### Protect yourself and others from common mistakes/problems
 
-A developer should put in place code checks, warnings and messages that protect and warn the user against common mistakes or issues. Common checks are to verify that all input formats and classes conform to what the function expects. If this is not the case the developer may add a mechanism to correct the faulty inputs (potentially with a warning or message telling the user it did so) or simply stop the computations with a meaningful error. We provide an example in Code block \@ref(code:dataModule2), where the `climateInit` function executed by the `init` event of the *climateData* module. Other checks can prevent undesirable function behaviours, such as the `if` statement protecting the `newModule` call above (see Code block \@ref(code:globalscript)).
+A developer should put in place code checks, warnings and messages that protect and warn the user against common mistakes or issues. Some of these fall in the category of *code assertions* -- small tests that verify a snippet of code. More complex tests that assess whether the module (or a group of modules) is producing expected results for, e.g., an ecological point of view fall in the category of *integration tests*. Here, we only talk about code assertions.
+
+A common assertion is to verify that input format and class conform to what the function expects. If this is not the case, the developer may add a mechanism to correct the faulty inputs (potentially with a warning or message telling the user it did so) or simply stop the computations with a meaningful error. We provide two examples in the `climateData` module, where the `climateInit` function checks whether the bioclimatic variable names are consistent between the baseline and projected climate data, and whether their raster layers match.
+
+Other assertions can prevent undesirable function behaviours, such as the `if` statement protecting the `newModule` call in `Example2_SDMMaxent.R`, or warn the user that something is missing early on, such as the check for `studyAreaRas` existence in the `.inputObjects` of the data modules).
+
+Bear in mind that these are just examples assertions and integration tests are as diverse as the code they test.
 
 ### Readable code
 
-There are several guides as to how to write more reader-friendly code. We aim follow many of the [recommendations by Hadley Wickham](http://adv-r.had.co.nz/Style.html) some of whiche we find particularly important: \* spacing around operators \* spacing before left parenthesis, except in a function call \* adding curly braces after `if`, `else`, `for` and `function`, unless they are very short statements \* thoroughly commenting the code \* naming functions meaningfully and avoiding to re-use function names (e.g. avoid `c <- function (...) {}`, as `c` is already a `base` function)
+There are several guides on how to write reader-friendly code. Even if the developer is forever the sole reader of their own code, there are benefits to writing readable code. First, working on it is less tiresome. Second, we quickly forget why we wrote code in a certain away. Code that is well documented and readable is easier to "come back to" and adapt.
 
-### Module documentation (module `.Rmd`)
+We follow many of the [recommendations by Hadley Wickham](http://adv-r.had.co.nz/Style.html), and highlight below those that we find particularly important:
 
-When modules are created using `newModule`, this function provides a template module `.Rmd` file that is meant to document the module. In this template we suggest a few key sections, notably an overview of the module, its inputs, parameters, outputs and general event flow, but also more in-depth descriptions of each of these sections. Some modules may also contain reproducible examples of how they can be used in practice, although this is not always relevant (for instance, data modules are meaningless without downstream modules that use their outputs). We invite the reader to see the manual of our forest landscape simulation model LandR Biomass_core, as an example of how we document some of our `SpaDES` modules.
+-   spacing around operators;
+
+-   spacing before left parenthesis, except in a function call;
+
+-   adding curly braces after `if`, `else`, `for` and `function`, unless they are very short statements;
+
+-   thoroughly commenting the code;
+
+-   naming functions meaningfully and avoiding to re-use function names (e.g. avoid `c <- function (...) {}`, as `c` is already a `base` function).
+
+### Module documentation -- module `.Rmd`
+
+When modules are created using `newModule`, this function provides a template module `.Rmd` file that is meant to document the module. The template suggests a few key sections that should be part of any module's documentation. Notably, an overview of the module and of its inputs, parameters, outputs and general event flow, together with more in-depth descriptions of each of these sections.
+
+The documentation may also contain reproducible examples of how a module can be used, although this is not always relevant. For instance, data modules are often meaningless without downstream modules that use their outputs.
+
+We invite the reader to see the manual of our forest landscape simulation model [LandR *Biomass_core*](https://htmlpreview.github.io/?https://github.com/PredictiveEcology/Biomass_core/blob/development/Biomass_core.html), as an example of how we document some of our `SpaDES` modules.
 
 ### Coding for the future
 
-We often make coding decisions that we regret a few months down the line. This is why as module developers, it is a good idea to think about other possible applications of a module or potential expansion avenues. For instance, trying to imagine if the module can be scaled up or transferred to different study areas, may influence the format of expected inputs and of outputs. In our example of the `speciesAbundanceData` we exported the same type of information in a raster layer and a `data.table`, because we could foresee that the `data.table` could be used to store several projections in a more compact format (Code block \@ref(code:dataModule1)).
+We often make coding decisions that we regret a few months down the line. This is why as module developers, it is a good idea to think about other possible applications of a module or potential expansion avenues. For instance, trying to imagine if the module can be scaled up or transferred to different study areas, may influence the format of expected inputs and of outputs. In our example, we exported the same type of information (species % cover and climate data) as raster layers and as tables, because we could foresee that the tables could be used to store several projections in a more compact format.
 
 ### Transparent models
 
-Model transparency is not only about using open source code and making it available. Providing easy access to model data, parameters and outputs is also important. For instance, in our example we deliberately exported the fitted statistical model `sdmOut` so that it can be more easily inspected by the user, without needing to "dive in" the code. `SpaDES` takes this a step further by offering the ability to save any objects that are exported to the `simList` object, via the `simInit(outputs = ...)` argument. To do so, the user should provide a `data.frame` of object names and the simulation times when they should be saved. Because objects are saved as `.rds` files by default, any object class can be saved to disk (see `?outputs` for more information)
+Model transparency is not only about using open source code and making it available. Providing easy access to model data, parameters and outputs is also important. For instance, in our example we deliberately exported the fitted statistical model `sdmOut`, data (`sdmData`) and evaluation statistics (`evalOut`) so that they can be more easily inspected by the user, without needing to "dive in" the code.
+
+`SpaDES` also offers the ability to save any objects that are exported to the `simList` object *without having to change module code*. To do so, the user passes a `data.frame` of object names and (potentially) the simulation times when they should be saved to the `simInit(outputs = ...)` argument. Because objects are saved as `.rds` files by default, any object class can be saved to disk (see `?outputs` for more information).
 
 ------------------------------------------------------------------------
 
 ### Additional notes
 
-`SpaDES` is an extremely powerful package, whose potential goes well beyond what has been discussed in this dummy example. If you want to explore it further, we recommend following [Example 2](https://htmlpreview.github.io/?https://github.com/CeresBarros/SpaDES4Dummies/blob/master/SpaDES4Dummies.html) for a more realistic (but still simple) `SpaDES` application.
-
-Also, do go to the [`SpaDES` webpage](http://predictiveecology.org/) to find further information about the platform, as well as upcoming workshops and publications and to the [Predictive Ecology Github repository](http://https://github.com/PredictiveEcology/) to see all the `SpaDES` modules and SpaDES-related packages that we maintain.
+`SpaDES` is an extremely powerful family of R packages, whose potential goes well beyond what has been discussed here. We recommend going to the [`SpaDES` webpage](http://predictiveecology.org/) to find out more about the `SpaDES` R modelling platform, upcoming workshops and publications. See also the [Predictive Ecology Github repository](http://https://github.com/PredictiveEcology/) for a list of all available `SpaDES` modules and `SpaDES`-related packages that we maintain.
 
 ------------------------------------------------------------------------
 
