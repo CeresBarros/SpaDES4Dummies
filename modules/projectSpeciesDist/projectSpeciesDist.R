@@ -15,7 +15,7 @@ defineModule(sim, list(
   timeunit = "year",
   citation = list("citation.bib"),
   documentation = list("README.md", "projectSpeciesDist.Rmd"), ## same file
-  reqdPkgs = list("SpaDES.core (>=1.0.10.9006)", "ggplot2",
+  reqdPkgs = list("SpaDES.core (>=1.0.10.9005)", "ggplot2",
                   "data.table", "dismo"),
   parameters = bindrows(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
