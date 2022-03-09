@@ -13,3 +13,4 @@ inputs/*
 ## don't ignore
 !modules/*/data/CHECKSUMS.txt
 !inputs/CHECKSUMS.txt
+!outputs/figures/
