@@ -61,7 +61,6 @@ It then defines the necessary folder directories for the simulation and creates 
 if (!require("Require")) install.packages("Require")
 Require::Require("PredictiveEcology/SpaDES.install@development")
 SpaDES.install::installSpaDES(ask = TRUE)
-Require("PredictiveEcology/SpaDES.core@development")
 
 ## decide where you're working
 mainDir <- "."
