@@ -1,0 +1,34 @@
+---
+title: "SpaDES 4 Dummies guide"
+author: "Ceres Barros"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+bibliography:
+  - citations/references.bib
+csl: citations/ecology-letters.csl
+link-citations: true
+documentclass: book
+github-repo: https://github.com/CeresBarros/SpaDES4Dummies
+description: "A `SpaDES` crash-course"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = 2)
+
+## get citation style
+if (!file.exists("citations/ecology-letters.csl")) {
+  dir.create("citations", showWarnings = FALSE)
+  download.file("https://www.zotero.org/styles/ecology-letters?source=1", destfile = "citations/ecology-letters.csl")
+}
+```
+
+# Preface {-}
+
+This guide will take you through how to make and link your own modules using `SpaDES` in two examples. Both examples draw on basic uses of statistical models in ecology, notably the relationships between enviromental variables and species abundance and presence. 
+
+Part \@ref(part1) is very minimal, and uses only dummy data. It is meant to introduce you to the different components of a `SpaDES` module.
+Part \@ref(part2) uses real and freely available data, and provides a deeper look into several useful aspects of `SpaDES`, notably caching and spatial data processing.
+
+To install `SpaDES`, please have a look at [SpaDES installation](https://github.com/PredictiveEcology/SpaDES.install/tree/installFromSource#readme).
+
+
