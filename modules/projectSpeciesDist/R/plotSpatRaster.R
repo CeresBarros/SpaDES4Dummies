@@ -13,7 +13,8 @@
 plotSpatRaster <- function(ras, plotTitle = "", xlab = "x", ylab = "y") {
   gplot(ras) + 
     geom_tile(aes(fill = value)) +
-    scale_fill_distiller(palette = "Blues", direction = 1, na.value = "grey90") +
+    scale_fill_distiller(palette = "Blues", direction = 1,
+                         na.value = "grey90", limits = c(0,1) ) +
     theme_classic() +
     coord_equal() +
     labs(title = plotTitle, x = xlab, y = ylab)
