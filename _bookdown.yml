@@ -1,5 +1,6 @@
 book_filename: SpaDES4Dummies
 new_session: true
+output_dir: "docs"
 before_chapter_script: _common.R
 language:
   ui:

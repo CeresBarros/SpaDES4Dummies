@@ -1,7 +1,7 @@
 ---
 title: "SpaDES 4 Dummies guide"
 author: "Ceres Barros"
-date: "`r Sys.Date()`"
+date: "2022-03-15"
 site: bookdown::bookdown_site
 bibliography:
   - citations/references.bib
@@ -12,18 +12,7 @@ github-repo: https://github.com/CeresBarros/SpaDES4Dummies
 description: "A `SpaDES` crash-course"
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(cache = 2)
 
-## get citation style
-if (!file.exists("citations/ecology-letters.csl")) {
-  dir.create("citations", showWarnings = FALSE)
-  download.file("https://www.zotero.org/styles/ecology-letters?source=1", destfile = "citations/ecology-letters.csl")
-}
-
-## prevents GitHub fromm rendering book using Jekyll
-file.create("docs/.nojekyll")
-```
 
 # Preface {-}
 
