@@ -1,13 +1,17 @@
 # SpaDES4Dummies
+
 A SpaDES crash-course
 
-This tutorial intends to introduce you to the **`SpaDES`** `R` modelling platform. It **does not** cover installation aspects, or more advanced **`SpaDES`** utilities like caching.
+This guide is an introduction to the `SpaDES` `R` modelling platform. It covers how to make and link `SpaDES` modules using `SpaDES` in two examples. Both examples draw on basic uses of statistical models in ecology, notably the relationships between environmental variables and species abundance and presence. 
 
-It will, however, teach you how to set up your own modules from scratch and make them run together in a simulation.
-All data used in this tuto is randomly generated, so there is no need to download data like in some other existing **`SpaDES`** modules.
+The guide can be accessed [here](https://htmlpreview.github.io/?https://github.com/CeresBarros/SpaDES4Dummies/blob/development/_book/index.html), and it is divided in two parts.
 
-You'll find the tutorial [here](https://htmlpreview.github.io/?https://github.com/CeresBarros/SpaDES4Dummies/blob/master/SpaDES4Dummies.html).
+Part 1 is very minimal, and uses only randomly generated data (no dowloading necessary). It is meant to introduce users creating and linking `SpaDES` modules, introducing the different parts of a module and how a `SpaDES` model (i.e. group of linked modules) works.
 
-[SpaDES installation](https://github.com/PredictiveEcology/SpaDES/wiki/Installation), [caching and debugging](http://spades-workshops.predictiveecology.org/articles/09c-CachingAndDebugging.html)
+Part 2 uses real and freely available data (that is downloaded by the created modules), and provides a deeper look into several useful aspects of `SpaDES`, such as automatically downloading and pre-processing spatial data and caching. This example also covers several good practices in the context of developing and sharing models built with `SpaDES`.
 
-Happy SpaDESing!
+See also:
+
+[SpaDES installation](https://github.com/PredictiveEcology/SpaDES.install/tree/installFromSource#readme), [caching and debugging](http://spades-workshops.predictiveecology.org/articles/09c-CachingAndDebugging.html)
+
+**Happy SpaDESing!**
