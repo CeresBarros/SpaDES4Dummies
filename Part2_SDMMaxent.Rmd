@@ -1,29 +1,13 @@
----
-title: "SpaDES 4 Dummies - Example 2"
-author: "Ceres Barros"
-date: "Last updated: `r Sys.Date()`"
-output: 
-  bookdown::html_document2:
-    theme: flatly
-    toc: true
-    number_sections: FALSE
-    toc_float: TRUE
-    toc_depth: 4
-    highlight: zenburn
-    css: "style.css"
-editor_options: 
-  chunk_output_type: console
-bibliography: citations/references.bib
----
+# A more realistic example of `SpaDES` {#part2}
 
-```{r setup, include=FALSE}
+Authors: Ceres Barros, Alex M. Chubaty
+
+```{r setupPart2, include=FALSE}
 options("repos" = c(CRAN = "https://cran.rstudio.com"))
 knitr::opts_chunk$set(cache = 2, cache.rebuild = FALSE)
 ```
 
-# A simple, but realistic example of `SpaDES`
-
-In [Example 1](https://htmlpreview.github.io/?https://github.com/CeresBarros/SpaDES4Dummies/blob/master/Example1_DummyModel.html) of this guide, we described how to create new `SpaDES` modules, their different components, how to link different modules and how to set up and run a simulation.
+In \@ref(part1) of this guide, we described how to create new `SpaDES` modules, their different components, how to link different modules and how to set up and run a simulation.
 
 Here, we assume that you are familiar with these steps, but go further in showing important `SpaDES` features that facilitate many of the steps common to most ecological modelling exercises.
 For the sake of simplicity, we focus our example on projecting a species' distribution as a function of climate covariates.
@@ -56,10 +40,11 @@ In this example this script is called `Example2_SDMMaxent.R`.
 The script begins with a few lines of code that ensure necessary packages are installed and loaded (see [Reproducible package installation]).
 It then defines the necessary folder directories for the simulation and creates the modules in the `modules/` folder:
 
-```{r globalscript, eval = FALSE}
+```{r globalscriptPart2, eval = FALSE}
 ## Get necessary R packages, but don't load any
 if (!require("Require")) install.packages("Require")
-Require::Require("PredictiveEcology/SpaDES.install@development")
+Require::Require("PredictiveEcology/SpaDES.install@development", require = FALSE)
+Require::Require("PredictiveEcology/SpaDES.experiment@development", require = FALSE)
 SpaDES.install::installSpaDES(ask = TRUE)
 
 ## decide where you're working
@@ -87,7 +72,7 @@ if (!dir.exists(file.path(simPaths$modulePath, "projectSpeciesDist"))){
 }
 ```
 
-```{r globalscriptHidden, include = FALSE}
+```{r globalscriptHiddenPart2, include = FALSE}
 ## decide where you're wtorking
 mainDir <- "."
 
@@ -124,7 +109,7 @@ Because `Require` may attempt to install missing packages and because installing
 ### Data modules
 
 The next two sections show our two data modules `.R` scripts.
-We assume you are already familiar with the different parts of a module `.R` script; if not, see [Example 1](https://htmlpreview.github.io/?https://github.com/CeresBarros/SpaDES4Dummies/blob/master/Example1_DummyModel.html).
+We assume you are already familiar with the different parts of a module `.R` script; if not, see Part \@ref(part1).
 We do not discuss the module `.Rmd` files, which should document each module in detail (see [Module documentation -- module .Rmd]).
 
 #### *speciesAbundanceData* module:
@@ -149,8 +134,9 @@ The module uses a different way to download data.
 It relies on two input `data.tables` that contain the URLs for each climate covariate, one for baseline conditions, the other for projected climate conditions, both containing information about when each layer should be used during the simulation (the "year "column).
 
 We have only supplied one set of data sources for default baseline climate conditions (`baselineClimateURLs`) and for climate projections (`projClimateURLs`), all of which are downloaded from WorldClim at 2.5 minutes resolution.
-The baseline climate data correspond to the 1970-2000 period, which aligns well with the species % cover data year (2001).
-The climate projections are for the 2081-2100 period, and and come from the CanESM5 climate model under the SSP 585 climate scenario.
+The baseline climate data correspond to the 1970-2000 period [@FickHijmans2017], which aligns well with the species % cover data year (2001).
+The climate projections were obtained for 2021-2040, 2041-2060, 2061-2080 and 2081-2100, from CMIP6 downscaled future projections using the CanESM5 model [@SwartEtAl2019] under the SSP 585 climate scenario.
+
 We encourage providing different (or additional) URLs referring to projections for other climate periods, other climate models and other climate scenarios (see [WorldClim](https://www.worldclim.org/data/cmip6/cmip6climate.html) for a list of climate projections).
 
 If providing other URLs to obtain different climate data, pay special attention to the "year" column of `projClimateURLs` -- the URLs need to correspond to the simulation year during which they will be used (not necessarily the actual climate year, unless the simulation years follow the same numbering).
@@ -232,11 +218,13 @@ SpaDES.install::makeSureAllPackagesInstalled(simPaths$modulePath)
 
 ## load necessary packages now
 library(SpaDES)
+library(SpaDES.experiment)
 ```
 
 ```{r simulationPkgsHidden, include = FALSE}
 ## load necessary packages now
 library(SpaDES)
+library(SpaDES.experiment)
 ```
 
 **/!\\ Attention /!\\**
@@ -247,21 +235,10 @@ We also recommend restarting the R session *after* `makeSureAllPackagesInstalled
 Windows can present problems when many packages are installed and further package installations fail.
 If you see errors like this after restarting R:
 
-    Installing: glue
-    Detaching is fraught with many potential problems; you may have to restart your session if things aren't working
-    some packages don't seem to unload their dlls correctly. These will not be unloaded: ellipsis, vctrs
-    Unloading package bit64
-    -- Installing glue -- (1 of 1. Estimated time left: ...; est. finish: ...calculating)
-    Installing package into ‘~/R/win-library/4.0’
-    (as ‘lib’ is unspecified)
-    trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.0/glue_1.6.2.zip'
-    Content type 'application/zip' length 171858 bytes (167 KB)
-    downloaded 167 KB
+Installing: glue Detaching is fraught with many potential problems; you may have to restart your session if things aren't working some packages don't seem to unload their dlls correctly.
+These will not be unloaded: ellipsis, vctrs Unloading package bit64 -- Installing glue -- (1 of 1. Estimated time left: ...; est. finish: ...calculating) Installing package into '\~/R/win-library/4.0' (as 'lib' is unspecified) trying URL '<https://cran.rstudio.com/bin/windows/contrib/4.0/glue_1.6.2.zip>' Content type 'application/zip' length 171858 bytes (167 KB) downloaded 167 KB
 
-    package ‘glue’ successfully unpacked and MD5 sums checked
-    Error in unpackPkgZip(foundpkgs[okp, 2L], foundpkgs[okp, 1L], lib, libs_only,  : 
-    ERROR: failed to lock directory ‘~\R\win-library\4.0’ for modifying
-    Try removing ‘~\R\win-library\4.0/00LOCK’
+package 'glue' successfully unpacked and MD5 sums checked Error in unpackPkgZip(foundpkgs[okp, 2L], foundpkgs[okp, 1L], lib, libs_only, : ERROR: failed to lock directory '\~\R\win-library\\4.0' for modifying Try removing '\~\R\win-library\\4.0/00LOCK'
 
 If you encounter this error, delete the problematic file/folder and try again.
 
@@ -271,8 +248,11 @@ This problem persisted even after we avoided loading `terra` before running `sim
 
 ### Simulation set-up
 
-The simulation folder directories were already set up before creating the modules, but it is still necessary to create a few lists that will be passed to the `simInit` function, which initializes the simulation.
+The simulation folder directories were already set up before creating the modules (see above), but it is still necessary to create a few lists that will be passed to the `simInit` function, which initializes the simulation.
 These lists define the modules used in the simulation (`simModules`), the start and end of the simulation (`simTimes`), the parameters passed to each module (`simParams`) and external input objects (`simObjects`) like the study area (`studyAreaRas`).
+
+The `studyAreaRas` is created from a random polygon drawn in SW Alberta, Canada, using `SpaDES.tools::randomStudyArea`.
+(Fig. \@ref(fig:studyAreaCanada)).
 
 We also define a few useful global options:
 
@@ -291,21 +271,31 @@ options(reproducible.useCache = TRUE,
 simModules <- list("speciesAbundanceData", "climateData", "projectSpeciesDist")
 
 ## Set simulation and module parameters
-simTimes <- list(start = 1, end = 2, timeunit = "year")
-simParams <- list(
+simTimes <- list(start = 1, end = 5, timeunit = "year")
+
+## we create two lists of parameters, one using the default MaxEnt
+## the other a GLM
+simParamsMaxEnt <- list(
   "speciesAbundanceData" = list(
     ".plots" = c("screen", "png"),
-    ".useCache" = c(".inputObjects", "init")
+    # ".useCache" = c(".inputObjects", "init")
+    ".useCache" = FALSE
   ),
   "climateData" = list(
     ".plots" = c("screen", "png"),
-    ".useCache" = c(".inputObjects", "init")
+    # ".useCache" = c(".inputObjects", "init")
+    ".useCache" = FALSE
   ),
   "projectSpeciesDist" = list(
+    "statModel" = "MaxEnt",
     ".plots" = c("screen", "png"),
-    ".useCache" = c(".inputObjects", "init")
+    # ".useCache" = c(".inputObjects", "init")
+    ".useCache" = FALSE
   )
 )
+
+simParamsGLM <- simParamsMaxEnt
+simParamsGLM$projectSpeciesDist$statModel <- "GLM"
 
 ## make a random study area.
 ##  Here use seed to make sure the same study area is always generated
@@ -318,51 +308,108 @@ simObjects <- list(
   "studyAreaRas" = studyAreaRas
 )
 
-## Simulation setup
-mySim <- simInit(times = simTimes, params = simParams, 
-                 modules = simModules, objects = simObjects, 
-                 paths = simPaths)
+## Simulation setup - create two simulations, one for MaxEnt another for GLM
+## SpaDES.experiment::experiment2, will take care of subdirectories to store outputs
+mySimMaxEnt <- simInit(times = simTimes, params = simParamsMaxEnt, 
+                       modules = simModules, objects = simObjects, 
+                       paths = simPaths)
+mySimGLM <- simInit(times = simTimes, params = simParamsGLM, 
+                    modules = simModules, objects = simObjects, 
+                    paths = simPaths)
+```
+
+```{r studyAreaCanada, echo = FALSE, fig.align = 'center', fig.cap = "Study area within Canada."}
+can1 <- raster::getData('GADM', country = "CAN", level = 1, path = simPaths$inputPath)
+can1 <- terra::vect(can1)
+can1 <- terra::project(can1, terra::crs(studyArea, proj = TRUE))
+
+terra::plot(can1)
+terra::plot(studyArea, add = TRUE, col = "darkgreen")
 ```
 
 Before running the simulation we look at the module linkage diagrams produced by `moduleDiagram` (Fig. \@ref(fig:moduleDiagram)) and `objectDiagram` (Fig. \@ref(fig:objectDiagram)) to assess whether modules are linked as expected.
 
 ```{r moduleDiagramsCode, eval = FALSE}
-moduleDiagram(mySim)
-objectDiagram(mySim)
+moduleDiagram(mySimMaxEnt)
+objectDiagram(mySimMaxEnt)
 ```
 
 ```{r moduleDiagram, echo = FALSE, fig.align = 'center', fig.cap = "Module network diagram."}
 clearPlot()
-moduleDiagram(mySim)
+moduleDiagram(mySimMaxEnt)
 ```
 
 ```{r objectDiagram, echo = FALSE, fig.align = 'center', fig.cap = "Module diagram showing module inter-dependencies with object names."}
-objectDiagram(mySim)
+objectDiagram(mySimMaxEnt)
 ```
 
 ### Simulation runs
 
-To run the simulation, we call `spades` on the output `simList` (called `mySim` here) generated by `simInit`.
-We also pass the argument `debug = TRUE,` so that the progress of the simulation is printed in detail.
+To run the simulation, we can call `spades` on the output `simList`s (called `mySimMaxEnt` and `mySimMaxGLM` here) generated by `simInit`, or use `experiment2` from the `SpaDES.experiment` package.
+`experiment2` will run as many simulations as `simList`s and organise outputs into sub-folders within the `simPaths$outputs` directory.
+It can also repeat simulations (`rep` argument) and parallelise across replicates using `future`.
+See `?experiment2` for examples.
+
+We advise using `spades` when running the model for the first time.
+Passing the argument `debug = TRUE` will print the progress of the simulation in detail.
 This helps diagnosing problems when the simulation fails, but also seeing which events are being executed and when particular cache calls are activated.
 
 ```{r runSimulation, eval = FALSE}
 ## run simulation
 clearPlot(force = TRUE)   ## this forces wiping the graphics device and opening a new window
-spades(mySim, debug = TRUE)
+
+## This runs one simulation and stores outputs in the main 'outputs' folder 
+## - not what we want, but good for testing
+# mySimOut <- spades(mySimMaxEnt, debug = TRUE)  
+
+## Better to use when spades runs error-free on the simLists
+myExperiment <- experiment2(MaxEnt = mySimMaxEnt, 
+                            GLM = mySimGLM, 
+                            debug = TRUE, 
+                            replicates = 1,
+                            clearSimEnv = FALSE)   ## prevent removing objects from the simLists at the end
 ```
 
-Try to execute the `spades` call a second time to see how much faster it runs now that many of the operations have been cached.
+Try to execute the `spades` call twice to see how much faster it runs after many of the operations have been cached.
 Notice also, how the `init` events are retrieved from the cache thanks to the `.useCache` parameters passed to the modules (see also [Caching]).
 
-Here are some outputs of the model:
+Some outputs of the model are shown below.
+From these results we can see that the MaxEnt predictions.
+This could be because we are missing important covariates, interactions, or simply a more appropriate algorithm.
 
-```{r figSimulationFig, echo = FALSE, fig.align = 'center', out.width = "50%", fig.cap = "**Simulation plots**: Raw predicted values of species probability of occurence for: (left to right) baseline climate conditions (first year of simulation) and 2081-2100 climate conditions (second year of simulation)."}
-knitr::include_graphics(c("outputs/figures/projRawVals_Year1.png", "outputs/figures/projRawVals_Year2.png"))
+We invite you to peruse the GLM results and for each model the evaluation results.
+For instance:
+
+```{r evalOutSim, eval = FALSE}
+myExperiment$MaxEnt_rep1$sdmOut   ## this links to an html page
+
+sets <- par(mfrow = c(2,2))
+plot(myExperiment$GLM_rep1$sdmOut)
+par(sets)
+
+## check validation results for the two models
+myExperiment$MaxEnt_rep1$evalOut
+myExperiment$GLM_rep1$evalOut
 ```
 
-```{r figSimulationFig2, echo = FALSE, fig.align = 'center', out.width = "50%", fig.cap = "**Simulation plots**: Predictions of *Picea glauca* presences/absences for: (left to right) baseline climate conditions and 2081-2100 climate conditions."}
-knitr::include_graphics(c("outputs/figures/projPA_Year1.png", "outputs/figures/projPA_Year2.png"))
+
+```{r figSimulationSppAbund, echo = FALSE, fig.align = 'center', out.width = "50%", fig.show='hold', fig.cap = "**Simulation plots**: Input *Picea glauca* % cover across the landscape - note that values are converted to presence/absence."}
+knitr::include_graphics(c("outputs/figures/speciesAbundance.png"))
+```
+
+```{r figSimulationClimate, echo = FALSE, fig.align = 'center', out.width = "50%", fig.show='hold', fig.cap = "**Simulation plots**: Bioclimatic variables under baseline (year 1) and future conditions"}
+figs <- list.files("outputs/figures/", pattern = "climateRas", full.names = TRUE)
+knitr::include_graphics(figs)
+```
+
+```{r figSimulationProj, echo = FALSE, fig.align = 'center', out.width = "20%", fig.show='hold', fig.cap = "**Simulation plots**: Raw predicted values of species probability of occurence under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt."}
+figs <- list.files("outputs/figures/", pattern = "projRawVals_MaxEnt", full.names = TRUE)
+knitr::include_graphics(figs)
+```
+
+```{r figSimulationProj2, echo = FALSE, fig.align = 'center', out.width = "20%", fig.show='hold', fig.cap = "**Simulation plots**: Predictions of *Picea glauca* presences/absences under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt."}
+figs <- list.files("outputs/figures/", pattern = "projPA_MaxEnt", full.names = TRUE)
+knitr::include_graphics(figs)
 ```
 
 ## Caching
@@ -370,11 +417,8 @@ knitr::include_graphics(c("outputs/figures/projPA_Year1.png", "outputs/figures/p
 In this example, we relied on caching to avoid having to repeat computationally intensive operations.
 Running the `simInit` and `spades` calls a second time (even after restarting R session) was faster and `SpaDES` informed us of instances where cached objects were being retrieved:
 
-    (...)
-    Mar05 19:56:53 clmtDt 1         climateData init      1            
-    Mar05 19:56:53 clmtDt   ...(Object to retrieve (a7816e2d0deb3b29.rds))
-    Mar05 19:56:53 clmtDt      loaded cached result from previous Map call
-    (...)
+(...) Mar05 19:56:53 clmtDt 1 climateData init 1\
+Mar05 19:56:53 clmtDt ...(Object to retrieve (a7816e2d0deb3b29.rds)) Mar05 19:56:53 clmtDt loaded cached result from previous Map call (...)
 
 Caching in `SpaDES` is managed by the `reproducible` package, and can be generally broken down into two types: explicitly coded by the module developer, or internal to `SpaDES` functions.
 
@@ -405,14 +449,13 @@ In particular, read about `showCache`, `clearCache` and the argument `userTags`,
 We call this "implicit" caching, because the developer does not need to add any caching mechanisms to the module code.
 `SpaDES` automatically reads the value of the `.useCache` parameter and activates caching in the module accordingly.
 
-`.useCache` can be used to turn all caching on/off at the module level, or to cache of particular events (in their entirety).
+This parameter can be used to cache (or not) all or some module events (in their entirety).
 In our example, we cached data preparation events across all modules (the `.inputObjects` and `init` events in this example), but not the events that fitted the SDM and generated projections.
 In truth, because none of the modules simulate any stochastic processes, we could have cached all events.
 Loading cached events produced a slightly different message from loading of other cached operations (see above):
 
-    Mar05 19:58:34 spcsbn 1         speciesAbundanceData init      1            
-    Mar05 19:58:34 spcsbn   ...(Object to retrieve (bffbc48cc055c846.rds))
-    Mar05 19:58:35 spcsbn      loaded cached copy of init event in speciesAbundanceData module.  
+Mar05 19:58:34 spcsbn 1 speciesAbundanceData init 1\
+Mar05 19:58:34 spcsbn ...(Object to retrieve (bffbc48cc055c846.rds)) Mar05 19:58:35 spcsbn loaded cached copy of init event in speciesAbundanceData module.
 
 ### Controlling caching without changing module code
 
@@ -420,7 +463,7 @@ In addition to the , which controls caching at the module level.
 
 The user can turn caching on/off without caching module code via three different mechanisms:
 
--   via the `.useCache` parameter -- as explained above ([Implicit caching of events]), setting this parameter to `TRUE` or `FALSE` activates or deactivates all caching inside a module;
+-   via the `.useCache` parameter -- as explained above ([Implicit caching of events]), setting this parameter controls event caching inside a module;
 
 -   via `options("reproducible.useCache")` -- setting this option to `TRUE` or `FALSE` in the global environment (`.GlobalEnv`) will affect *all* caching (inside and outside `SpaDES` modules and the simulation);
 
@@ -521,6 +564,8 @@ Because objects are saved as `.rds` files by default, any object class can be sa
 We recommend going to the [`SpaDES` webpage](http://predictiveecology.org/) to find out more about the `SpaDES` R modelling platform, upcoming workshops and publications.
 See also the [Predictive Ecology Github repository](http://https://github.com/PredictiveEcology/) for a list of all available `SpaDES` modules and `SpaDES`-related packages that we maintain.
 
+We wish to acknowledge the World Climate Research Programme, which coordinated and promoted CMIP6, and thank the climate modelling groups for producing and making available their model output, the Earth System Grid Federation (ESGF) for archiving the data and providing access, and WorldClim for downscaling and sharing climate projections and preparing bioclimatic variables.
+
 ------------------------------------------------------------------------
 
 <center>
@@ -529,6 +574,6 @@ See also the [Predictive Ecology Github repository](http://https://github.com/Pr
 
 </center>
 
-# References
+## References
 
 <!-- automatically generated -->
