@@ -12,6 +12,7 @@
 
 plotSpatRasterStk <-  function(stk, plotTitle = "", xlab = "x", ylab = "y") {
   gplot(stk) + 
+    geom_tile(aes(fill = value)) +
     scale_fill_distiller(palette = "Blues", direction = 1, na.value = "grey90") +
     theme_classic() +
     coord_equal() +

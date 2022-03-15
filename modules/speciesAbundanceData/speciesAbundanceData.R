@@ -123,7 +123,7 @@ abundancePlot <- function(sim) {
   ## plot species abundance
   Plots(sim$sppAbundanceRas, fn = plotSpatRaster, types = P(sim)$.plots,
         usePlot = TRUE, filename = file.path(outputPath(sim), "figures", "speciesAbundance"), 
-        plotTitle = "Species abundance data", xlab = "Longitude", y = "Latitude")
+        plotTitle = "Species abundance data", xlab = "Longitude", ylab = "Latitude")
   
   return(invisible(sim))
 }

@@ -109,6 +109,11 @@ climateInit <- function(sim) {
     }
   }, USE.NAMES = FALSE)
   
+  ## check that baseline climate data only has one year value
+  if (length(unique(sim$baselineClimateURLs$year)) != 1) {
+    stop(paste("'baselineClimateURLs' should all have the same 'year' value,",
+               "corresponding to the first year of the simulation"))
+  }
   ## download data - prepInputs does all the heavy-lifting of dowloading and pre-processing the layer and caches.
   baselineClimateRas <- Cache(Map, 
                               f = prepInputs,
@@ -122,13 +127,15 @@ climateInit <- function(sim) {
                                 cacheRepo = cachePath(sim)),
                               cacheRepo = cachePath(sim))
   
-  names(baselineClimateRas) <- sim$baselineClimateURLs$vars
+  names(baselineClimateRas) <- paste0(sim$baselineClimateURLs$vars, "_year", sim$baselineClimateURLs$year)
+  
   ## make a stack
   baselineClimateRas <- rast(baselineClimateRas)
   
   ## make a data.table 
   baselineClimateData <- as.data.table(as.data.frame(baselineClimateRas, xy = TRUE, cells = TRUE))
-  baselineClimateData[, year := 1L]
+  setnames(baselineClimateData, sub("_year.*", "", names(baselineClimateData))) ## don't need year in names here 
+  baselineClimateData[, year := unique(sim$baselineClimateURLs$year)]
   
   ## GET PROJECTED DATA
   ## make a vector of archive (zip) file names if the url points to one.
@@ -159,14 +166,34 @@ climateInit <- function(sim) {
     lyr <- which(sub(".*_", "BIO", names(projClimateRas[[1]])) == var)
     return(stk[[lyr]])
   }, stk = projClimateRas, var = sim$projClimateURLs$vars)
-  names(projClimateRas) <- sim$projClimateURLs$vars
+  names(projClimateRas) <- paste0(sim$projClimateURLs$vars, "_year", sim$projClimateURLs$year)
   
   ## make a stack
   projClimateRas <- rast(projClimateRas)
   
   ## make a data.table 
   projClimateData <- as.data.table(as.data.frame(projClimateRas, xy = TRUE, cells = TRUE))
-  projClimateData[, year := 2L]
+  
+  ## melt so that year is in a column
+  projClimateDataMolten <- lapply(unique(sim$projClimateURLs$vars), function(var, projClimateData) {
+    cols <- grep(paste0(var, "_year"), names(projClimateData), value = TRUE)
+    idCols <- names(projClimateData)[!grepl("_year", names(projClimateData))]
+    
+    moltenDT <-  melt(projClimateData, id.vars = idCols, measure.vars = cols, 
+                      variable.name = "year", value.name = var)
+    moltenDT[, year := sub(paste0(var, "_year"), "", year)]
+    moltenDT[, year := as.integer(year)]
+    return(moltenDT)
+  }, projClimateData = projClimateData)
+  
+  idCols <- c(names(projClimateData)[!grepl("_year", names(projClimateData))], "year")
+  ## set keys for merge
+  projClimateDataMolten <- lapply(projClimateDataMolten, function(DT, cols) {
+    setkeyv(DT, cols = cols)
+    return(DT)
+  }, cols = idCols)
+  
+  projClimateData <- Reduce(merge, projClimateDataMolten)
   
   ## bind the two data.tables
   if (!identical(sort(names(baselineClimateData)), sort(names(projClimateData)))) {
@@ -188,18 +215,18 @@ climateInit <- function(sim) {
 
 ## Plotting event function 
 climatePlot <- function(sim) {
-  ## plot species abundance
+  ## plot climate rasters 
   allRasters <- rast(list(sim$baselineClimateRas, sim$projClimateRas))
-  names(allRasters) <- c(paste(names(sim$baselineClimateRas), "- year 1"),
-                         paste(names(sim$projClimateRas), "- year 2"))
-  allRasters <- allRasters[[order(names(allRasters))]]
-  
-  ## Because we are working with SpatRasters, we need to make our own custom 
-  ## function (Plots only works with outputs from ggplot or with quickPlot::Plot)
-  Plots(allRasters, fn = plotSpatRasterStk, types = P(sim)$.plots,
-        usePlot = FALSE,
-        filename = file.path(outputPath(sim), "figures", "climateCovariates"))
-  
+  lapply(sim$baselineClimateURLs$vars, function(var, allRasters) {
+    lrs <- grep(paste0(var, "_"), names(allRasters))
+    file_name <- paste0("climateRas_", var)
+    Plots(allRasters[[lrs]],
+          fn = plotSpatRasterStk, types = P(sim)$.plots,
+          usePlot = FALSE,
+          filename = file.path(outputPath(sim), "figures", file_name),
+          xlab = "Longitude", ylab = "Latitude")
+    }, allRasters = allRasters)
+
   return(invisible(sim))
 }
 
@@ -231,16 +258,18 @@ climatePlot <- function(sim) {
   }
   
   if (!suppliedElsewhere(sim$projClimateURLs)) {
-    sim$projClimateURLs <- data.table(vars = c("BIO1", "BIO4", "BIO12", "BIO15"),
-                                      URL = c("https://geodata.ucdavis.edu/cmip6/2.5m/CanESM5/ssp585/wc2.1_2.5m_bioc_CanESM5_ssp585_2081-2100.tif",
-                                              "https://geodata.ucdavis.edu/cmip6/2.5m/CanESM5/ssp585/wc2.1_2.5m_bioc_CanESM5_ssp585_2081-2100.tif",
-                                              "https://geodata.ucdavis.edu/cmip6/2.5m/CanESM5/ssp585/wc2.1_2.5m_bioc_CanESM5_ssp585_2081-2100.tif",
-                                              "https://geodata.ucdavis.edu/cmip6/2.5m/CanESM5/ssp585/wc2.1_2.5m_bioc_CanESM5_ssp585_2081-2100.tif"),
-                                      targetFile = c("wc2.1_2.5m_bioc_CanESM5_ssp585_2081-2100.tif", 
-                                                     "wc2.1_2.5m_bioc_CanESM5_ssp585_2081-2100.tif", 
-                                                     "wc2.1_2.5m_bioc_CanESM5_ssp585_2081-2100.tif", 
-                                                     "wc2.1_2.5m_bioc_CanESM5_ssp585_2081-2100.tif"),
-                                      year = rep(2L, 4))
+    sim$projClimateURLs <- data.table(vars = rep(c("BIO1", "BIO4", "BIO12", "BIO15"), times = 4),
+                                      URL = rep(c("https://geodata.ucdavis.edu/cmip6/2.5m/CanESM5/ssp585/wc2.1_2.5m_bioc_CanESM5_ssp585_2021-2040.tif",
+                                                  "https://geodata.ucdavis.edu/cmip6/2.5m/CanESM5/ssp585/wc2.1_2.5m_bioc_CanESM5_ssp585_2041-2060.tif",
+                                                  "https://geodata.ucdavis.edu/cmip6/2.5m/CanESM5/ssp585/wc2.1_2.5m_bioc_CanESM5_ssp585_2061-2080.tif",
+                                                  "https://geodata.ucdavis.edu/cmip6/2.5m/CanESM5/ssp585/wc2.1_2.5m_bioc_CanESM5_ssp585_2081-2100.tif"),
+                                                each = 4),
+                                      targetFile = rep(c("wc2.1_2.5m_bioc_CanESM5_ssp585_2021-2040.tif",
+                                                         "wc2.1_2.5m_bioc_CanESM5_ssp585_2041-2060.tif",
+                                                         "wc2.1_2.5m_bioc_CanESM5_ssp585_2061-2080.tif",
+                                                         "wc2.1_2.5m_bioc_CanESM5_ssp585_2081-2100.tif"),
+                                                       each = 4),
+                                      year = rep(2L:5L, each = 4))
   } 
   
   # ! ----- STOP EDITING ----- ! #

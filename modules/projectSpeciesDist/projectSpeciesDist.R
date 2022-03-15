@@ -15,12 +15,18 @@ defineModule(sim, list(
   timeunit = "year",
   citation = list("citation.bib"),
   documentation = list("README.md", "projectSpeciesDist.Rmd"), ## same file
-  reqdPkgs = list("SpaDES.core (>=1.0.10.9005)", "ggplot2",
+  reqdPkgs = list("PredictiveEcology/SpaDES.core@development (>=1.0.10.9000)", "ggplot2",
                   "data.table", "dismo"),
   parameters = bindrows(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
     defineParameter("predVars", "character", c("BIO1", "BIO4", "BIO12", "BIO15"), NA, NA,
-                    "Predictors used in Maxent model (see dismo::maxent)."),
+                    "Predictors used in statistical model."),
+    defineParameter("statModel", "character", "MaxEnt", NA, NA,
+                    paste("What statitical algorith to use. Currently only 'MaxEnt' and 'GLM' are",
+                          "supported. 'MaxEnt will fit a MaxEnt model using dismo::maxent; 'GLM'",
+                          "will fit a generalised linear model with a logit link using",
+                          "glm(..., family = 'binomial'). In both cases all predictor variables are used,",
+                          "and for GLM only additive effects are considered." )),
     defineParameter(".plots", "character", "screen", NA, NA,
                     "Used by Plots function, which can be optionally used here"),
     defineParameter(".plotInitialTime", "numeric", start(sim), NA, NA,
@@ -39,6 +45,8 @@ defineModule(sim, list(
                               "the simulation year to which the data corresponds.")),
     expectsInput("sppAbundanceDT", "data.table", 
                  desc = paste("A species abundance data. Converted to presence/absence data, if not binary")),
+    expectsInput("studyAreaRas", objectClass = "RasterLayer", 
+                 desc = "A binary raster of the study area")
   ),
   outputObjects = bindrows(
     #createsOutput("objectName", "objectClass", "output object description", ...),
@@ -50,9 +58,9 @@ defineModule(sim, list(
                                "the data. See `?dismo::evaluation`.")),
     createsOutput(objectName = "sdmData", objectClass = "data.table", 
                   desc = "Input data used to fit `sdmOut`."),
-    createsOutput(objectName = "sdmOut", objectClass = "MaxEnt",
-                  desc = paste("Fitted species distribution model, using MaxEnt. Model fitted on 80%",
-                               "of `sdmData`, with remaining 0% used for evaluation. See `?dismo::maxent`."))
+    createsOutput(objectName = "sdmOut", objectClass = c("MaxEnt", "glm"),
+                  desc = paste("Fitted species distribution model. Model fitted on 80%",
+                               "of `sdmData`, with remaining 20% used for evaluation."))
   )
 ))
 
@@ -71,13 +79,22 @@ doEvent.projectSpeciesDist = function(sim, eventTime, eventType) {
       
       # schedule future event(s)
       sim <- scheduleEvent(sim, start(sim), "projectSpeciesDist", "fitSDM")
-      sim <- scheduleEvent(sim, start(sim), "projectSpeciesDist", "projSDM")
-      sim <- scheduleEvent(sim, P(sim)$.plotInitialTime, "projectSpeciesDist", "plotProjSDM")
+      sim <- scheduleEvent(sim, start(sim), "projectSpeciesDist", "evalSDM", 
+                           eventPriority = .normal() + 1)
+      sim <- scheduleEvent(sim, start(sim), "projectSpeciesDist", "projSDM", 
+                           eventPriority = .normal() + 2)
+      sim <- scheduleEvent(sim, P(sim)$.plotInitialTime, "projectSpeciesDist", "plotProjSDM",
+                           eventPriority = .normal() + 3)
       
     },
     fitSDM = {
       # ! ----- EDIT BELOW ----- ! #
       sim <- fitSDMEvent(sim)
+      # ! ----- STOP EDITING ----- ! #
+    },
+    evalSDM = {
+      # ! ----- EDIT BELOW ----- ! #
+      sim <- evalSDMEvent(sim)
       # ! ----- STOP EDITING ----- ! #
     },
     projSDM = {
@@ -91,7 +108,8 @@ doEvent.projectSpeciesDist = function(sim, eventTime, eventType) {
       # ! ----- EDIT BELOW ----- ! #
       plotProjEvent(sim)
       
-      sim <- scheduleEvent(sim, time(sim) + 1L, "projectSpeciesDist", "plotProjSDM")
+      sim <- scheduleEvent(sim, time(sim) + 1L, "projectSpeciesDist", "plotProjSDM",
+                           eventPriority = .normal() + 1)
       
       # ! ----- STOP EDITING ----- ! #
     },
@@ -116,6 +134,10 @@ SDMInit <- function(sim) {
   if (length(setdiff(sim$climateDT$cell, sim$sppAbundanceDT$cell)) > 0 ||
       length(setdiff(sim$sppAbundanceDT$cell, sim$climateDT$cell)) > 0) {
     stop("'cell' columns in `climateDT` and `sppAbundanceDT` have different values")
+  }
+  
+  if (!P(sim)$statModel %in% c("MaxEnt", "GLM")) {
+    stop("'statModel' parameter must be 'MaxEnt' or 'GLM'")
   }
   
   ## a few data cleaning steps to make sure we have presences and absences:
@@ -148,16 +170,30 @@ fitSDMEvent <- function(sim) {
   }
   
   group <- kfold(dataForFitting, 5)
-  trainData <- dataForFitting[group != 1, ]
-  testData <-  dataForFitting[group == 1, ]
+  ## save the the split datasets as internal objects to this module
+  mod$trainData <- dataForFitting[group != 1, ]
+  mod$testData <-  dataForFitting[group == 1, ]
   
   predVars <- P(sim)$predVars
-  sim$sdmOut <- maxent(x = as.data.frame(trainData[, ..predVars]), 
-                       p = trainData$presAbs)
-  
-  ## set threshold of presence/absence
-  sim$evalOut <- evaluate(p = testData[presAbs == 1, ..predVars],
-                          a = testData[presAbs == 0, ..predVars],
+  if (P(sim)$statModel == "MaxEnt") {
+    sim$sdmOut <- maxent(x = as.data.frame(mod$trainData[, ..predVars]), 
+                         p = mod$trainData$presAbs)
+  } else {
+    ## make an additive model with all predictors - avoid using as.formula, which drags the whole environment
+    form <- enquote(paste("presAbs ~", paste(predVars, collapse = "+")))
+    sim$sdmOut <- glm(formula = eval(expr = parse(text = form)), 
+                      family = "binomial", data = mod$trainData)
+  }
+  # ! ----- STOP EDITING ----- ! #
+  return(invisible(sim))
+}
+
+evalSDMEvent <- function(sim) {
+  # ! ----- EDIT BELOW ----- ! #
+  ## validate model
+  predVars <- P(sim)$predVars
+  sim$evalOut <- evaluate(p = mod$testData[presAbs == 1, ..predVars],
+                          a = mod$testData[presAbs == 0, ..predVars],
                           model = sim$sdmOut)
   ## save the threshold of presence/absence in an internal object to this module
   mod$thresh <- threshold(sim$evalOut, 'spec_sens')
@@ -196,29 +232,33 @@ plotProjEvent <- function(sim) {
   checkPath(file.path(outputPath(sim), "figures"), create = TRUE)
   
   if (any(!is.na(P(sim)$.plots))) {
+    
     ## response plot
     ## we can't use Plots to plot and save SDM predictions with dismo.
     ## these are only saved to disk
-    notScreen <- setdiff(P(sim)$.plots, "screen")
+    fileSuffix <- paste0(P(sim)$statModel, ".png")
+  
+      notScreen <- setdiff(P(sim)$.plots, "screen")
     if (any(notScreen != "png")) {
       warning(paste(currentModule(sim), "only saves to PNG at the moment."))
     } 
-    png(file.path(outputPath(sim), "figures", "SDMresponsePlot.png"))
+    png(file.path(outputPath(sim), "figures", paste0("SDMresponsePlot_", fileSuffix)))
     response(sim$sdmOut)
     dev.off()
     
     ## species projections
+    fileSuffix <- paste0(P(sim)$statModel, "_Year", time(sim))
     clearPlot()
     rawValsPlot <- sim$sppDistProj[[paste0("year", time(sim))]]
     Plots(rawValsPlot, fn = plotSpatRaster, types = P(sim)$.plots,
-          usePlot = TRUE, filename = file.path(outputPath(sim), "figures", paste0("projRawVals_Year", time(sim))), 
-          plotTitle = paste("Maxent raw values -", "year", time(sim)),
-          xlab = "Longitude", y = "Latitude")
+          usePlot = TRUE, filename = file.path(outputPath(sim), "figures", paste0("projRawVals_", fileSuffix)), 
+          plotTitle = paste("Projected raw values -", "year", time(sim)),
+          xlab = "Longitude", ylab = "Latitude")
     PAsPlot <- sim$sppDistProj[[paste0("year", time(sim))]] > mod$thresh
     Plots(PAsPlot, fn = plotSpatRaster, types = P(sim)$.plots,
-          usePlot = TRUE, filename = file.path(outputPath(sim), "figures", paste0("projPA_Year", time(sim))), 
-          plotTitle = paste("Presence/absence -", "year", time(sim)),
-          xlab = "Longitude", y = "Latitude")
+          usePlot = TRUE, filename = file.path(outputPath(sim), "figures", paste0("projPA_", fileSuffix)), 
+          plotTitle = paste("Projected presence/absence -", "year", time(sim)),
+          xlab = "Longitude", ylab = "Latitude")
   }
   
   # ! ----- STOP EDITING ----- ! #
