@@ -21,7 +21,7 @@ if (!file.exists("citations/ecology-letters.csl")) {
   download.file("https://www.zotero.org/styles/ecology-letters?source=1", destfile = "citations/ecology-letters.csl")
 }
 
-## prevents GitHub fromm rendering book using Jekyll
+## prevents GitHub from rendering book using Jekyll
 file.create("docs/.nojekyll")
 ```
 
