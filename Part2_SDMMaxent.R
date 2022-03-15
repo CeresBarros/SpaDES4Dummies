@@ -1,7 +1,8 @@
-## Get necessary R packages, but don't load any
 if (!require("Require")) install.packages("Require")
-Require::Require("PredictiveEcology/SpaDES.install@development")
+Require::Require("PredictiveEcology/SpaDES.install@development", require = FALSE)
+Require::Require("PredictiveEcology/SpaDES.experiment@development", require = FALSE)
 # SpaDES.install::installSpaDES(ask = TRUE)
+
 
 ## decide where you're working
 mainDir <- "."
@@ -36,6 +37,7 @@ SpaDES.install::makeSureAllPackagesInstalled(simPaths$modulePath)
 
 ## load necessary packages now
 library(SpaDES)
+library(SpaDES.experiment)
 
 ## a few important options:
 options(reproducible.useCache = TRUE,
@@ -47,21 +49,32 @@ options(reproducible.useCache = TRUE,
 simModules <- list("speciesAbundanceData", "climateData", "projectSpeciesDist")
 
 ## Set simulation and module parameters
-simTimes <- list(start = 1, end = 2, timeunit = "year")
-simParams <- list(
+## Set simulation and module parameters
+simTimes <- list(start = 1, end = 5, timeunit = "year")
+
+## we create two lists of parameters, one using the default MaxEnt
+## the other a GLM
+simParamsMaxEnt <- list(
   "speciesAbundanceData" = list(
     ".plots" = c("screen", "png"),
-    ".useCache" = c(".inputObjects", "init")
+    # ".useCache" = c(".inputObjects", "init")
+    ".useCache" = FALSE
   ),
   "climateData" = list(
     ".plots" = c("screen", "png"),
-    ".useCache" = c(".inputObjects", "init")
+    # ".useCache" = c(".inputObjects", "init")
+    ".useCache" = FALSE
   ),
   "projectSpeciesDist" = list(
+    "statModel" = "MaxEnt",
     ".plots" = c("screen", "png"),
-    ".useCache" = c(".inputObjects", "init")
+    # ".useCache" = c(".inputObjects", "init")
+    ".useCache" = FALSE
   )
 )
+
+simParamsGLM <- simParamsMaxEnt
+simParamsGLM$projectSpeciesDist$statModel <- "GLM"
 
 ## make a random study area.
 ##  Here use seed to make sure the same study area is always generated
@@ -74,14 +87,40 @@ simObjects <- list(
   "studyAreaRas" = studyAreaRas
 )
 
-## Simulation setup
-mySim <- simInit(times = simTimes, params = simParams, 
-                 modules = simModules, objects = simObjects, 
-                 paths = simPaths)
+## Simulation setup - create two simulations, one for MaxEnt another for GLM
+## SpaDES.experiment::experiment2, will take care of subdirectories to store outputs
+mySimMaxEnt <- simInit(times = simTimes, params = simParamsMaxEnt, 
+                       modules = simModules, objects = simObjects, 
+                       paths = simPaths)
+mySimGLM <- simInit(times = simTimes, params = simParamsGLM, 
+                    modules = simModules, objects = simObjects, 
+                    paths = simPaths)
+
 clearPlot(force = TRUE)   ## this forces wiping the graphics device and opening a new window
 moduleDiagram(mySim)
 objectDiagram(mySim)
 
 ## run simulation
 clearPlot(force = TRUE)   ## this forces wiping the graphics device and opening a new window
-spades(mySim, debug = TRUE)
+
+## This runs one simulation and stores outputs in the main 'outputs' folder 
+## - not what we want, but good for testing
+# mySimOut <- spades(mySimMaxEnt, debug = TRUE)  
+
+## Better to use when spades runs error-free on the simLists
+myExperiment <- experiment2(MaxEnt = mySimMaxEnt, 
+                            GLM = mySimGLM, 
+                            debug = TRUE, 
+                            replicates = 1,
+                            clearSimEnv = FALSE)   ## prevent removing objects from the simLists at the end
+
+## check models
+myExperiment$MaxEnt_rep1$sdmOut   ## this links to an html page
+sets <- par(mfrow = c(2,2))
+plot(myExperiment$GLM_rep1$sdmOut)
+par(sets)
+
+## check validation results for the two models
+myExperiment$MaxEnt_rep1$evalOut
+myExperiment$GLM_rep1$evalOut
+

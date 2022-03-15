@@ -1,26 +1,11 @@
----
-title: "SpaDES 4 Dummies - Example 1"
-author: "Ceres Barros, Tati Micheletti"
-date: "Last updated: `r Sys.Date()`"
-output: 
-  bookdown::html_document2:
-    theme: flatly
-    toc: true
-    number_sections: FALSE
-    toc_float: TRUE
-    toc_depth: 4
-    highlight: zenburn
-    css: "style.css"
-editor_options: 
-  chunk_output_type: console
----
+# Introducing `SpaDES` with a dummy ecological model {#part1}
 
-```{r setup, include=FALSE}
+Authors: Ceres Barros, Tati Micheletti
+
+```{r setupPart1, include=FALSE}
 options("repos" = c(CRAN = "https://cran.rstudio.com"))
 knitr::opts_chunk$set(cache = 2, cache.rebuild = FALSE)
 ```
-
-# A VERY simple example of `SpaDES` with a dummy ecological model
 
 Let's imagine we want to explore how the relationship between a species' abundance and temperature changes over time. Both the abundance data and the temperature data are being constantly updated by a simulation model, and we want to analyse the relationship between the two iteratively, without needing to manually run a script to account for the newly generated data inputs.
 
@@ -30,7 +15,7 @@ If we use R to develop our species abundance and temperature simulation models i
 
 The example below is so minimal that it is unlikely to show the full benefits of using `SpaDES` - the same could be accomplished with a fairly short script. However, it introduces the different parts of a module and how to link modules.
 
-Example 2 goes a step further and uses real datasets to project species presences across a landscape in Canada. In this example, we introduce `SpaDES` features that we most commonly use in our work (e.g., caching and spatial data processing) and provide some coding best practices that we use ourselves (e.g., code assertions).
+Part \@ref(part2) goes a step further and uses real datasets to project species presences across a landscape in Canada. In this example, we introduce `SpaDES` features that we most commonly use in our work (e.g., caching and spatial data processing) and provide some coding best practices that we use ourselves (e.g., code assertions).
 
 ### Setup
 
@@ -134,7 +119,7 @@ Let us now solve the same problem using the `SpaDES` approach. We start by creat
 
 We start by making sure all `SpaDES` packages and they dependencies are installed and up to date using `SpaDES.install::installSpaDES`.
 
-```{r globalscript, eval = FALSE}
+```{r globalscriptPart1, eval = FALSE}
 ## start again from a clean R session
 if (!require("Require")) install.packages("Require")
 Require::Require("PredictiveEcology/SpaDES.install@development")
@@ -158,7 +143,7 @@ if (!dir.exists(file.path(getPaths()$modulePath, "speciesAbundance"))) {
 }
 ```
 
-```{r globalscriptHidden, include = FALSE}
+```{r globalscriptHiddenPart1, include = FALSE}
 library(SpaDES)  ## should automatically download all packages in the SpaDES family and their dependencies
 
 ## decide where you're working
@@ -425,16 +410,7 @@ Events can also rely on other functions that can either be sourced from other sc
 
 Functions should also be accompanied by metadata. Here we provide a description of the function, its parameters, returning value and what other package functions it relies on using the `roxygen2` documentation style (indicated by `#'`).
 
-```{r abund_module8, eval = FALSE}
-#' Accessory function to speciesAbundance module
-
-#' @param ras a raster layer used as template.
-#' @return a fake abundance raster generated as a Gaussian map with scale = 100 and variance = 0.01
-#' @importFrom SpaDES.tools gaussMap 
-abundance_model <- function(ras) {
-  abund_ras <- gaussMap(ras, scale = 100, var = 0.01) 
-  return(abund_ras)
-}
+```{r abund_module8, code = readLines(file.path("modules", "speciesAbundance", "R", "abundance_model.R")), eval = FALSE}
 ```
 
 ------------------------------------------------------------------------
@@ -449,131 +425,12 @@ The second module we created generates yearly temperatures. Apart from different
 
 This is how we set up the `temperature.R` script looks like:
 
-```{r temp_module, eval = FALSE}
-
-# Everything in this file gets sourced during simInit, and all functions and objects
-# are put into the simList.
-defineModule(sim, list(
-  name = "temperature",
-  description = "Temperature simulator",
-  keywords = c("temperature", "gaussian", "spatial"),
-  authors = person("Me", email = "me@example.com", role = c("aut", "cre")),
-  childModules = character(0),
-  version = list(speciesAbundanceData = "0.0.0.9000"),
-  timeframe = as.POSIXlt(c(NA, NA)),
-  timeunit = "year",
-  citation = list("citation.bib"),
-  documentation = list("README.txt", "temperature.Rmd"),
-  reqdPkgs = list("PredictiveEcology/SpaDES.core@development (>=1.0.10.9000)",
-                  "raster"),
-  parameters = bindrows(
-    #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
-    defineParameter("simulationTimeStep", "numeric", 1, NA, NA, 
-                    "This describes the simulation time step interval"),
-    defineParameter(".plotInitialTime", "numeric", 1, NA, NA, 
-                    "This describes the simulation time at which the first plot event should occur"),
-    defineParameter(".plotInterval", "numeric", 1, NA, NA,
-                    "This describes the simulation time interval between plot events")
-  ),
-  inputObjects = bindrows(
-    #expectsInput("objectName", "objectClass", "input object description", sourceURL, ...),
-    expectsInput("r", "RasterLayer", "Template raster")
-  ),
-  outputObjects = bindrows(
-    #createsOutput("objectName", "objectClass", "output object description", ...),
-    createsOutput("tempRasters",  "list", "List of raster layers of temperature at any given year")
-  )
-))
-
-## event types
-#   - type `init` is required for initialiazation
-
-doEvent.temperature = function(sim, eventTime, eventType, debug = FALSE) {
-  switch(
-    eventType,
-    init = {
-      ## do stuff for this event
-      sim <- temperatureInit(sim)
-      
-      ## schedule future event(s)
-      sim <- scheduleEvent(sim, eventTime = start(sim), moduleName = "temperature", eventType = "SimulTemp")
-      sim <- scheduleEvent(sim, eventTime = P(sim)$.plotInitialTime, moduleName = "temperature", 
-                           eventType = "tempPlot", eventPriority = .normal() + 0.5)
-    },
-    SimulTemp = {
-      ## do stuff for this event
-      sim <- temperatureSim(sim)
-      
-      ## schedule future event(s)
-      sim <- scheduleEvent(sim, eventTime = time(sim) + P(sim)$simulationTimeStep, moduleName = "temperature", 
-                           eventType = "SimulTemp")
-    },
-    tempPlot = {
-      ## do stuff for this event
-      sim <- temperaturePlot(sim)
-      
-      ## schedule future event(s)
-      sim <- scheduleEvent(sim, eventTime = time(sim) + P(sim)$.plotInterval, moduleName = "temperature", 
-                           eventType = "tempPlot", eventPriority = .normal() + 0.5)
-    },
-    warning(paste("Undefined event type: '", current(sim)[1, "eventType", with = FALSE],
-                  "' in module '", current(sim)[1, "moduleName", with = FALSE], "'", sep = ""))
-  )
-  return(invisible(sim))
-}
-
-## This is the 'init' event:
-temperatureInit <- function(sim) {
-  ## create storage list of species temperature
-  sim$tempRasters <- list()
-  
-  return(invisible(sim))
-}
-
-## This is the temperature simulation event function
-temperatureSim <- function(sim) {
-  ## Generate temperature - our "updated data"
-  sim$tempRasters[[as.character(time(sim))]] <- temperature_model(ras = sim$r)
-  
-  return(invisible(sim))
-}
-
-## This is the plotting event funciton
-temperaturePlot <- function(sim) {
-  ## plot temperature
-  plotTitle <- paste("Temperature\nat time",
-                     names(sim$tempRasters)[length(sim$tempRasters)])
-  tempPlot <- sim$tempRasters[[length(sim$tempRasters)]] 
-  Plot(tempPlot, 
-       title = plotTitle, 
-       new = TRUE, addTo = "tempPlot")
-  
-  return(invisible(sim))
-}
-
-.inputObjects <- function(sim) {
-  if (!suppliedElsewhere("r")) {
-    ## make template raster if not supplied elsewhere.
-    sim$r <- raster(nrows = 100, ncols = 100, xmn = -50, xmx = 50, ymn = -50, ymx = 50)
-  }
-  return(invisible(sim))
-}
-
+```{r temp_module, code = readLines(file.path("modules", "temperature", "temperature.R")), eval = FALSE}
 ```
 
 Again, we added an accessory `temperature_model` function in a separate script `R/temperature_model.R`:
 
-```{r temp_module2, eval = FALSE}
-#' Accessory function to temperature module
-
-#' @param ras a raster layer used as template.
-#' @return a fake temperature raster generated as a Gaussian map with scale = 100 and variance = 0.01
-#' @import SpaDES.tools gaussMap 
-
-temperature_model <- function(ras) {
-  temp_ras <- gaussMap(ras, scale = 100, var = 0.01) 
-  return(temp_ras)
-}
+```{r temp_module2, code = readLines(file.path("modules", "temperature", "R", "temperature_model.R")), eval = FALSE}
 ```
 
 ------------------------------------------------------------------------
@@ -596,176 +453,12 @@ Finally, we draw your attention to a few differences in this module's script bef
 
 Below is the full module script. Notice how the future events where scheduled to `P(sim)$statsTimestep + 0.1`, to force the statistical analyses to occur **after** the abundance and temperature rasters are ready.
 
-```{r stats_module, eval = FALSE}
-
-# Everything in this file gets sourced during simInit, and all functions and objects
-# are put into the simList.
-defineModule(sim, list(
-  name = "speciesTempLM",
-  description = "Statistical analysis of species ~ temperature relationships using LM",
-  keywords = c("linear model"),
-  authors = person("Me", email = "me@example.com", role = c("aut", "cre")),
-  childModules = character(0),
-  version = list(speciesAbundanceData = "0.0.0.9000"),
-  timeframe = as.POSIXlt(c(NA, NA)),
-  timeunit = "year",
-  citation = list("citation.bib"),
-  documentation = list("README.txt", "speciesTempLM.Rmd"),
-  reqdPkgs = list("PredictiveEcology/SpaDES.core@development (>=1.0.10.9000)",
-                  "raster", "ggplot2", "data.table", "reshape2"),
-  parameters = bindrows(
-    #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
-    defineParameter("statsTimestep", "numeric", 1, NA, NA, "This describes the how often the statitiscal analysis will be done")
-  ),
-  inputObjects = bindrows(
-    #expectsInput("objectName", "objectClass", "input object description", sourceURL, ...),
-    expectsInput("abundRasters", "list", "List of raster layers of species abundance at any given year"),
-    expectsInput("tempRasters", "list", "List of raster layers of temperature at any given year")
-  ),
-  outputObjects = bindrows(
-    #createsOutput("objectName", "objectClass", "output object description", ...),
-    createsOutput("outputdata", "list", "List of dataframes containing species abundances and temperature values per pixel"),
-    createsOutput("outputLM", "list", "List of output yearly LMs (abundance ~ temperature)"),
-    createsOutput("yrs", "numeric", "Vector of years used for statistical analysis")
-  )
-))
-
-## event types
-#   - type `init` is required for initialiazation
-
-doEvent.speciesTempLM = function(sim, eventTime, eventType, debug = FALSE) {
-  switch(
-    eventType,
-    init = {
-      ## do stuff for this event
-      sim <- statsInit(sim)
-      
-      ## schedule future event(s)
-      sim <- scheduleEvent(sim, P(sim)$statsTimestep, "speciesTempLM", 
-                           "stats", eventPriority = .normal() + 2)
-      sim <- scheduleEvent(sim, P(sim)$statsTimestep, "speciesTempLM", 
-                           "statsPlot", eventPriority = .normal() + 2.5)
-    },
-    stats = {
-      ## do stuff for this event
-      sim <- statsAnalysis(sim)
-      
-      ## schedule future event(s)
-      sim <- scheduleEvent(sim, time(sim) + P(sim)$statsTimestep, "speciesTempLM", 
-                           "stats", eventPriority = .normal() + 2)
-    },
-    statsPlot = {
-      ## do stuff for this event
-      sim <- statsPlot(sim)
-      
-      ## schedule future event(s)
-      sim <- scheduleEvent(sim, time(sim) + P(sim)$statsTimestep, "speciesTempLM",
-                           "statsPlot", eventPriority = .normal() + 2.5)
-    },
-    warning(paste("Undefined event type: '", current(sim)[1, "eventType", with = FALSE],
-                  "' in module '", current(sim)[1, "moduleName", with = FALSE], "'", sep = ""))
-  )
-  return(invisible(sim))
-}
-
-## template initialization
-statsInit <- function(sim) {
-  ## create outputs storage lists
-  sim$outputLM <- list()
-  
-  return(invisible(sim))
-}
-
-## Statistical analysis event
-statsAnalysis <- function(sim) {
-  ## get all species abundances data available
-  abundData <- data.table(getValues(stack(sim$abundRasters)))
-  abundData[, pixID := 1:nrow(abundData)]
-  abundData <- melt.data.table(abundData, id.var = "pixID",
-                               variable.name = "year", value.name = "abund")
-  abundData[, year := as.numeric(sub("X", "", year))]
-  
-  ## get all temperature data available
-  tempData <- data.table(getValues(stack(sim$tempRasters)))
-  tempData[, pixID := 1:nrow(tempData)]
-  tempData <- melt.data.table(tempData, id.var = "pixID",
-                              variable.name = "year", value.name = "temp")
-  tempData[, year := as.numeric(sub("X", "", year))] 
-  
-  ## merge per year  
-  setkey(abundData, pixID, year)
-  setkey(tempData, pixID, year)
-  sim$outputdata <- abundData[tempData]
-  
-  sim$outputLM[[as.character(time(sim))]] <- linearModel(Data = sim$outputdata)
-  return(invisible(sim))
-}
-
-## Plotting event
-statsPlot <- function(sim) {
-  model <- sim$outputLM[[as.character(time(sim))]]
-  
-  modelPlot <- ggplot(sim$outputdata) + 
-    geom_point(aes(x = temp, y = abund)) +
-    geom_abline(intercept = model$coefficients["(Intercept)"], 
-                slope = model$coefficients["temp"], size = 2, col = "blue") +
-    theme_bw() +
-    labs(x = "Temp.", y = "Species abundance")
-  
-  plotTitle <- paste("abundance ~ temperature\n",
-                     "years", range(sim$outputdata$year)[1],
-                     "to", range(sim$outputdata$year)[2])
-  Plot(modelPlot, 
-       title = plotTitle, 
-       new = TRUE, addTo = "modelPlot")
-  
-  return(invisible(sim))
-}
-
-.inputObjects <- function(sim) {
-  # Any code written here will be run during the simInit for the purpose of creating
-  # any objects required by this module and identified in the inputObjects element of defineModule.
-  # This is useful if there is something required before simulation to produce the module
-  # object dependencies, including such things as downloading default datasets, e.g.,
-  # downloadData("LCC2005", modulePath(sim)).
-  # Nothing should be created here that does not create a named object in inputObjects.
-  # Any other initiation procedures should be put in "init" eventType of the doEvent function.
-  # Note: the module developer can check if an object is 'suppliedElsewhere' to
-  # selectively skip unnecessary steps because the user has provided those inputObjects in the
-  # simInit call, or another module will supply or has supplied it. e.g.,
-  # if (!suppliedElsewhere('defaultColor', sim)) {
-  #   sim$map <- Cache(prepInputs, extractURL('map')) # download, extract, load file from url in sourceURL
-  # }
-  
-  #cacheTags <- c(currentModule(sim), "function:.inputObjects") ## uncomment this if Cache is being used
-  dPath <- asPath(getOption("reproducible.destinationPath", dataPath(sim)), 1)
-  message(currentModule(sim), ": using dataPath '", dPath, "'.")
-  
-  # ! ----- EDIT BELOW ----- ! #
-  
-  # ! ----- STOP EDITING ----- ! #
-  return(invisible(sim))
-}
+```{r stats_module, code = readLines(file.path("modules", "speciesTempLM", "speciesTempLM.R")), eval = FALSE}
 ```
 
 And the script with the accessory functions:
 
-```{r stats_module2, eval = FALSE}
-## Accessory functions to speciesTempLM module
-
-#' Accessory function to speciesTempLM module that calculates a
-#'  linear regression between species abundances and temperature
-#'
-#' @param Data a data.frame or data.table that contains an \code{abund}
-#'   column and a \code{temp} column with abundance and temperature values 
-#'   in each location, respectively.
-#' @return a linear model (\code{lm}) object fitted with the formula:
-#'  \code{abund ~ temp}
-
-linearModel <- function(Data) {
-  lm1 <- lm(abund ~ temp, data = Data)
-  return(lm1)
-}
+```{r stats_module, code = readLines(file.path("modules", "speciesTempLM", "R",  "linear_model_functions.R")), eval = FALSE}
 ```
 
 ------------------------------------------------------------------------
@@ -856,7 +549,7 @@ We suggest experimenting with changing parameter values and trying to create and
 
 ### Additional notes
 
-`SpaDES` is an extremely powerful package, whose potential goes well beyond what has been discussed in this dummy example. If you want to explore it further, we recommend following [Example 2](https://htmlpreview.github.io/?https://github.com/CeresBarros/SpaDES4Dummies/blob/master/SpaDES4Dummies.html) for a more realistic (but still simple) `SpaDES` application.
+`SpaDES` is an extremely powerful package, whose potential goes well beyond what has been discussed in this dummy example. If you want to explore it further, we recommend following Part \@ref(part2) for a more realistic (but still simple) `SpaDES` application.
 
 Also, do go to the [`SpaDES` webpage](http://predictiveecology.org/) to find further information about the platform, as well as upcoming workshops and publications and to the [Predictive Ecology Github repository](http://https://github.com/PredictiveEcology/) to see all the `SpaDES` modules and SpaDES-related packages that we maintain.
 
