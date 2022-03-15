@@ -5,29 +5,29 @@ defineModule(sim, list(
   name = "speciesTempLM",
   description = "Statistical analysis of species ~ temperature relationships using LM",
   keywords = c("linear model"),
-  authors = person("Mr.", "Me", email = "mr.me@example.com", role = c("aut", "cre")),
+  authors = person("Me", email = "me@example.com", role = c("aut", "cre")),
   childModules = character(0),
-  version = list(SpaDES.core = "0.1.1.9011", speciesAbundance = "0.0.1"),
-  # spatialExtent = raster::extent(rep(NA_real_, 4)),
+  version = list(speciesAbundanceData = "0.0.0.9000"),
   timeframe = as.POSIXlt(c(NA, NA)),
   timeunit = "year",
   citation = list("citation.bib"),
   documentation = list("README.txt", "speciesTempLM.Rmd"),
-  reqdPkgs = list("raster", "ggplot2", "data.table", "reshape2"),
-  parameters = rbind(
+  reqdPkgs = list("PredictiveEcology/SpaDES.core@development (>=1.0.10.9000)",
+                  "raster", "ggplot2", "data.table", "reshape2"),
+   parameters = bindrows(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
     defineParameter("statsTimestep", "numeric", 1, NA, NA, "This describes the how often the statitiscal analysis will be done")
   ),
-  inputObjects = bind_rows(
+  inputObjects = bindrows(
     #expectsInput("objectName", "objectClass", "input object description", sourceURL, ...),
-    expectsInput( "abundRasters", "list", "List of raster layers of species abundance at any given year"),
-    expectsInput( "tempRasters", "list", "List of raster layers of temperature at any given year")
+    expectsInput("abundRasters", "list", "List of raster layers of species abundance at any given year"),
+    expectsInput("tempRasters", "list", "List of raster layers of temperature at any given year")
   ),
-  outputObjects = bind_rows(
+  outputObjects = bindrows(
     #createsOutput("objectName", "objectClass", "output object description", ...),
     createsOutput("outputdata", "list", "List of dataframes containing species abundances and temperature values per pixel"),
-    createsOutput( "outputLM", "list", "List of output yearly LMs (abundance ~ temperature)"),
-    createsOutput( "yrs", "numeric", "Vector of years used for statistical analysis")
+    createsOutput("outputLM", "list", "List of output yearly LMs (abundance ~ temperature)"),
+    createsOutput("yrs", "numeric", "Vector of years used for statistical analysis")
   )
 ))
 
@@ -43,9 +43,9 @@ doEvent.speciesTempLM = function(sim, eventTime, eventType, debug = FALSE) {
 
       ## schedule future event(s)
       sim <- scheduleEvent(sim, P(sim)$statsTimestep, "speciesTempLM", 
-                           "stats", eventPriority = .normal()+2)
+                           "stats", eventPriority = .normal() + 2)
       sim <- scheduleEvent(sim, P(sim)$statsTimestep, "speciesTempLM", 
-                           "statsPlot", eventPriority = .normal()+2.5)
+                           "statsPlot", eventPriority = .normal() + 2.5)
     },
     stats = {
       ## do stuff for this event
@@ -53,7 +53,7 @@ doEvent.speciesTempLM = function(sim, eventTime, eventType, debug = FALSE) {
       
       ## schedule future event(s)
       sim <- scheduleEvent(sim, time(sim) + P(sim)$statsTimestep, "speciesTempLM", 
-                           "stats", eventPriority = .normal()+2)
+                           "stats", eventPriority = .normal() + 2)
     },
     statsPlot = {
       ## do stuff for this event
@@ -61,7 +61,7 @@ doEvent.speciesTempLM = function(sim, eventTime, eventType, debug = FALSE) {
       
       ## schedule future event(s)
       sim <- scheduleEvent(sim, time(sim) + P(sim)$statsTimestep, "speciesTempLM",
-                           "statsPlot", eventPriority = .normal()+2.5)
+                           "statsPlot", eventPriority = .normal() + 2.5)
     },
     warning(paste("Undefined event type: '", current(sim)[1, "eventType", with = FALSE],
                   "' in module '", current(sim)[1, "moduleName", with = FALSE], "'", sep = ""))
@@ -120,6 +120,31 @@ statsPlot <- function(sim) {
        title = plotTitle, 
        new = TRUE, addTo = "modelPlot")
   
+  return(invisible(sim))
+}
+
+.inputObjects <- function(sim) {
+  # Any code written here will be run during the simInit for the purpose of creating
+  # any objects required by this module and identified in the inputObjects element of defineModule.
+  # This is useful if there is something required before simulation to produce the module
+  # object dependencies, including such things as downloading default datasets, e.g.,
+  # downloadData("LCC2005", modulePath(sim)).
+  # Nothing should be created here that does not create a named object in inputObjects.
+  # Any other initiation procedures should be put in "init" eventType of the doEvent function.
+  # Note: the module developer can check if an object is 'suppliedElsewhere' to
+  # selectively skip unnecessary steps because the user has provided those inputObjects in the
+  # simInit call, or another module will supply or has supplied it. e.g.,
+  # if (!suppliedElsewhere('defaultColor', sim)) {
+  #   sim$map <- Cache(prepInputs, extractURL('map')) # download, extract, load file from url in sourceURL
+  # }
+  
+  #cacheTags <- c(currentModule(sim), "function:.inputObjects") ## uncomment this if Cache is being used
+  dPath <- asPath(getOption("reproducible.destinationPath", dataPath(sim)), 1)
+  message(currentModule(sim), ": using dataPath '", dPath, "'.")
+  
+  # ! ----- EDIT BELOW ----- ! #
+  
+  # ! ----- STOP EDITING ----- ! #
   return(invisible(sim))
 }
 

@@ -4,16 +4,16 @@ defineModule(sim, list(
   name = "speciesAbundance",
   description = "",
   keywords = "",
-  authors = structure(list(list(given = c("First", "Middle"), family = "Last", role = c("aut", "cre"), email = "email@example.com", comment = NULL)), class = "person"),
+  authors = person("Me", email = "me@example.com", role = c("aut", "cre")),
   childModules = character(0),
-  version = list(SpaDES.core = "0.1.1.9011", speciesAbundance = "0.0.1"),
-  # spatialExtent = raster::extent(rep(NA_real_, 4)),
+  version = list(speciesAbundanceData = "0.0.0.9000"),
   timeframe = as.POSIXlt(c(NA, NA)),
   timeunit = "year",
   citation = list("citation.bib"),
   documentation = deparse(list("README.txt", "speciesAbundance.Rmd")),
-  reqdPkgs = list("raster", "quickPlot"),
-  parameters = rbind(
+  reqdPkgs = list("PredictiveEcology/SpaDES.core@development (>=1.0.10.9000)",
+                  "raster", "quickPlot"),
+   parameters = bindrows(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
     defineParameter("simulationTimeStep", "numeric", 1, NA, NA, 
                     "This describes the simulation time step interval"),
@@ -22,11 +22,11 @@ defineModule(sim, list(
     defineParameter(".plotInterval", "numeric", 1, NA, NA,
                     "Describes the simulation time interval between plot events.")
   ),
-  inputObjects = bind_rows(
+  inputObjects = bindrows(
     # expectsInput("objectName", "objectClass", "input object description", sourceURL, ...),
     expectsInput("r", objectClass = "RasterLayer", desc = "Template raster")
   ),
-  outputObjects = bind_rows(
+  outputObjects = bindrows(
     #createsOutput("objectName", "objectClass", "output object description", ...),
     createsOutput("abundRasters", "list", "List of layers of species abundance at any given year")
   )
@@ -106,7 +106,7 @@ abundancePlot <- function(sim) {
 
 
 .inputObjects <- function(sim) {
-  if(!suppliedElsewhere(sim$r)) {
+  if(!suppliedElsewhere("r")) {
     ## make template raster if not supplied elsewhere.
     sim$r <- raster(nrows = 100, ncols = 100, xmn = -50, xmx = 50, ymn = -50, ymx = 50)
   }
