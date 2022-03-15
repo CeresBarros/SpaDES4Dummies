@@ -10,7 +10,11 @@ inputs/*
 *_cache
 *_files
 
+_book/
+_bookdown_files/
+
 ## don't ignore
 !modules/*/data/CHECKSUMS.txt
 !inputs/CHECKSUMS.txt
 !outputs/figures/
+!_book/*.html

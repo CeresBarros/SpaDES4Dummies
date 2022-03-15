@@ -1,0 +1,42 @@
+bookdown::bs4_book:
+  css: style.css
+  theme:
+    primary: "#096B72"
+  footnotes_inline: false
+  repo: 
+    base: https://github.com/CeresBarros/SpaDES4Dummies
+    branch: development
+bookdown::gitbook:
+  description: "A `SpaDES` crash-course"
+  css: style.css
+  number_sections: true
+  split-bib: true
+  config:
+    toc:
+      collapse: subsection
+      scroll_highlight: true
+      before: |
+        <li><a href="_book/index.html">SpaDES 4 Dummies</a></li>
+      after: |
+        <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+    edit: null
+    download: ["pdf", "epub"]
+    info: false
+  sharing:
+    facebook: false
+    github: false
+    twitter: true
+    linkedin: true
+    weibo: false
+    instapaper: false
+    vk: false
+    whatsapp: false
+  github-repo: https://github.com/CeresBarros/SpaDES4Dummies
+bookdown::epub_book: default
+bookdown::pdf_book:
+  includes:
+    in_header: preamble.tex
+  latex_engine: xelatex
+  citation_package: natbib
+  keep_tex: no
+
