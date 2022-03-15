@@ -5,4 +5,7 @@
 "wc2.1_2.5m_bio_4.tif" "aae4bc43f5f78b08" "56204551" "xxhash64"
 "wc2.1_2.5m_bio.zip" "e16f2240fa34d93a" "658405521" "xxhash64"
 "NFI_MODIS250m_2001_kNN_Species_Pice_Gla_v1.tif" "3843aca938161456" "130328501" "xxhash64"
+"wc2.1_2.5m_bioc_CanESM5_ssp585_2021-2040.tif" "1556946a18c61dc7" "455514039" "xxhash64"
+"wc2.1_2.5m_bioc_CanESM5_ssp585_2041-2060.tif" "dcca9bc1ca3851a1" "456530733" "xxhash64"
+"wc2.1_2.5m_bioc_CanESM5_ssp585_2061-2080.tif" "0b0cb1d94f31eb6a" "457912958" "xxhash64"
 "wc2.1_2.5m_bioc_CanESM5_ssp585_2081-2100.tif" "1fad66a2c3c73701" "459225034" "xxhash64"
