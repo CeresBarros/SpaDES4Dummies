@@ -5,7 +5,7 @@ bookdown::bs4_book:
   footnotes_inline: false
   repo: 
     base: https://github.com/CeresBarros/SpaDES4Dummies
-    branch: development
+    branch: master
 bookdown::gitbook:
   description: "A `SpaDES` crash-course"
   css: style.css
@@ -16,7 +16,7 @@ bookdown::gitbook:
       collapse: subsection
       scroll_highlight: true
       before: |
-        <li><a href="_book/index.html">SpaDES 4 Dummies</a></li>
+        <li><a href="docs/index.html">SpaDES 4 Dummies</a></li>
       after: |
         <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
     edit: null
