@@ -11,10 +11,6 @@
 
 nul
 
-_book
-!_book/*.html
-!_book/*.pdf
-!_book/*.epub
 _bookdown_files
 rsconnect
 
