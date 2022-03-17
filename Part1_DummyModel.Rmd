@@ -144,6 +144,7 @@ if (!dir.exists(file.path(getPaths()$modulePath, "speciesAbundance"))) {
 ```
 
 ```{r globalscriptHiddenPart1, include = FALSE}
+rm(list = ls())
 library(SpaDES)  ## should automatically download all packages in the SpaDES family and their dependencies
 
 ## decide where you're working
