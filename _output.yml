@@ -6,6 +6,7 @@ bookdown::bs4_book:
   repo: 
     base: https://github.com/CeresBarros/SpaDES4Dummies
     branch: master
+
 bookdown::gitbook:
   description: "A `SpaDES` crash-course"
   css: style.css
@@ -32,11 +33,12 @@ bookdown::gitbook:
     vk: false
     whatsapp: false
   github-repo: https://github.com/CeresBarros/SpaDES4Dummies
+
 bookdown::epub_book: default
 bookdown::pdf_book:
   includes:
     in_header: preamble.tex
-  latex_engine: xelatex
-  citation_package: natbib
-  keep_tex: no
+  # latex_engine: xelatex
+  # citation_package: natbib
+  # keep_tex: no
 

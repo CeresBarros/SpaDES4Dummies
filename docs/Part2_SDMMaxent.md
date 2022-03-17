@@ -907,7 +907,7 @@ library(SpaDES.experiment)
 
 
 
-**/!\\ Attention /!\\**
+**/!\\ ATTENTION /!\\**
 
 `makeSureAllPackagesInstalled` may fail to install if other packages have been loaded already, so we recommend running this line from a clean R session.
 We also recommend restarting the R session *after* `makeSureAllPackagesInstalled` installs packages.
@@ -915,10 +915,10 @@ We also recommend restarting the R session *after* `makeSureAllPackagesInstalled
 Windows can present problems when many packages are installed and further package installations fail.
 If you see errors like this after restarting R:
 
-Installing: glue Detaching is fraught with many potential problems; you may have to restart your session if things aren't working some packages don't seem to unload their dlls correctly.
-These will not be unloaded: ellipsis, vctrs Unloading package bit64 -- Installing glue -- (1 of 1. Estimated time left: ...; est. finish: ...calculating) Installing package into '\~/R/win-library/4.0' (as 'lib' is unspecified) trying URL '<https://cran.rstudio.com/bin/windows/contrib/4.0/glue_1.6.2.zip>' Content type 'application/zip' length 171858 bytes (167 KB) downloaded 167 KB
+    Installing: glue Detaching is fraught with many potential problems; you may have to restart your session if things aren't working some packages don't seem to unload their dlls correctly.
+    These will not be unloaded: ellipsis, vctrs Unloading package bit64 -- Installing glue -- (1 of 1. Estimated time left: ...; est. finish: ...calculating) Installing package into '\~/R/win-library/4.0' (as 'lib' is unspecified) trying URL '<https://cran.rstudio.com/bin/windows/contrib/4.0/glue_1.6.2.zip>' Content type 'application/zip' length 171858 bytes (167 KB) downloaded 167 KB
 
-package 'glue' successfully unpacked and MD5 sums checked Error in unpackPkgZip(foundpkgs[okp, 2L], foundpkgs[okp, 1L], lib, libs_only, : ERROR: failed to lock directory '\~\R\win-library\\4.0' for modifying Try removing '\~\R\win-library\\4.0/00LOCK'
+    package 'glue' successfully unpacked and MD5 sums checked Error in unpackPkgZip(foundpkgs[okp, 2L], foundpkgs[okp, 1L], lib, libs_only, : ERROR: failed to lock directory '\~\R\win-library\\4.0' for modifying Try removing '\~\R\win-library\\4.0/00LOCK'
 
 If you encounter this error, delete the problematic file/folder and try again.
 
@@ -1083,7 +1083,6 @@ myExperiment$MaxEnt_rep1$evalOut
 myExperiment$GLM_rep1$evalOut
 ```
 
-
 <div class="figure" style="text-align: center">
 <img src="outputs/figures/speciesAbundance.png" alt="**Simulation plots**: Input *Picea glauca* % cover across the landscape - note that values are converted to presence/absence." width="50%" />
 <p class="caption">(\#fig:figSimulationSppAbund)**Simulation plots**: Input *Picea glauca* % cover across the landscape - note that values are converted to presence/absence.</p>
@@ -1131,7 +1130,7 @@ Note that caching operations involving stochasticity should be avoided, as it wi
 We recommend exploring the examples available in the `Cache` and `prepInputs` R documentation to learn more about their capabilities.
 In particular, read about `showCache`, `clearCache` and the argument `userTags`, which allow consulting and deleting cached files.
 
-**/!\\ Attention /!\\**
+**/!\\ ATTENTION /!\\**
 
 `Cache` does not deal well with the `apply` family of functions, which is why we used `Map` (instead of `mapply`) to iteratively apply `prepInputs` to several climate layer URLs.
 
