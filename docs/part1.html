@@ -10,6 +10,7 @@
 <meta name="generator" content="bookdown 0.24 with bs4_book()">
 <meta property="og:title" content="1 Introducing SpaDES with a dummy ecological model | SpaDES 4 Dummies guide">
 <meta property="og:type" content="book">
+<meta property="og:url" content="https://ceresbarros.github.io/SpaDES4Dummies/part1.html">
 <meta property="og:description" content="Authors: Ceres Barros, Tati Micheletti Let’s imagine we want to explore how the relationship between a species’ abundance and temperature changes over time. Both the abundance data and the...">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="1 Introducing SpaDES with a dummy ecological model | SpaDES 4 Dummies guide">
@@ -180,16 +181,16 @@ Note that Markdown (<code>.Rmd</code>) scripts can also be used instead of R scr
 <span class="co">## decide where you're working</span>
 <span class="va">mainDir</span> <span class="op">&lt;-</span> <span class="st">"."</span>
 
-<span class="fu">setPaths</span><span class="op">(</span>cachePath <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">mainDir</span>, <span class="st">"cache"</span><span class="op">)</span>,
+<span class="fu"><a href="https://spades-core.predictiveecology.org/reference/setPaths.html">setPaths</a></span><span class="op">(</span>cachePath <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">mainDir</span>, <span class="st">"cache"</span><span class="op">)</span>,
          inputPath <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">mainDir</span>, <span class="st">"inputs"</span><span class="op">)</span>,
          modulePath <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">mainDir</span>, <span class="st">"modules"</span><span class="op">)</span>,
          outputPath <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">mainDir</span>, <span class="st">"outputs"</span><span class="op">)</span><span class="op">)</span>
 
-<span class="fu">getPaths</span><span class="op">(</span><span class="op">)</span> <span class="co">## check that this is what you wanted</span>
+<span class="fu"><a href="https://spades-core.predictiveecology.org/reference/setPaths.html">getPaths</a></span><span class="op">(</span><span class="op">)</span> <span class="co">## check that this is what you wanted</span>
 
 <span class="co">## Let's create a self-contained module that will simulate the species' abundance for any given period of time and frequency.</span>
-<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/files2.html">dir.exists</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="fu">getPaths</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">modulePath</span>, <span class="st">"speciesAbundance"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-  <span class="fu">newModule</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"speciesAbundance"</span>, path <span class="op">=</span> <span class="fu">getPaths</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">modulePath</span><span class="op">)</span>
+<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/files2.html">dir.exists</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://spades-core.predictiveecology.org/reference/setPaths.html">getPaths</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">modulePath</span>, <span class="st">"speciesAbundance"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+  <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/newModule.html">newModule</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"speciesAbundance"</span>, path <span class="op">=</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/setPaths.html">getPaths</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">modulePath</span><span class="op">)</span>
 <span class="op">}</span></code></pre></div>
 <p>We then create modules using <code>newModule</code>.
 <code>newModule</code> creates a module folder (<em>speciesAbundance</em>) inside <code>/modules</code> that contains both the module <code>.R</code> script template, as well as the documentation template (the <code>.Rmd</code> file).
@@ -213,7 +214,7 @@ The module script can be divided into 4 parts:</p>
 <p>[Scheduling Events]: this is how <code>SpaDES</code> schedules when each event is going to happen - in which order (e.g. during the simulation, when will <code>SpaDES</code> plot a graph) - simply put, <strong>WHEN</strong> the module does it;</p>
 <p>[Additional module functions]: any additional functions needed (e.g. this is used to keep the coding of your module as clear and straightforward as possible);</p>
 <p>The first thing to note is that <strong>the user does not need to manually run</strong> any of the code inside a module’s <code>.R</code> script.
-The function <code>simInit()</code> will do so when it sets up the simulation.
+The function <code><a href="https://spades-core.predictiveecology.org/reference/simInit.html">simInit()</a></code> will do so when it sets up the simulation.
 We will see this see this later in detail.</p>
 <div id="defining-the-module" class="section level4" number="1.2.2.1">
 <h4>
@@ -237,7 +238,7 @@ Figure 1.1: <strong>Inputs and outputs in <code>SpaDES</code>:</strong> Object A
 <p>The exception to this rule are the default input objects created by the <code>.inputObjects</code> function (see [.inputObjects function]) during the <code>simInit</code> call.</p>
 <p>Here is how we defined the <em>speciesAbundance</em> module:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">defineModule</span><span class="op">(</span><span class="va">sim</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
+<code class="sourceCode R"><span class="fu"><a href="https://spades-core.predictiveecology.org/reference/defineModule.html">defineModule</a></span><span class="op">(</span><span class="va">sim</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
   name <span class="op">=</span> <span class="st">"speciesAbundance"</span>,
   description <span class="op">=</span> <span class="st">""</span>,
   keywords <span class="op">=</span> <span class="st">""</span>,
@@ -250,29 +251,29 @@ Figure 1.1: <strong>Inputs and outputs in <code>SpaDES</code>:</strong> Object A
   documentation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/deparse.html">deparse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">"README.txt"</span>, <span class="st">"speciesAbundance.Rmd"</span><span class="op">)</span><span class="op">)</span>,
   reqdPkgs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">"PredictiveEcology/SpaDES.core@development (&gt;=1.0.10.9000)"</span>,
                   <span class="st">"raster"</span>, <span class="st">"quickPlot"</span><span class="op">)</span>,
-  parameters <span class="op">=</span> <span class="fu">bindrows</span><span class="op">(</span>
+  parameters <span class="op">=</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/bindrows.html">bindrows</a></span><span class="op">(</span>
     <span class="co">#defineParameter("paramName", "paramClass", value, min, max, "parameter description"),</span>
-    <span class="fu">defineParameter</span><span class="op">(</span><span class="st">"simulationTimeStep"</span>, <span class="st">"numeric"</span>, <span class="fl">1</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, 
+    <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/defineParameter.html">defineParameter</a></span><span class="op">(</span><span class="st">"simulationTimeStep"</span>, <span class="st">"numeric"</span>, <span class="fl">1</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, 
                     <span class="st">"This describes the simulation time step interval"</span><span class="op">)</span>,
-    <span class="fu">defineParameter</span><span class="op">(</span><span class="st">".plotInitialTime"</span>, <span class="st">"numeric"</span>, <span class="fl">1</span>, <span class="cn">NA</span>, <span class="cn">NA</span>,
+    <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/defineParameter.html">defineParameter</a></span><span class="op">(</span><span class="st">".plotInitialTime"</span>, <span class="st">"numeric"</span>, <span class="fl">1</span>, <span class="cn">NA</span>, <span class="cn">NA</span>,
                     <span class="st">"Describes the simulation time at which the first plot event should occur."</span><span class="op">)</span>,
-    <span class="fu">defineParameter</span><span class="op">(</span><span class="st">".plotInterval"</span>, <span class="st">"numeric"</span>, <span class="fl">1</span>, <span class="cn">NA</span>, <span class="cn">NA</span>,
+    <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/defineParameter.html">defineParameter</a></span><span class="op">(</span><span class="st">".plotInterval"</span>, <span class="st">"numeric"</span>, <span class="fl">1</span>, <span class="cn">NA</span>, <span class="cn">NA</span>,
                     <span class="st">"Describes the simulation time interval between plot events."</span><span class="op">)</span>
   <span class="op">)</span>,
-  inputObjects <span class="op">=</span> <span class="fu">bindrows</span><span class="op">(</span>
+  inputObjects <span class="op">=</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/bindrows.html">bindrows</a></span><span class="op">(</span>
     <span class="co"># expectsInput("objectName", "objectClass", "input object description", sourceURL, ...),</span>
-    <span class="fu">expectsInput</span><span class="op">(</span><span class="st">"r"</span>, objectClass <span class="op">=</span> <span class="st">"RasterLayer"</span>, desc <span class="op">=</span> <span class="st">"Template raster"</span><span class="op">)</span>
+    <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/expectsInput.html">expectsInput</a></span><span class="op">(</span><span class="st">"r"</span>, objectClass <span class="op">=</span> <span class="st">"RasterLayer"</span>, desc <span class="op">=</span> <span class="st">"Template raster"</span><span class="op">)</span>
   <span class="op">)</span>,
-  outputObjects <span class="op">=</span> <span class="fu">bindrows</span><span class="op">(</span>
+  outputObjects <span class="op">=</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/bindrows.html">bindrows</a></span><span class="op">(</span>
     <span class="co">#createsOutput("objectName", "objectClass", "output object description", ...),</span>
-    <span class="fu">createsOutput</span><span class="op">(</span><span class="st">"abundRasters"</span>, <span class="st">"list"</span>, <span class="st">"List of layers of species abundance at any given year"</span><span class="op">)</span>
+    <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/createsOutput.html">createsOutput</a></span><span class="op">(</span><span class="st">"abundRasters"</span>, <span class="st">"list"</span>, <span class="st">"List of layers of species abundance at any given year"</span><span class="op">)</span>
   <span class="op">)</span>
 <span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>Note that the package versions that you define will depend on the ones that are installed on your computer.
 So take care to change them accordingly.
 The <code>SpaDES</code> package version suggested by the template reflects the version on your computer.</p>
 <p>The rest of the script defines the events and their sequences for this module - remember <code>SpaDES</code> = Spatial Discrete Event Simulator - and the events themselves.</p>
-<p><em><strong>/!\ ATTENTION /!\</strong><code>defineModule()</code> is not intended to be run directly by the user – it is run internally during a <code>simInit()</code> call (see <a href="part1.html#simulation-setup-in-a-global-script">Simulation setup in a “global” script</a>). In other words, you don’t run any part of a module’s code directly in your session; you run <code>simInit()</code> with that module listed in the modules argument.</em></p>
+<p><em><strong>/!\ ATTENTION /!\</strong><code><a href="https://spades-core.predictiveecology.org/reference/defineModule.html">defineModule()</a></code> is not intended to be run directly by the user – it is run internally during a <code><a href="https://spades-core.predictiveecology.org/reference/simInit.html">simInit()</a></code> call (see <a href="part1.html#simulation-setup-in-a-global-script">Simulation setup in a “global” script</a>). In other words, you don’t run any part of a module’s code directly in your session; you run <code><a href="https://spades-core.predictiveecology.org/reference/simInit.html">simInit()</a></code> with that module listed in the modules argument.</em></p>
 </div>
 <div id="events-and-event-functions" class="section level4" number="1.2.2.2">
 <h4>
@@ -281,7 +282,7 @@ The <code>SpaDES</code> package version suggested by the template reflects the v
 <p>Module events are defined and scheduled in the <code>doEvent.&lt;module name&gt;</code> function (in this example, <code>doEvent.speciesAbundance</code> function; see [Scheduling events]. Since we are only interested in simulating and plotting species abundances, we removed unnecessary events from the script and kept: the initialisation (<code>init</code>), an abundance simulation event (<code>SimulAbund</code>) and a plotting event (<code>abundPlot</code>).
 Each of these events can execute one or more functions.</p>
 <p><em>Event functions</em> (actual R functions) mustn’t be confused with <em>event names</em>, which are the names of the events appearing in the <code>doEvent.&lt;module name&gt;</code>.</p>
-<p><strong><em>/!\</em></strong> <strong>ATTENTION <em>/!\</em></strong> <em>Event functions take only one argument, <code>sim</code> (the <code><a href="https://spades-core.predictiveecology.org/reference/simList-class.html">SpaDES.core::simList</a></code> object that stores all objects, modules, functions, etc., of a simulation; see <code>?simList</code>) and event functions always (and only) return <code>sim</code> (using <code>return(invisible(sim))</code>).</em></p>
+<p><strong><em>/!\</em></strong> <strong>ATTENTION <em>/!\</em></strong> <em>Event functions take only one argument, <code>sim</code> (the <code><a href="https://spades-core.predictiveecology.org/reference/simList-class.html">SpaDES.core::simList</a></code> object that stores all objects, modules, functions, etc., of a simulation; see <code><a href="https://spades-core.predictiveecology.org/reference/simList-class.html">?simList</a></code>) and event functions always (and only) return <code>sim</code> (using <code>return(invisible(sim))</code>).</em></p>
 <div id="initialisation-event-function" class="section level5" number="1.2.2.2.1">
 <h5>
 <span class="header-section-number">1.2.2.2.1</span> <em>Initialisation event function</em><a class="anchor" aria-label="anchor" href="#initialisation-event-function"><i class="fas fa-link"></i></a>
@@ -351,7 +352,7 @@ Two things are of particular importance:</p>
 <strong>Events should only schedule themselves</strong>. The only exception is the <code>init</code>, which schedules the first time all other events are executed (even if a particular event only occurs once at the end of the simulation).</li>
 </ol>
 <p>It is usually easier to fill the <code>doEvent.&lt;module name&gt;</code> function <em>after</em> having defined the event functions (as we did above).
-For instance, we know that plotting should occur after the generation of species abundances, and so the <code>abundPlot</code> will be scheduled to occur after the <code>SimulAbund</code> event, by changing event priority (see <code>?priority</code>).</p>
+For instance, we know that plotting should occur after the generation of species abundances, and so the <code>abundPlot</code> will be scheduled to occur after the <code>SimulAbund</code> event, by changing event priority (see <code><a href="https://spades-core.predictiveecology.org/reference/priority.html">?priority</a></code>).</p>
 <p>This is how we configured our <code>doEvent.speciesAbundance</code> function:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">doEvent.speciesAbundance</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">sim</span>, <span class="va">eventTime</span>, <span class="va">eventType</span>, <span class="va">debug</span> <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span>
@@ -362,18 +363,18 @@ For instance, we know that plotting should occur after the generation of species
       <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">abundanceInit</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span>
       
       <span class="co">## schedule future event(s)</span>
-      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">scheduleEvent</span><span class="op">(</span><span class="va">sim</span>, eventTime <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/start.html">start</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span>, moduleName <span class="op">=</span> <span class="st">"speciesAbundance"</span>, 
+      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/scheduleEvent.html">scheduleEvent</a></span><span class="op">(</span><span class="va">sim</span>, eventTime <span class="op">=</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/simList-accessors-times.html">start</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span>, moduleName <span class="op">=</span> <span class="st">"speciesAbundance"</span>, 
                            eventType <span class="op">=</span> <span class="st">"SimulAbund"</span><span class="op">)</span>
-      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">scheduleEvent</span><span class="op">(</span><span class="va">sim</span>, eventTime <span class="op">=</span> <span class="fu">P</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">$</span><span class="va">.plotInitialTime</span>, 
+      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/scheduleEvent.html">scheduleEvent</a></span><span class="op">(</span><span class="va">sim</span>, eventTime <span class="op">=</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/params.html">P</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">$</span><span class="va">.plotInitialTime</span>, 
                            moduleName <span class="op">=</span> <span class="st">"speciesAbundance"</span>, eventType <span class="op">=</span> <span class="st">"abundPlot"</span>,
-                           eventPriority <span class="op">=</span> <span class="fu">.normal</span><span class="op">(</span><span class="op">)</span><span class="op">+</span><span class="fl">0.5</span><span class="op">)</span>
+                           eventPriority <span class="op">=</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/priority.html">.normal</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span><span class="fl">0.5</span><span class="op">)</span>
     <span class="op">}</span>,
     SimulAbund <span class="op">=</span> <span class="op">{</span>
       <span class="co">## do stuff for this event</span>
       <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">abundanceSim</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span>
       
       <span class="co">## schedule future event(s)</span>
-      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">scheduleEvent</span><span class="op">(</span><span class="va">sim</span>, eventTime <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/time.html">time</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">+</span> <span class="fu">P</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">$</span><span class="va">simulationTimeStep</span>, 
+      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/scheduleEvent.html">scheduleEvent</a></span><span class="op">(</span><span class="va">sim</span>, eventTime <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/time.html">time</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/params.html">P</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">$</span><span class="va">simulationTimeStep</span>, 
                            moduleName <span class="op">=</span> <span class="st">"speciesAbundance"</span>, eventType <span class="op">=</span> <span class="st">"SimulAbund"</span><span class="op">)</span>
     <span class="op">}</span>,
     abundPlot <span class="op">=</span> <span class="op">{</span>
@@ -381,12 +382,12 @@ For instance, we know that plotting should occur after the generation of species
       <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">abundancePlot</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span>
       
       <span class="co">## schedule future event(s)</span>
-      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">scheduleEvent</span><span class="op">(</span><span class="va">sim</span>, eventTime <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/time.html">time</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">+</span> <span class="fu">P</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">$</span><span class="va">.plotInterval</span>, 
+      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/scheduleEvent.html">scheduleEvent</a></span><span class="op">(</span><span class="va">sim</span>, eventTime <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/time.html">time</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/params.html">P</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">$</span><span class="va">.plotInterval</span>, 
                            moduleName <span class="op">=</span> <span class="st">"speciesAbundance"</span>, eventType <span class="op">=</span> <span class="st">"abundPlot"</span>, 
-                           eventPriority <span class="op">=</span> <span class="fu">.normal</span><span class="op">(</span><span class="op">)</span><span class="op">+</span><span class="fl">0.5</span><span class="op">)</span>
+                           eventPriority <span class="op">=</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/priority.html">.normal</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span><span class="fl">0.5</span><span class="op">)</span>
     <span class="op">}</span>,
-    <span class="kw"><a href="https://rdrr.io/r/base/warning.html">warning</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="st">"Undefined event type: '"</span>, <span class="fu">current</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>, <span class="st">"eventType"</span>, with <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>,
-                  <span class="st">"' in module '"</span>, <span class="fu">current</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>, <span class="st">"moduleName"</span>, with <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>, <span class="st">"'"</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span><span class="op">)</span>
+    <span class="kw"><a href="https://rdrr.io/r/base/warning.html">warning</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="st">"Undefined event type: '"</span>, <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/simList-accessors-events.html">current</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>, <span class="st">"eventType"</span>, with <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>,
+                  <span class="st">"' in module '"</span>, <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/simList-accessors-events.html">current</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>, <span class="st">"moduleName"</span>, with <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>, <span class="st">"'"</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span><span class="op">)</span>
   <span class="op">)</span>
   <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">)</span>
 <span class="op">}</span></code></pre></div>
@@ -405,7 +406,7 @@ Notice two things:</p>
 <ol style="list-style-type: decimal">
 <li>The <code>SimulAbund</code> event is scheduled at <code>start(sim)</code> (i.e. at the first time step of the simulation), which means that it will run after the <code>init</code> event, but still in the same “year”.</li>
 <li>
-<code>init</code> schedules the first plotting event to be executed at the time defined by the <code>.plotInitialTime</code> parameter, which is stored in the <code>sim</code> object (and obtained using <code>SpaDES.core::P(sim)</code>), but with a slightly lower event priority <code>eventPriority = .normal()+0.5</code> (see <code>?priority</code>).</li>
+<code>init</code> schedules the first plotting event to be executed at the time defined by the <code>.plotInitialTime</code> parameter, which is stored in the <code>sim</code> object (and obtained using <code>SpaDES.core::P(sim)</code>), but with a slightly lower event priority <code>eventPriority = .normal()+0.5</code> (see <code><a href="https://spades-core.predictiveecology.org/reference/priority.html">?priority</a></code>).</li>
 </ol>
 </div>
 <div id="simulabund" class="section level5" number="1.2.2.3.2">
@@ -443,7 +444,7 @@ In more complex cases it is a good idea to pass a vector of module names to <cod
 <p>Here’s an example of how to do this (the commented instructions have been deleted):</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">.inputObjects</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">{</span>
-  <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu">suppliedElsewhere</span><span class="op">(</span><span class="st">"r"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+  <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://spades-core.predictiveecology.org/reference/suppliedElsewhere.html">suppliedElsewhere</a></span><span class="op">(</span><span class="st">"r"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
     <span class="co">## make template raster if not supplied elsewhere.</span>
     <span class="va">sim</span><span class="op">$</span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/raster/man/raster.html">raster</a></span><span class="op">(</span>nrows <span class="op">=</span> <span class="fl">100</span>, ncols <span class="op">=</span> <span class="fl">100</span>, xmn <span class="op">=</span> <span class="op">-</span><span class="fl">50</span>, xmx <span class="op">=</span> <span class="fl">50</span>, ymn <span class="op">=</span> <span class="op">-</span><span class="fl">50</span>, ymx <span class="op">=</span> <span class="fl">50</span><span class="op">)</span>
   <span class="op">}</span>
@@ -503,7 +504,7 @@ This may appear trivial in this example, but it can be extremely useful when inu
 <code class="sourceCode R">
 <span class="co"># Everything in this file gets sourced during simInit, and all functions and objects</span>
 <span class="co"># are put into the simList.</span>
-<span class="fu">defineModule</span><span class="op">(</span><span class="va">sim</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
+<span class="fu"><a href="https://spades-core.predictiveecology.org/reference/defineModule.html">defineModule</a></span><span class="op">(</span><span class="va">sim</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
   name <span class="op">=</span> <span class="st">"temperature"</span>,
   description <span class="op">=</span> <span class="st">"Temperature simulator"</span>,
   keywords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"temperature"</span>, <span class="st">"gaussian"</span>, <span class="st">"spatial"</span><span class="op">)</span>,
@@ -516,22 +517,22 @@ This may appear trivial in this example, but it can be extremely useful when inu
   documentation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">"README.txt"</span>, <span class="st">"temperature.Rmd"</span><span class="op">)</span>,
   reqdPkgs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">"PredictiveEcology/SpaDES.core@development (&gt;=1.0.10.9000)"</span>,
                   <span class="st">"raster"</span><span class="op">)</span>,
-   parameters <span class="op">=</span> <span class="fu">bindrows</span><span class="op">(</span>
+   parameters <span class="op">=</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/bindrows.html">bindrows</a></span><span class="op">(</span>
     <span class="co">#defineParameter("paramName", "paramClass", value, min, max, "parameter description"),</span>
-    <span class="fu">defineParameter</span><span class="op">(</span><span class="st">"simulationTimeStep"</span>, <span class="st">"numeric"</span>, <span class="fl">1</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, 
+    <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/defineParameter.html">defineParameter</a></span><span class="op">(</span><span class="st">"simulationTimeStep"</span>, <span class="st">"numeric"</span>, <span class="fl">1</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, 
                     <span class="st">"This describes the simulation time step interval"</span><span class="op">)</span>,
-    <span class="fu">defineParameter</span><span class="op">(</span><span class="st">".plotInitialTime"</span>, <span class="st">"numeric"</span>, <span class="fl">1</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, 
+    <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/defineParameter.html">defineParameter</a></span><span class="op">(</span><span class="st">".plotInitialTime"</span>, <span class="st">"numeric"</span>, <span class="fl">1</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, 
                     <span class="st">"This describes the simulation time at which the first plot event should occur"</span><span class="op">)</span>,
-    <span class="fu">defineParameter</span><span class="op">(</span><span class="st">".plotInterval"</span>, <span class="st">"numeric"</span>, <span class="fl">1</span>, <span class="cn">NA</span>, <span class="cn">NA</span>,
+    <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/defineParameter.html">defineParameter</a></span><span class="op">(</span><span class="st">".plotInterval"</span>, <span class="st">"numeric"</span>, <span class="fl">1</span>, <span class="cn">NA</span>, <span class="cn">NA</span>,
                     <span class="st">"This describes the simulation time interval between plot events"</span><span class="op">)</span>
   <span class="op">)</span>,
-  inputObjects <span class="op">=</span> <span class="fu">bindrows</span><span class="op">(</span>
+  inputObjects <span class="op">=</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/bindrows.html">bindrows</a></span><span class="op">(</span>
     <span class="co">#expectsInput("objectName", "objectClass", "input object description", sourceURL, ...),</span>
-    <span class="fu">expectsInput</span><span class="op">(</span><span class="st">"r"</span>, <span class="st">"RasterLayer"</span>, <span class="st">"Template raster"</span><span class="op">)</span>
+    <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/expectsInput.html">expectsInput</a></span><span class="op">(</span><span class="st">"r"</span>, <span class="st">"RasterLayer"</span>, <span class="st">"Template raster"</span><span class="op">)</span>
   <span class="op">)</span>,
-  outputObjects <span class="op">=</span> <span class="fu">bindrows</span><span class="op">(</span>
+  outputObjects <span class="op">=</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/bindrows.html">bindrows</a></span><span class="op">(</span>
     <span class="co">#createsOutput("objectName", "objectClass", "output object description", ...),</span>
-    <span class="fu">createsOutput</span><span class="op">(</span><span class="st">"tempRasters"</span>,  <span class="st">"list"</span>, <span class="st">"List of raster layers of temperature at any given year"</span><span class="op">)</span>
+    <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/createsOutput.html">createsOutput</a></span><span class="op">(</span><span class="st">"tempRasters"</span>,  <span class="st">"list"</span>, <span class="st">"List of raster layers of temperature at any given year"</span><span class="op">)</span>
   <span class="op">)</span>
 <span class="op">)</span><span class="op">)</span>
 
@@ -546,16 +547,16 @@ This may appear trivial in this example, but it can be extremely useful when inu
       <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">temperatureInit</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span>
       
       <span class="co">## schedule future event(s)</span>
-      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">scheduleEvent</span><span class="op">(</span><span class="va">sim</span>, eventTime <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/start.html">start</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span>, moduleName <span class="op">=</span> <span class="st">"temperature"</span>, eventType <span class="op">=</span> <span class="st">"SimulTemp"</span><span class="op">)</span>
-      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">scheduleEvent</span><span class="op">(</span><span class="va">sim</span>, eventTime <span class="op">=</span> <span class="fu">P</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">$</span><span class="va">.plotInitialTime</span>, moduleName <span class="op">=</span> <span class="st">"temperature"</span>, 
-                           eventType <span class="op">=</span> <span class="st">"tempPlot"</span>, eventPriority <span class="op">=</span> <span class="fu">.normal</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0.5</span><span class="op">)</span>
+      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/scheduleEvent.html">scheduleEvent</a></span><span class="op">(</span><span class="va">sim</span>, eventTime <span class="op">=</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/simList-accessors-times.html">start</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span>, moduleName <span class="op">=</span> <span class="st">"temperature"</span>, eventType <span class="op">=</span> <span class="st">"SimulTemp"</span><span class="op">)</span>
+      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/scheduleEvent.html">scheduleEvent</a></span><span class="op">(</span><span class="va">sim</span>, eventTime <span class="op">=</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/params.html">P</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">$</span><span class="va">.plotInitialTime</span>, moduleName <span class="op">=</span> <span class="st">"temperature"</span>, 
+                           eventType <span class="op">=</span> <span class="st">"tempPlot"</span>, eventPriority <span class="op">=</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/priority.html">.normal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0.5</span><span class="op">)</span>
     <span class="op">}</span>,
     SimulTemp <span class="op">=</span> <span class="op">{</span>
       <span class="co">## do stuff for this event</span>
       <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">temperatureSim</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span>
       
       <span class="co">## schedule future event(s)</span>
-      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">scheduleEvent</span><span class="op">(</span><span class="va">sim</span>, eventTime <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/time.html">time</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">+</span> <span class="fu">P</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">$</span><span class="va">simulationTimeStep</span>, moduleName <span class="op">=</span> <span class="st">"temperature"</span>, 
+      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/scheduleEvent.html">scheduleEvent</a></span><span class="op">(</span><span class="va">sim</span>, eventTime <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/time.html">time</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/params.html">P</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">$</span><span class="va">simulationTimeStep</span>, moduleName <span class="op">=</span> <span class="st">"temperature"</span>, 
                            eventType <span class="op">=</span> <span class="st">"SimulTemp"</span><span class="op">)</span>
     <span class="op">}</span>,
     tempPlot <span class="op">=</span> <span class="op">{</span>
@@ -563,11 +564,11 @@ This may appear trivial in this example, but it can be extremely useful when inu
       <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">temperaturePlot</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span>
 
       <span class="co">## schedule future event(s)</span>
-      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">scheduleEvent</span><span class="op">(</span><span class="va">sim</span>, eventTime <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/time.html">time</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">+</span> <span class="fu">P</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">$</span><span class="va">.plotInterval</span>, moduleName <span class="op">=</span> <span class="st">"temperature"</span>, 
-                           eventType <span class="op">=</span> <span class="st">"tempPlot"</span>, eventPriority <span class="op">=</span> <span class="fu">.normal</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0.5</span><span class="op">)</span>
+      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/scheduleEvent.html">scheduleEvent</a></span><span class="op">(</span><span class="va">sim</span>, eventTime <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/time.html">time</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/params.html">P</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">$</span><span class="va">.plotInterval</span>, moduleName <span class="op">=</span> <span class="st">"temperature"</span>, 
+                           eventType <span class="op">=</span> <span class="st">"tempPlot"</span>, eventPriority <span class="op">=</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/priority.html">.normal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0.5</span><span class="op">)</span>
     <span class="op">}</span>,
-    <span class="kw"><a href="https://rdrr.io/r/base/warning.html">warning</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="st">"Undefined event type: '"</span>, <span class="fu">current</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>, <span class="st">"eventType"</span>, with <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>,
-                  <span class="st">"' in module '"</span>, <span class="fu">current</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>, <span class="st">"moduleName"</span>, with <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>, <span class="st">"'"</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span><span class="op">)</span>
+    <span class="kw"><a href="https://rdrr.io/r/base/warning.html">warning</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="st">"Undefined event type: '"</span>, <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/simList-accessors-events.html">current</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>, <span class="st">"eventType"</span>, with <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>,
+                  <span class="st">"' in module '"</span>, <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/simList-accessors-events.html">current</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>, <span class="st">"moduleName"</span>, with <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>, <span class="st">"'"</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span><span class="op">)</span>
   <span class="op">)</span>
   <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">)</span>
 <span class="op">}</span>
@@ -602,7 +603,7 @@ This may appear trivial in this example, but it can be extremely useful when inu
 <span class="op">}</span>
 
 <span class="va">.inputObjects</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">{</span>
-  <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu">suppliedElsewhere</span><span class="op">(</span><span class="st">"r"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+  <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://spades-core.predictiveecology.org/reference/suppliedElsewhere.html">suppliedElsewhere</a></span><span class="op">(</span><span class="st">"r"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
     <span class="co">## make template raster if not supplied elsewhere.</span>
     <span class="va">sim</span><span class="op">$</span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/raster/man/raster.html">raster</a></span><span class="op">(</span>nrows <span class="op">=</span> <span class="fl">100</span>, ncols <span class="op">=</span> <span class="fl">100</span>, xmn <span class="op">=</span> <span class="op">-</span><span class="fl">50</span>, xmx <span class="op">=</span> <span class="fl">50</span>, ymn <span class="op">=</span> <span class="op">-</span><span class="fl">50</span>, ymx <span class="op">=</span> <span class="fl">50</span><span class="op">)</span>
   <span class="op">}</span>
@@ -647,7 +648,7 @@ Notice how the future events where scheduled to <code>P(sim)$statsTimestep + 0.1
 <code class="sourceCode R">
 <span class="co"># Everything in this file gets sourced during simInit, and all functions and objects</span>
 <span class="co"># are put into the simList.</span>
-<span class="fu">defineModule</span><span class="op">(</span><span class="va">sim</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
+<span class="fu"><a href="https://spades-core.predictiveecology.org/reference/defineModule.html">defineModule</a></span><span class="op">(</span><span class="va">sim</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
   name <span class="op">=</span> <span class="st">"speciesTempLM"</span>,
   description <span class="op">=</span> <span class="st">"Statistical analysis of species ~ temperature relationships using LM"</span>,
   keywords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"linear model"</span><span class="op">)</span>,
@@ -660,20 +661,20 @@ Notice how the future events where scheduled to <code>P(sim)$statsTimestep + 0.1
   documentation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">"README.txt"</span>, <span class="st">"speciesTempLM.Rmd"</span><span class="op">)</span>,
   reqdPkgs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">"PredictiveEcology/SpaDES.core@development (&gt;=1.0.10.9000)"</span>,
                   <span class="st">"raster"</span>, <span class="st">"ggplot2"</span>, <span class="st">"data.table"</span>, <span class="st">"reshape2"</span><span class="op">)</span>,
-   parameters <span class="op">=</span> <span class="fu">bindrows</span><span class="op">(</span>
+   parameters <span class="op">=</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/bindrows.html">bindrows</a></span><span class="op">(</span>
     <span class="co">#defineParameter("paramName", "paramClass", value, min, max, "parameter description"),</span>
-    <span class="fu">defineParameter</span><span class="op">(</span><span class="st">"statsTimestep"</span>, <span class="st">"numeric"</span>, <span class="fl">1</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="st">"This describes the how often the statitiscal analysis will be done"</span><span class="op">)</span>
+    <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/defineParameter.html">defineParameter</a></span><span class="op">(</span><span class="st">"statsTimestep"</span>, <span class="st">"numeric"</span>, <span class="fl">1</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="st">"This describes the how often the statitiscal analysis will be done"</span><span class="op">)</span>
   <span class="op">)</span>,
-  inputObjects <span class="op">=</span> <span class="fu">bindrows</span><span class="op">(</span>
+  inputObjects <span class="op">=</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/bindrows.html">bindrows</a></span><span class="op">(</span>
     <span class="co">#expectsInput("objectName", "objectClass", "input object description", sourceURL, ...),</span>
-    <span class="fu">expectsInput</span><span class="op">(</span><span class="st">"abundRasters"</span>, <span class="st">"list"</span>, <span class="st">"List of raster layers of species abundance at any given year"</span><span class="op">)</span>,
-    <span class="fu">expectsInput</span><span class="op">(</span><span class="st">"tempRasters"</span>, <span class="st">"list"</span>, <span class="st">"List of raster layers of temperature at any given year"</span><span class="op">)</span>
+    <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/expectsInput.html">expectsInput</a></span><span class="op">(</span><span class="st">"abundRasters"</span>, <span class="st">"list"</span>, <span class="st">"List of raster layers of species abundance at any given year"</span><span class="op">)</span>,
+    <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/expectsInput.html">expectsInput</a></span><span class="op">(</span><span class="st">"tempRasters"</span>, <span class="st">"list"</span>, <span class="st">"List of raster layers of temperature at any given year"</span><span class="op">)</span>
   <span class="op">)</span>,
-  outputObjects <span class="op">=</span> <span class="fu">bindrows</span><span class="op">(</span>
+  outputObjects <span class="op">=</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/bindrows.html">bindrows</a></span><span class="op">(</span>
     <span class="co">#createsOutput("objectName", "objectClass", "output object description", ...),</span>
-    <span class="fu">createsOutput</span><span class="op">(</span><span class="st">"outputdata"</span>, <span class="st">"list"</span>, <span class="st">"List of dataframes containing species abundances and temperature values per pixel"</span><span class="op">)</span>,
-    <span class="fu">createsOutput</span><span class="op">(</span><span class="st">"outputLM"</span>, <span class="st">"list"</span>, <span class="st">"List of output yearly LMs (abundance ~ temperature)"</span><span class="op">)</span>,
-    <span class="fu">createsOutput</span><span class="op">(</span><span class="st">"yrs"</span>, <span class="st">"numeric"</span>, <span class="st">"Vector of years used for statistical analysis"</span><span class="op">)</span>
+    <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/createsOutput.html">createsOutput</a></span><span class="op">(</span><span class="st">"outputdata"</span>, <span class="st">"list"</span>, <span class="st">"List of dataframes containing species abundances and temperature values per pixel"</span><span class="op">)</span>,
+    <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/createsOutput.html">createsOutput</a></span><span class="op">(</span><span class="st">"outputLM"</span>, <span class="st">"list"</span>, <span class="st">"List of output yearly LMs (abundance ~ temperature)"</span><span class="op">)</span>,
+    <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/createsOutput.html">createsOutput</a></span><span class="op">(</span><span class="st">"yrs"</span>, <span class="st">"numeric"</span>, <span class="st">"Vector of years used for statistical analysis"</span><span class="op">)</span>
   <span class="op">)</span>
 <span class="op">)</span><span class="op">)</span>
 
@@ -688,29 +689,29 @@ Notice how the future events where scheduled to <code>P(sim)$statsTimestep + 0.1
       <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">statsInit</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span>
 
       <span class="co">## schedule future event(s)</span>
-      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">scheduleEvent</span><span class="op">(</span><span class="va">sim</span>, <span class="fu">P</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">$</span><span class="va">statsTimestep</span>, <span class="st">"speciesTempLM"</span>, 
-                           <span class="st">"stats"</span>, eventPriority <span class="op">=</span> <span class="fu">.normal</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">2</span><span class="op">)</span>
-      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">scheduleEvent</span><span class="op">(</span><span class="va">sim</span>, <span class="fu">P</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">$</span><span class="va">statsTimestep</span>, <span class="st">"speciesTempLM"</span>, 
-                           <span class="st">"statsPlot"</span>, eventPriority <span class="op">=</span> <span class="fu">.normal</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">2.5</span><span class="op">)</span>
+      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/scheduleEvent.html">scheduleEvent</a></span><span class="op">(</span><span class="va">sim</span>, <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/params.html">P</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">$</span><span class="va">statsTimestep</span>, <span class="st">"speciesTempLM"</span>, 
+                           <span class="st">"stats"</span>, eventPriority <span class="op">=</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/priority.html">.normal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">2</span><span class="op">)</span>
+      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/scheduleEvent.html">scheduleEvent</a></span><span class="op">(</span><span class="va">sim</span>, <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/params.html">P</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">$</span><span class="va">statsTimestep</span>, <span class="st">"speciesTempLM"</span>, 
+                           <span class="st">"statsPlot"</span>, eventPriority <span class="op">=</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/priority.html">.normal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">2.5</span><span class="op">)</span>
     <span class="op">}</span>,
     stats <span class="op">=</span> <span class="op">{</span>
       <span class="co">## do stuff for this event</span>
       <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">statsAnalysis</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span>
       
       <span class="co">## schedule future event(s)</span>
-      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">scheduleEvent</span><span class="op">(</span><span class="va">sim</span>, <span class="fu"><a href="https://rdrr.io/r/stats/time.html">time</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">+</span> <span class="fu">P</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">$</span><span class="va">statsTimestep</span>, <span class="st">"speciesTempLM"</span>, 
-                           <span class="st">"stats"</span>, eventPriority <span class="op">=</span> <span class="fu">.normal</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">2</span><span class="op">)</span>
+      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/scheduleEvent.html">scheduleEvent</a></span><span class="op">(</span><span class="va">sim</span>, <span class="fu"><a href="https://rdrr.io/r/stats/time.html">time</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/params.html">P</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">$</span><span class="va">statsTimestep</span>, <span class="st">"speciesTempLM"</span>, 
+                           <span class="st">"stats"</span>, eventPriority <span class="op">=</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/priority.html">.normal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">2</span><span class="op">)</span>
     <span class="op">}</span>,
     statsPlot <span class="op">=</span> <span class="op">{</span>
       <span class="co">## do stuff for this event</span>
       <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">statsPlot</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span>
       
       <span class="co">## schedule future event(s)</span>
-      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">scheduleEvent</span><span class="op">(</span><span class="va">sim</span>, <span class="fu"><a href="https://rdrr.io/r/stats/time.html">time</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">+</span> <span class="fu">P</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">$</span><span class="va">statsTimestep</span>, <span class="st">"speciesTempLM"</span>,
-                           <span class="st">"statsPlot"</span>, eventPriority <span class="op">=</span> <span class="fu">.normal</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">2.5</span><span class="op">)</span>
+      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/scheduleEvent.html">scheduleEvent</a></span><span class="op">(</span><span class="va">sim</span>, <span class="fu"><a href="https://rdrr.io/r/stats/time.html">time</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/params.html">P</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">$</span><span class="va">statsTimestep</span>, <span class="st">"speciesTempLM"</span>,
+                           <span class="st">"statsPlot"</span>, eventPriority <span class="op">=</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/priority.html">.normal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">2.5</span><span class="op">)</span>
     <span class="op">}</span>,
-    <span class="kw"><a href="https://rdrr.io/r/base/warning.html">warning</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="st">"Undefined event type: '"</span>, <span class="fu">current</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>, <span class="st">"eventType"</span>, with <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>,
-                  <span class="st">"' in module '"</span>, <span class="fu">current</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>, <span class="st">"moduleName"</span>, with <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>, <span class="st">"'"</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span><span class="op">)</span>
+    <span class="kw"><a href="https://rdrr.io/r/base/warning.html">warning</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="st">"Undefined event type: '"</span>, <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/simList-accessors-events.html">current</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>, <span class="st">"eventType"</span>, with <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>,
+                  <span class="st">"' in module '"</span>, <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/simList-accessors-events.html">current</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>, <span class="st">"moduleName"</span>, with <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>, <span class="st">"'"</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span><span class="op">)</span>
   <span class="op">)</span>
   <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">)</span>
 <span class="op">}</span>
@@ -785,8 +786,8 @@ Notice how the future events where scheduled to <code>P(sim)$statsTimestep + 0.1
   <span class="co"># }</span>
   
   <span class="co">#cacheTags &lt;- c(currentModule(sim), "function:.inputObjects") ## uncomment this if Cache is being used</span>
-  <span class="va">dPath</span> <span class="op">&lt;-</span> <span class="fu">asPath</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/options.html">getOption</a></span><span class="op">(</span><span class="st">"reproducible.destinationPath"</span>, <span class="fu">dataPath</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">)</span>, <span class="fl">1</span><span class="op">)</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/message.html">message</a></span><span class="op">(</span><span class="fu">currentModule</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span>, <span class="st">": using dataPath '"</span>, <span class="va">dPath</span>, <span class="st">"'."</span><span class="op">)</span>
+  <span class="va">dPath</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://reproducible.predictiveecology.org/reference/Path-class.html">asPath</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/options.html">getOption</a></span><span class="op">(</span><span class="st">"reproducible.destinationPath"</span>, <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/simList-accessors-paths.html">dataPath</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">)</span>, <span class="fl">1</span><span class="op">)</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/message.html">message</a></span><span class="op">(</span><span class="fu"><a href="https://spades-core.predictiveecology.org/reference/namespacing.html">currentModule</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span>, <span class="st">": using dataPath '"</span>, <span class="va">dPath</span>, <span class="st">"'."</span><span class="op">)</span>
   
   <span class="co"># ! ----- EDIT BELOW ----- ! #</span>
   
@@ -848,14 +849,14 @@ Here we chose to list <code>.plotInitialTime</code> (a parameter used and define
 <span class="op">)</span>
 
 <span class="co">## make a list of directory paths</span>
-<span class="va">simPaths</span> <span class="op">&lt;-</span> <span class="fu">getPaths</span><span class="op">(</span><span class="op">)</span>
+<span class="va">simPaths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/setPaths.html">getPaths</a></span><span class="op">(</span><span class="op">)</span>
 
 <span class="co">## Simulation setup</span>
-<span class="va">mySim</span> <span class="op">&lt;-</span> <span class="fu">simInit</span><span class="op">(</span>times <span class="op">=</span> <span class="va">simTimes</span>, params <span class="op">=</span> <span class="va">simParams</span>, 
+<span class="va">mySim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/simInit.html">simInit</a></span><span class="op">(</span>times <span class="op">=</span> <span class="va">simTimes</span>, params <span class="op">=</span> <span class="va">simParams</span>, 
                  modules <span class="op">=</span> <span class="va">simModules</span>, paths <span class="op">=</span> <span class="va">simPaths</span><span class="op">)</span></code></pre></div>
 <p>Finally, we highlight that <code>simInit</code> also executes all <code>.inputObjects</code> functions, and schedules the <code>init</code> events, but does not execute them:</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">events</span><span class="op">(</span><span class="va">mySim</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://spades-core.predictiveecology.org/reference/simList-accessors-events.html">events</a></span><span class="op">(</span><span class="va">mySim</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="checking-the-simulation-setup" class="section level4" number="1.2.5.2">
 <h4>
@@ -868,13 +869,13 @@ The direction of the arrows indicates an output to input flow.
 You can see that <em>speciesAbundance</em> and <em>temperature</em> inputs (specifically our R raster) are supplied by an external source (“<em>INPUT</em>”) - the user or <code>.inputObjects</code>.
 Whereas the inputs to the <em>speciesTempLM</em> module are outputs of the <em>speciesAbundance</em> and <em>temperature</em> modules.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">moduleDiagram</span><span class="op">(</span><span class="va">mySim</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://spades-core.predictiveecology.org/reference/moduleDiagram.html">moduleDiagram</a></span><span class="op">(</span><span class="va">mySim</span><span class="op">)</span></code></pre></div>
 <div class="inline-figure"><img src="Part1_DummyModel_files/figure-html/modulediagram-1.png" width="960"></div>
 <p><strong>Object diagram</strong></p>
 <p><code>objectDiagram</code> provides another way of checking module linkages.
 It explicitly shows module inter-dependencies by depicting the objects that establish links between modules.</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">objectDiagram</span><span class="op">(</span><span class="va">mySim</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://spades-core.predictiveecology.org/reference/objectDiagram.html">objectDiagram</a></span><span class="op">(</span><span class="va">mySim</span><span class="op">)</span></code></pre></div>
 <div id="htmlwidget-b4cbbaf0643964535329" style="width:672px;height:480px;" class="DiagrammeR html-widget"></div>
 <script type="application/json" data-for="htmlwidget-b4cbbaf0643964535329">{"x":{"diagram":"sequenceDiagram\n_INPUT_ ->> speciesAbundance : r\n_INPUT_ ->> temperature : r\nspeciesAbundance ->> speciesTempLM : abundRasters\ntemperature ->> speciesTempLM : tempRasters\n"},"evals":[],"jsHooks":[]}</script>
 </div>
@@ -889,7 +890,7 @@ In case something fails, this helps diagnosing where the issue occurred.</p>
 <code class="sourceCode R"><span class="co">## run simulation</span>
 <span class="fu"><a href="http://quickplot.predictiveecology.org//reference/dev.html">dev</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># on Windows and Mac, this opens external device if using Rstudio, it is faster</span>
 <span class="fu"><a href="http://quickplot.predictiveecology.org//reference/clearPlot.html">clearPlot</a></span><span class="op">(</span><span class="op">)</span>
-<span class="va">mySim2</span> <span class="op">&lt;-</span> <span class="fu">spades</span><span class="op">(</span><span class="va">mySim</span>, debug <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<span class="va">mySim2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://spades-core.predictiveecology.org/reference/spades.html">spades</a></span><span class="op">(</span><span class="va">mySim</span>, debug <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:figSimulationFig"></span>
 <img src="simul_plot.png" alt="**Simulation plots**: Final plot of the simulation" width="326"><p class="caption">
