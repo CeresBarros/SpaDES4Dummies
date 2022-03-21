@@ -1,7 +1,7 @@
 ---
 title: "SpaDES 4 Dummies guide"
 author: "Ceres Barros"
-date: "2022-03-17"
+date: "2022-03-18"
 site: bookdown::bookdown_site
 knit: "bookdown::render_book"
 bibliography:

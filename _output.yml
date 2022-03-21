@@ -34,11 +34,11 @@ bookdown::gitbook:
     whatsapp: false
   github-repo: https://github.com/CeresBarros/SpaDES4Dummies
 
-bookdown::epub_book: default
-bookdown::pdf_book:
-  includes:
-    in_header: preamble.tex
-  # latex_engine: xelatex
-  # citation_package: natbib
-  # keep_tex: no
+# bookdown::epub_book: default
+# bookdown::pdf_book:
+#   includes:
+#     in_header: preamble.tex
+#   # latex_engine: xelatex
+#   # citation_package: natbib
+#   # keep_tex: no
 
