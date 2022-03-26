@@ -2,8 +2,6 @@
 
 Authors: Ceres Barros, Tati Micheletti
 
-
-
 Let's imagine we want to explore how the relationship between a species' abundance and temperature changes over time.
 Both the abundance data and the temperature data are being constantly updated by a simulation model, and we want to analyse the relationship between the two iteratively, without needing to manually run a script to account for the newly generated data inputs.
 
@@ -67,7 +65,7 @@ dev()
 plot(stack(abundance))
 ```
 
-<img src="Part1_DummyModel_files/figure-html/the_r_way_simulation_length-1.png" width="672" />
+![](Part1_DummyModel_files/figure-latex/the_r_way_simulation_length-1.pdf)<!-- --> 
 
 ### Temperature "simulations"
 
@@ -92,7 +90,7 @@ temperature <- temp_model(r = r, Time = Time)
 plot(stack(temperature))
 ```
 
-<img src="Part1_DummyModel_files/figure-html/the_r_way_plot_results_TMP-1.png" width="672" />
+![](Part1_DummyModel_files/figure-latex/the_r_way_plot_results_TMP-1.pdf)<!-- --> 
 
 ### Data analysis
 
@@ -212,10 +210,14 @@ To distinguish what input and output objects are in the context of a module, a g
 Another way of explaining it for objects is illustrated in Fig.
 \@ref(fig:figObj):
 
-<div class="figure" style="text-align: center">
-<img src="obj.png" alt="**Inputs and outputs in `SpaDES`:** Object A comes from outside of the module (e.g. from an internet URL, from data you have, or from `.inputObjects`), while Module Z produces object C. Both objects serve as an **inputs** for Module Y, which in return produce as **outputs** objects B and D, respectivelly from objects A and C. As Module Z uses a simple function *internally* to create object C, it doesn't have any inputs, such as our dummy example." width="364" />
-<p class="caption">(\#fig:figObj)**Inputs and outputs in `SpaDES`:** Object A comes from outside of the module (e.g. from an internet URL, from data you have, or from `.inputObjects`), while Module Z produces object C. Both objects serve as an **inputs** for Module Y, which in return produce as **outputs** objects B and D, respectivelly from objects A and C. As Module Z uses a simple function *internally* to create object C, it doesn't have any inputs, such as our dummy example.</p>
-</div>
+\begin{figure}
+
+{\centering \includegraphics[width=0.8\linewidth]{obj} 
+
+}
+
+\caption{**Inputs and outputs in `SpaDES`:** Object A comes from outside of the module (e.g. from an internet URL, from data you have, or from `.inputObjects`), while Module Z produces object C. Both objects serve as an **inputs** for Module Y, which in return produce as **outputs** objects B and D, respectivelly from objects A and C. As Module Z uses a simple function *internally* to create object C, it doesn't have any inputs, such as our dummy example.}(\#fig:figObj)
+\end{figure}
 
 The exception to this rule are the default input objects created by the `.inputObjects` function (see [.inputObjects function]) during the `simInit` call.
 
@@ -905,7 +907,7 @@ Whereas the inputs to the *speciesTempLM* module are outputs of the *speciesAbun
 moduleDiagram(mySim)
 ```
 
-<img src="Part1_DummyModel_files/figure-html/modulediagram-1.png" width="960" />
+![](Part1_DummyModel_files/figure-latex/modulediagram-1.pdf)<!-- --> 
 
 **Object diagram**
 
@@ -917,10 +919,7 @@ It explicitly shows module inter-dependencies by depicting the objects that esta
 objectDiagram(mySim)
 ```
 
-```{=html}
-<div id="htmlwidget-b4cbbaf0643964535329" style="width:672px;height:480px;" class="DiagrammeR html-widget"></div>
-<script type="application/json" data-for="htmlwidget-b4cbbaf0643964535329">{"x":{"diagram":"sequenceDiagram\n_INPUT_ ->> speciesAbundance : r\n_INPUT_ ->> temperature : r\nspeciesAbundance ->> speciesTempLM : abundRasters\ntemperature ->> speciesTempLM : tempRasters\n"},"evals":[],"jsHooks":[]}</script>
-```
+![](Part1_DummyModel_files/figure-latex/eventdiagram-1.pdf)<!-- --> 
 
 #### Running `SpaDES`
 
@@ -936,10 +935,14 @@ clearPlot()
 mySim2 <- spades(mySim, debug = TRUE)
 ```
 
-<div class="figure" style="text-align: center">
-<img src="simul_plot.png" alt="**Simulation plots**: Final plot of the simulation" width="326" />
-<p class="caption">(\#fig:figSimulationFig)**Simulation plots**: Final plot of the simulation</p>
-</div>
+\begin{figure}
+
+{\centering \includegraphics[width=0.8\linewidth]{simul_plot} 
+
+}
+
+\caption{**Simulation plots**: Final plot of the simulation}(\#fig:figSimulationFig)
+\end{figure}
 
 We suggest experimenting with changing parameter values and trying to create and add other modules to further explore all the `SpaDES` flexibility.
 The more complex the project gets, the more advantageous it is to use `SpaDES` to turn modules *on* or *off*, swapping modules to run, e.g., different statistical analyses, or to include different data.
