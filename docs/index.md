@@ -1,7 +1,7 @@
 ---
 title: "SpaDES 4 Dummies guide"
 author: "Ceres Barros"
-date: "2022-03-18"
+date: "2022-03-21"
 site: bookdown::bookdown_site
 knit: "bookdown::render_book"
 bibliography:
@@ -12,6 +12,7 @@ documentclass: book
 github-repo: CeresBarros/SpaDES4Dummies
 url: 'https\://ceresbarros.github.io/SpaDES4Dummies/'
 description: "A `SpaDES` crash-course"
+always_allow_html: true
 ---
 
 

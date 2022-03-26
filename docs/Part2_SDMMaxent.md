@@ -2,13 +2,11 @@
 
 Authors: Ceres Barros, Alex M. Chubaty
 
-
-
 In \@ref(part1) of this guide, we described how to create new `SpaDES` modules, their different components, how to link different modules and how to set up and run a simulation.
 
 Here, we assume that you are familiar with these steps, but go further in showing important `SpaDES` features that facilitate many of the steps common to most ecological modelling exercises.
 For the sake of simplicity, we focus our example on projecting a species' distribution as a function of climate covariates.
-Yet, the true power of `SpaDES` is more evident when using complex dynamic simulation models parameterized using large datasets and ran across large spatial areas.
+Yet, the true power of `SpaDES` is more evident when using complex dynamic simulation models parametrised using large datasets and ran across large spatial areas.
 
 This example is broken into four main parts: 1) Module creation and coding; 2) Running the model; 3) Caching; and 4) Best practices.
 By no mean does it cover caching or best practices in full, as each of these topics is very extensive, but it highlights some of their essentials in `SpaDES` and from our own experience.
@@ -95,7 +93,7 @@ The `prepInputs` function downloads the % cover layer from the Canadian National
 The module then outputs *Picea glauca* % cover as a raster (`sppAbundanceRas`) and as a `data.table` (`sppAbundanceDT`).
 The `data.table` contains added information about the year of the simulation during which the data should be used (here, only the first year when SDM fitting happens).
 
-We export species % cover in two formats (a raster and a table) for demonstrational purposes, but also because we could envision that this model (i.e. group of modules) could save the species distribution projections for several points in time in a more compact format of a `data.table` -- large raster layers can consume a considerable amount of disk space (see [Coding for the future]].
+We export species % cover in two formats (a raster and a table) for demonstrational purposes, but also because we could envision that this model (i.e. group of modules) could save the species distribution projections for several points in time in a more compact format of a `data.table` -- large raster layers can consume a considerable amount of disk space (see [Coding for the future]).
 
 
 ```r
@@ -1001,13 +999,17 @@ mySimGLM <- simInit(times = simTimes, params = simParamsGLM,
 
 
 ```
-#> Warning: [vect] argument 'crs' should be a character value
+## Warning: [vect] argument 'crs' should be a character value
 ```
 
-<div class="figure" style="text-align: center">
-<img src="Part2_SDMMaxent_files/figure-html/studyAreaCanada-1.png" alt="Study area within Canada." width="672" />
-<p class="caption">(\#fig:studyAreaCanada)Study area within Canada.</p>
-</div>
+\begin{figure}
+
+{\centering \includegraphics{Part2_SDMMaxent_files/figure-latex/studyAreaCanada-1} 
+
+}
+
+\caption{Study area within Canada.}(\#fig:studyAreaCanada)
+\end{figure}
 
 Before running the simulation we look at the module linkage diagrams produced by `moduleDiagram` (Fig. \@ref(fig:moduleDiagram)) and `objectDiagram` (Fig. \@ref(fig:objectDiagram)) to assess whether modules are linked as expected.
 
@@ -1017,20 +1019,23 @@ moduleDiagram(mySimMaxEnt)
 objectDiagram(mySimMaxEnt)
 ```
 
-<div class="figure" style="text-align: center">
-<img src="Part2_SDMMaxent_files/figure-html/moduleDiagram-1.png" alt="Module network diagram." width="672" />
-<p class="caption">(\#fig:moduleDiagram)Module network diagram.</p>
-</div>
+\begin{figure}
 
-<div class="figure" style="text-align: center">
+{\centering \includegraphics{Part2_SDMMaxent_files/figure-latex/moduleDiagram-1} 
 
-```{=html}
-<div id="htmlwidget-5fcd6112aa366f77a383" style="width:672px;height:480px;" class="DiagrammeR html-widget"></div>
-<script type="application/json" data-for="htmlwidget-5fcd6112aa366f77a383">{"x":{"diagram":"sequenceDiagram\n_INPUT_ ->> climateData : baselineClimateURLs\n_INPUT_ ->> climateData : projClimateURLs\n_INPUT_ ->> climateData : studyAreaRas\n_INPUT_ ->> projectSpeciesDist : studyAreaRas\n_INPUT_ ->> speciesAbundanceData : studyAreaRas\nclimateData ->> projectSpeciesDist : climateDT\nspeciesAbundanceData ->> projectSpeciesDist : sppAbundanceDT\n"},"evals":[],"jsHooks":[]}</script>
-```
+}
 
-<p class="caption">(\#fig:objectDiagram)Module diagram showing module inter-dependencies with object names.</p>
-</div>
+\caption{Module network diagram.}(\#fig:moduleDiagram)
+\end{figure}
+
+\begin{figure}
+
+{\centering \includegraphics{Part2_SDMMaxent_files/figure-latex/objectDiagram-1} 
+
+}
+
+\caption{Module diagram showing module inter-dependencies with object names.}(\#fig:objectDiagram)
+\end{figure}
 
 ### Simulation runs
 
@@ -1083,25 +1088,42 @@ myExperiment$MaxEnt_rep1$evalOut
 myExperiment$GLM_rep1$evalOut
 ```
 
-<div class="figure" style="text-align: center">
-<img src="outputs/figures/speciesAbundance.png" alt="**Simulation plots**: Input *Picea glauca* % cover across the landscape - note that values are converted to presence/absence." width="50%" />
-<p class="caption">(\#fig:figSimulationSppAbund)**Simulation plots**: Input *Picea glauca* % cover across the landscape - note that values are converted to presence/absence.</p>
-</div>
+\begin{figure}
 
-<div class="figure" style="text-align: center">
-<img src="outputs/figures/climateRas_BIO1.png" alt="**Simulation plots**: Bioclimatic variables under baseline (year 1) and future conditions" width="50%" /><img src="outputs/figures/climateRas_BIO12.png" alt="**Simulation plots**: Bioclimatic variables under baseline (year 1) and future conditions" width="50%" /><img src="outputs/figures/climateRas_BIO15.png" alt="**Simulation plots**: Bioclimatic variables under baseline (year 1) and future conditions" width="50%" /><img src="outputs/figures/climateRas_BIO4.png" alt="**Simulation plots**: Bioclimatic variables under baseline (year 1) and future conditions" width="50%" />
-<p class="caption">(\#fig:figSimulationClimate)**Simulation plots**: Bioclimatic variables under baseline (year 1) and future conditions</p>
-</div>
+{\centering \includegraphics[width=0.5\linewidth]{outputs/figures/speciesAbundance} 
 
-<div class="figure" style="text-align: center">
-<img src="outputs/figures/projRawVals_MaxEnt_Year1.png" alt="**Simulation plots**: Raw predicted values of species probability of occurence under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt." width="20%" /><img src="outputs/figures/projRawVals_MaxEnt_Year2.png" alt="**Simulation plots**: Raw predicted values of species probability of occurence under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt." width="20%" /><img src="outputs/figures/projRawVals_MaxEnt_Year3.png" alt="**Simulation plots**: Raw predicted values of species probability of occurence under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt." width="20%" /><img src="outputs/figures/projRawVals_MaxEnt_Year4.png" alt="**Simulation plots**: Raw predicted values of species probability of occurence under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt." width="20%" /><img src="outputs/figures/projRawVals_MaxEnt_Year5.png" alt="**Simulation plots**: Raw predicted values of species probability of occurence under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt." width="20%" />
-<p class="caption">(\#fig:figSimulationProj)**Simulation plots**: Raw predicted values of species probability of occurence under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt.</p>
-</div>
+}
 
-<div class="figure" style="text-align: center">
-<img src="outputs/figures/projPA_MaxEnt_Year1.png" alt="**Simulation plots**: Predictions of *Picea glauca* presences/absences under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt." width="20%" /><img src="outputs/figures/projPA_MaxEnt_Year2.png" alt="**Simulation plots**: Predictions of *Picea glauca* presences/absences under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt." width="20%" /><img src="outputs/figures/projPA_MaxEnt_Year3.png" alt="**Simulation plots**: Predictions of *Picea glauca* presences/absences under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt." width="20%" /><img src="outputs/figures/projPA_MaxEnt_Year4.png" alt="**Simulation plots**: Predictions of *Picea glauca* presences/absences under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt." width="20%" /><img src="outputs/figures/projPA_MaxEnt_Year5.png" alt="**Simulation plots**: Predictions of *Picea glauca* presences/absences under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt." width="20%" />
-<p class="caption">(\#fig:figSimulationProj2)**Simulation plots**: Predictions of *Picea glauca* presences/absences under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt.</p>
-</div>
+\caption{**Simulation plots**: Input *Picea glauca* percent cover across the landscape - note that values are converted to presence/absence.}(\#fig:figSimulationSppAbund)
+\end{figure}
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.5\linewidth]{outputs/figures/climateRas_BIO1} \includegraphics[width=0.5\linewidth]{outputs/figures/climateRas_BIO12} \includegraphics[width=0.5\linewidth]{outputs/figures/climateRas_BIO15} \includegraphics[width=0.5\linewidth]{outputs/figures/climateRas_BIO4} 
+
+}
+
+\caption{**Simulation plots**: Bioclimatic variables under baseline (year 1) and future conditions}(\#fig:figSimulationClimate)
+\end{figure}
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.2\linewidth]{outputs/figures/projRawVals_MaxEnt_Year1} \includegraphics[width=0.2\linewidth]{outputs/figures/projRawVals_MaxEnt_Year2} \includegraphics[width=0.2\linewidth]{outputs/figures/projRawVals_MaxEnt_Year3} \includegraphics[width=0.2\linewidth]{outputs/figures/projRawVals_MaxEnt_Year4} \includegraphics[width=0.2\linewidth]{outputs/figures/projRawVals_MaxEnt_Year5} 
+
+}
+
+\caption{**Simulation plots**: Raw predicted values of species probability of occurence under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt.}(\#fig:figSimulationProj)
+\end{figure}
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.2\linewidth]{outputs/figures/projPA_MaxEnt_Year1} \includegraphics[width=0.2\linewidth]{outputs/figures/projPA_MaxEnt_Year2} \includegraphics[width=0.2\linewidth]{outputs/figures/projPA_MaxEnt_Year3} \includegraphics[width=0.2\linewidth]{outputs/figures/projPA_MaxEnt_Year4} \includegraphics[width=0.2\linewidth]{outputs/figures/projPA_MaxEnt_Year5} 
+
+}
+
+\caption{**Simulation plots**: Predictions of *Picea glauca* presences/absences under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt.}(\#fig:figSimulationProj2)
+\end{figure}
+
 
 ## Caching
 
