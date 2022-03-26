@@ -2,16 +2,11 @@
 
 Authors: Ceres Barros, Alex M. Chubaty
 
-```{r setupPart2, include=FALSE}
-options("repos" = c(CRAN = "https://cran.rstudio.com"))
-knitr::opts_chunk$set(cache = 2, cache.rebuild = TRUE)
-```
-
 In \@ref(part1) of this guide, we described how to create new `SpaDES` modules, their different components, how to link different modules and how to set up and run a simulation.
 
 Here, we assume that you are familiar with these steps, but go further in showing important `SpaDES` features that facilitate many of the steps common to most ecological modelling exercises.
 For the sake of simplicity, we focus our example on projecting a species' distribution as a function of climate covariates.
-Yet, the true power of `SpaDES` is more evident when using complex dynamic simulation models parameterized using large datasets and ran across large spatial areas.
+Yet, the true power of `SpaDES` is more evident when using complex dynamic simulation models parametrised using large datasets and ran across large spatial areas.
 
 This example is broken into four main parts: 1) Module creation and coding; 2) Running the model; 3) Caching; and 4) Best practices.
 By no mean does it cover caching or best practices in full, as each of these topics is very extensive, but it highlights some of their essentials in `SpaDES` and from our own experience.
@@ -121,7 +116,7 @@ The `prepInputs` function downloads the % cover layer from the Canadian National
 The module then outputs *Picea glauca* % cover as a raster (`sppAbundanceRas`) and as a `data.table` (`sppAbundanceDT`).
 The `data.table` contains added information about the year of the simulation during which the data should be used (here, only the first year when SDM fitting happens).
 
-We export species % cover in two formats (a raster and a table) for demonstrational purposes, but also because we could envision that this model (i.e. group of modules) could save the species distribution projections for several points in time in a more compact format of a `data.table` -- large raster layers can consume a considerable amount of disk space (see [Coding for the future]].
+We export species % cover in two formats (a raster and a table) for demonstrational purposes, but also because we could envision that this model (i.e. group of modules) could save the species distribution projections for several points in time in a more compact format of a `data.table` -- large raster layers can consume a considerable amount of disk space (see [Coding for the future]).
 
 ```{r dataModule1, code = readLines(file.path("modules", "speciesAbundanceData", "speciesAbundanceData.R")), eval = FALSE}
 ```
@@ -392,7 +387,7 @@ myExperiment$MaxEnt_rep1$evalOut
 myExperiment$GLM_rep1$evalOut
 ```
 
-```{r figSimulationSppAbund, echo = FALSE, fig.align = 'center', out.width = "50%", fig.show='hold', fig.cap = "**Simulation plots**: Input *Picea glauca* % cover across the landscape - note that values are converted to presence/absence."}
+```{r figSimulationSppAbund, echo = FALSE, fig.align = 'center', out.width = "50%", fig.show='hold', fig.cap = "**Simulation plots**: Input *Picea glauca* percent cover across the landscape - note that values are converted to presence/absence."}
 knitr::include_graphics(c("outputs/figures/speciesAbundance.png"))
 ```
 
@@ -410,6 +405,7 @@ knitr::include_graphics(figs)
 figs <- list.files("outputs/figures/", pattern = "projPA_MaxEnt", full.names = TRUE)
 knitr::include_graphics(figs)
 ```
+
 
 ## Caching
 
