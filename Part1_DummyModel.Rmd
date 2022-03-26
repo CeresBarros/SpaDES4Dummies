@@ -2,11 +2,6 @@
 
 Authors: Ceres Barros, Tati Micheletti
 
-```{r setupPart1, include=FALSE}
-options("repos" = c(CRAN = "https://cran.rstudio.com"))
-knitr::opts_chunk$set(cache = 2, cache.rebuild = FALSE)
-```
-
 Let's imagine we want to explore how the relationship between a species' abundance and temperature changes over time.
 Both the abundance data and the temperature data are being constantly updated by a simulation model, and we want to analyse the relationship between the two iteratively, without needing to manually run a script to account for the newly generated data inputs.
 
@@ -214,7 +209,7 @@ To distinguish what input and output objects are in the context of a module, a g
 Another way of explaining it for objects is illustrated in Fig.
 \@ref(fig:figObj):
 
-```{r figObj, fig.align = 'center', echo = FALSE, fig.cap = "**Inputs and outputs in `SpaDES`:** Object A comes from outside of the module (e.g. from an internet URL, from data you have, or from `.inputObjects`), while Module Z produces object C. Both objects serve as an **inputs** for Module Y, which in return produce as **outputs** objects B and D, respectivelly from objects A and C. As Module Z uses a simple function *internally* to create object C, it doesn't have any inputs, such as our dummy example."}
+```{r figObj, fig.align = 'center', echo = FALSE, fig.cap = "**Inputs and outputs in `SpaDES`:** Object A comes from outside of the module (e.g. from an internet URL, from data you have, or from `.inputObjects`), while Module Z produces object C. Both objects serve as an **inputs** for Module Y, which in return produce as **outputs** objects B and D, respectivelly from objects A and C. As Module Z uses a simple function *internally* to create object C, it doesn't have any inputs, such as our dummy example.", out.width="80%"}
 knitr::include_graphics(c("obj.png"))
 ```
 
@@ -622,7 +617,7 @@ clearPlot()
 mySim2 <- spades(mySim, debug = TRUE)
 ```
 
-```{r figSimulationFig, fig.align = 'center', echo = FALSE, fig.cap = "**Simulation plots**: Final plot of the simulation"}
+```{r figSimulationFig, fig.align = 'center', echo = FALSE, fig.cap = "**Simulation plots**: Final plot of the simulation", out.width="80%"}
 knitr::include_graphics(c("simul_plot.png"))
 ```
 

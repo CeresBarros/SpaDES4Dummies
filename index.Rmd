@@ -12,11 +12,10 @@ documentclass: book
 github-repo: CeresBarros/SpaDES4Dummies
 url: 'https\://ceresbarros.github.io/SpaDES4Dummies/'
 description: "A `SpaDES` crash-course"
+always_allow_html: true
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(cache = 2)
-
 ## get citation style
 if (!file.exists("citations/ecology-letters.csl")) {
   dir.create("citations", showWarnings = FALSE)
@@ -24,7 +23,9 @@ if (!file.exists("citations/ecology-letters.csl")) {
 }
 
 ## prevents GitHub from rendering book using Jekyll
-file.create("docs/.nojekyll")
+if (!file.exists("docs/.nojekyll")) {
+  file.create("docs/.nojekyll")
+}
 ```
 
 # Preface {-}
