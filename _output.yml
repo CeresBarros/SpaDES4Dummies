@@ -13,7 +13,7 @@ bookdown::gitbook:
   description: "A `SpaDES` crash-course"
   css: style.css
   number_sections: true
-  split-bib: true
+  split-bib: false
   config:
     toc:
       collapse: section
