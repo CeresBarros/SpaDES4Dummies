@@ -1,19 +1,23 @@
 ---
-title: "SpaDES 4 Dummies guide"
+title: "SpaDES 4 Dummies"
 author: "Ceres Barros"
 date: "`r Sys.Date()`"
+description: "A `SpaDES` crash-course"
 documentclass: krantz
 site: bookdown::bookdown_site
+github-repo: CeresBarros/SpaDES4Dummies
+url: 'https\://ceresbarros.github.io/SpaDES4Dummies/'
 knit: "bookdown::render_book"
 bibliography:
   - citations/references.bib
 csl: citations/ecology-letters.csl
 link-citations: true
-documentclass: book
-github-repo: CeresBarros/SpaDES4Dummies
-url: 'https\://ceresbarros.github.io/SpaDES4Dummies/'
-description: "A `SpaDES` crash-course"
 always_allow_html: true
+colorlinks: yes
+graphics: yes
+fontsize: 11pt
+lot: yes
+lof: yes
 ---
 
 ```{r setup, include=FALSE}
