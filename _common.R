@@ -7,5 +7,6 @@ knitr::opts_chunk$set(
   cache = 2, 
   cache.rebuild = FALSE, 
   tidy = TRUE, 
-  tidy.opts = list(width.cutoff = 60)
-  )
+  tidy.opts = list(width.cutoff = 60),
+  size = "tiny"
+)
