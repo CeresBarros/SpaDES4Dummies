@@ -36,23 +36,22 @@ bookdown::gitbook:
     whatsapp: false
   github-repo: https://github.com/CeresBarros/SpaDES4Dummies
 
-
 bookdown::pdf_book:
   includes:
     in_header: latex/preamble.tex
-  keep_tex: no
-  # dev: "cairo_pdf"
+  keep_tex: yes
+  fig_crop: false
   latex_engine: xelatex
   citation_package: biblatex
+  template: null
   reference-section-title: ""
-  # template: null
-  pandoc_args: ["--listings", "--top-level-division=chapter"] 
+  pandoc_args: [--top-level-division=chapter, --wrap=none, --listings]
   toc_depth: 3
   toc_unnumbered: no
   toc_appendix: yes
-  highlight: zenburn
-  
+  highlight_bw: yes
+  quote_footer: ["\\VA{", "}{}"]
+
 ## epub is not a fan of cross-references between chapters.
 # bookdown::epub_book:  
 #   stylesheet: css/style.css
-
