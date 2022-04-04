@@ -36,7 +36,6 @@ bookdown::gitbook:
     whatsapp: false
   github-repo: https://github.com/CeresBarros/SpaDES4Dummies
 
-bookdown::epub_book: default
 
 bookdown::pdf_book:
   includes:
@@ -53,4 +52,7 @@ bookdown::pdf_book:
   toc_appendix: yes
   highlight: zenburn
   
+## epub is not a fan of cross-references between chapters.
+# bookdown::epub_book:  
+#   stylesheet: css/style.css
 
