@@ -1,8 +1,12 @@
 # A more realistic example of `SpaDES` {#part2}
 
+(ref:Pice-gla) *Picea glauca*
+
+(ref:PA) presence/absence
+
 Authors: Ceres Barros, Alex M. Chubaty
 
-In \@ref(part1) of this guide, we described how to create new `SpaDES` modules, their different components, how to link different modules and how to set up and run a simulation.
+In Part \@ref(part1) of this guide, we described how to create new `SpaDES` modules, their different components, how to link different modules and how to set up and run a simulation.
 
 Here, we assume that you are familiar with these steps, but go further in showing important `SpaDES` features that facilitate many of the steps common to most ecological modelling exercises.
 For the sake of simplicity, we focus our example on projecting a species' distribution as a function of climate covariates.
@@ -14,13 +18,15 @@ By no mean does it cover caching or best practices in full, as each of these top
 ## The example: projecting species distribution shifts under climate change
 
 Species distribution models (SDMs) have been widely used in ecology to predict how species presences and absences across a landscape may change under changing environmental conditions.
-As a result, there are several R packages that have been built with this in mind e.g. `dismo` @dismo; `biomod2` @biomod2] and many ecologists do these analyses exclusively in R.
+As a result, there are several R packages that have been built with this in mind [e.g. `dismo` @dismo; `biomod2` @biomod2] and many ecologists do these analyses exclusively in R.
 
 Often, these analyses are run only once for a given set of species, baseline and projected environmental conditions, and researchers will have a few R scripts (or maybe just one longer script) that load the data into R, do any necessary pre-processing steps, fit the models and run species distribution projections.
 The usefulness of `SpaDES` comes when we want an automated and standardized workflow that can be easily updated with new data and adapted with new algorithms.
 `SpaDES` provides a common standard and a modular approach to modelling that facilitates expanding, debugging and sharing code, but also various tools that bring many well-known best practices from computer- and data-science workflows (including reproducible, modular workflows, and caching), to the realm of ecological modelling, so that they can be used by non-computer-scientists with minimal learning.
 In an SDM project this means that updating data and algorithms, and automating iterative forecasting become easier and less prone to errors.
 When `SpaDES` modules are open and shared, this also expands a potential pool of users who can themselves help improve the code.
+
+------------------------------------------------------------------------
 
 ## Module creation and coding
 
@@ -31,7 +37,7 @@ Or, we could develop a second simulation module using a different SDM approach a
 Our data modules are *speciesAbundanceData* and *climateData*.
 The simulation module is *projectSpeciesDist*.
 We start by creating an `.R` script to set up and control the simulation.
-In this example this script is called `Example2_SDMMaxent.R`.
+In this example this script is called `Part2_SDMs.R`.
 The script begins with a few lines of code that ensure necessary packages are installed and loaded (see [Reproducible package installation]).
 It then defines the necessary folder directories for the simulation and creates the modules in the `modules/` folder:
 
@@ -78,19 +84,6 @@ SpaDES.core::setPaths(cachePath = file.path(mainDir, "cache"),
                       outputPath = file.path(mainDir, "outputs"))
 
 simPaths <- SpaDES.core::getPaths() ## check that this is what you wanted
-
-## Let's create a self-contained module that will simulate the species' abundance for any given period of time and frequency.
-if (!dir.exists(file.path(simPaths$modulePath, "speciesAbundanceData"))) {
-  SpaDES.core::newModule(name = "speciesAbundanceData", path = simPaths$modulePath)
-}
-
-if (!dir.exists(file.path(simPaths$modulePath, "climateData"))) {
-  SpaDES.core::newModule(name = "climateData", path = simPaths$modulePath)
-}
-
-if (!dir.exists(file.path(simPaths$modulePath, "projectSpeciesDist"))) {
-  SpaDES.core::newModule(name = "projectSpeciesDist", path = simPaths$modulePath)
-}
 ```
 
 Notice how we protect the `newModule` call with an `if` statement that first detects whether the module directory exists already.
@@ -109,11 +102,11 @@ We do not discuss the module `.Rmd` files, which should document each module in 
 
 #### *speciesAbundanceData* module:
 
-This module downloads freely available spatial layers of *Picea glauca* percent cover (% cover) across Canada and pre-processes them to match a user-supplied study area raster.
+This module downloads freely available spatial layers of (ref:Pice-gla) percent cover (% cover) across Canada and pre-processes them to match a user-supplied study area raster.
 We use the new `terra` package throughout this example, since the `raster` package will soon be discontinued.
 
 The `prepInputs` function downloads the % cover layer from the Canadian National Forest Inventory data server using the URL supplied by `sppAbundURL` and processes it to match the study area raster (`studyAreaRas`) supplied by the user.
-The module then outputs *Picea glauca* % cover as a raster (`sppAbundanceRas`) and as a `data.table` (`sppAbundanceDT`).
+The module then outputs (ref:Pice-gla) % cover as a raster (`sppAbundanceRas`) and as a `data.table` (`sppAbundanceDT`).
 The `data.table` contains added information about the year of the simulation during which the data should be used (here, only the first year when SDM fitting happens).
 
 We export species % cover in two formats (a raster and a table) for demonstrational purposes, but also because we could envision that this model (i.e. group of modules) could save the species distribution projections for several points in time in a more compact format of a `data.table` -- large raster layers can consume a considerable amount of disk space (see [Coding for the future]).
@@ -123,13 +116,13 @@ We export species % cover in two formats (a raster and a table) for demonstratio
 
 #### *climateData* module:
 
-This module downloads and processes freely available spatial layers of four bioclimatic variables used to fit the SDM of *Picea glauca* in the study area.
+This module downloads and processes freely available spatial layers of four bioclimatic variables used to fit the SDM of (ref:Pice-gla) in the study area.
 
 The module uses a different way to download data.
 It relies on two input `data.tables` that contain the URLs for each climate covariate, one for baseline conditions, the other for projected climate conditions, both containing information about when each layer should be used during the simulation (the "year "column).
 
 We have only supplied one set of data sources for default baseline climate conditions (`baselineClimateURLs`) and for climate projections (`projClimateURLs`), all of which are downloaded from WorldClim at 2.5 minutes resolution.
-The baseline climate data correspond to the 1970-2000 period [@FickHijmans2017], which aligns well with the species % cover data year (2001).
+The baseline climate data correspond to the 1970-2000 period @FickHijmans2017, which aligns well with the species % cover data year (2001).
 The climate projections were obtained for 2021-2040, 2041-2060, 2061-2080 and 2081-2100, from CMIP6 downscaled future projections using the CanESM5 model [@SwartEtAl2019] under the SSP 585 climate scenario.
 
 We encourage providing different (or additional) URLs referring to projections for other climate periods, other climate models and other climate scenarios (see [WorldClim](https://www.worldclim.org/data/cmip6/cmip6climate.html) for a list of climate projections).
@@ -166,7 +159,7 @@ We draw your attention to a few particular aspects of the data modules:
 -   How we export objects created within the module functions to `sim`.
     Without doing so, these objects are lost after the function is executed.
 
-#### "Simulation" module
+#### Prediction module
 
 We show below the `.R` script for the *projectSpeciesDist* module.
 This module depends entirely on the other two, as we did not provide any default input objects in the `.inputObjects` function.
@@ -196,11 +189,13 @@ We draw your attention to:
 -   How the fitted model object (`sdmOut`) and it's evaluation (`evalOut`) are both module outputs.
     This way these objects can not only be used by other events, but also inspected by the user after the simulation is finished (see [Transparent models]).
 
+------------------------------------------------------------------------
+
 ## Running the model
 
 ### Ensuring all packages are installed
 
-After the modules are created, we go back to the `Example2_SDMMaxent.R` script to set up and run the simulation.
+After the modules are created, we go back to the `Part2_SDMs.R` script to set up and run the simulation.
 The first line of code ensures that all module dependencies (and their dependencies and so on) are installed in `.libPaths()`.
 If not it will attempt to install missing packages.
 Only then do we load `SpaDES` (necessary to run the simulation).
@@ -224,22 +219,18 @@ library(SpaDES.experiment)
 
 **/!\\ ATTENTION /!\\**
 
-`makeSureAllPackagesInstalled` may fail to install if other packages have been loaded already, so we recommend running this line from a clean R session.
-We also recommend restarting the R session *after* `makeSureAllPackagesInstalled` installs packages.
+*`makeSureAllPackagesInstalled` may fail to install if other packages have been loaded already, so we recommend running this line from a clean R session. We also recommend restarting the R session after `makeSureAllPackagesInstalled` installs packages.*
 
-Windows can present problems when many packages are installed and further package installations fail.
-If you see errors like this after restarting R:
+*Windows can present problems when many packages are installed and further package installations fail. If you see errors like this after restarting R:*
 
     Installing: glue Detaching is fraught with many potential problems; you may have to restart your session if things aren't working some packages don't seem to unload their dlls correctly.
-    These will not be unloaded: ellipsis, vctrs Unloading package bit64 -- Installing glue -- (1 of 1. Estimated time left: ...; est. finish: ...calculating) Installing package into '\~/R/win-library/4.0' (as 'lib' is unspecified) trying URL '<https://cran.rstudio.com/bin/windows/contrib/4.0/glue_1.6.2.zip>' Content type 'application/zip' length 171858 bytes (167 KB) downloaded 167 KB
+        These will not be unloaded: ellipsis, vctrs Unloading package bit64 -- Installing glue -- (1 of 1. Estimated time left: ...; est. finish: ...calculating) Installing package into '\~/R/win-library/4.0' (as 'lib' is unspecified) trying URL '<https://cran.rstudio.com/bin/windows/contrib/4.0/glue_1.6.2.zip>' Content type 'application/zip' length 171858 bytes (167 KB) downloaded 167 KB
 
     package 'glue' successfully unpacked and MD5 sums checked Error in unpackPkgZip(foundpkgs[okp, 2L], foundpkgs[okp, 1L], lib, libs_only, : ERROR: failed to lock directory '\~\R\win-library\\4.0' for modifying Try removing '\~\R\win-library\\4.0/00LOCK'
 
-If you encounter this error, delete the problematic file/folder and try again.
+*If you encounter this error, delete the problematic file/folder and try again.*
 
-Sometimes `Require` may still unable to automatically install a package and a manual installation from a clean session is the only solution.
-In the error above, `Require` only detected that `glue` was missing during the `simInit` call, which meant that other packages had been loaded already causing failure when `Require` attempted the installation.
-This problem persisted even after we avoided loading `terra` before running `simInit` (we make the study area objects prefixing functions with `terra::`), so `glue` had to be manually installed.
+*Sometimes `Require` may still unable to automatically install a package and a manual installation from a clean session is the only solution. In the error above, `Require` only detected that `glue` was missing during the `simInit` call, which meant that other packages had been loaded already causing failure when `Require` attempted the installation. This problem persisted even after we avoided loading `terra` before running `simInit` (we make the study area objects prefixing functions with `terra::`), so `glue` had to be manually installed.*
 
 ### Simulation set-up
 
@@ -363,17 +354,42 @@ myExperiment <- experiment2(MaxEnt = mySimMaxEnt,
                             debug = TRUE, 
                             replicates = 1,
                             clearSimEnv = FALSE)   ## prevent removing objects from the simLists at the end
+## save outputs
+qs::qsave(myExperiment, file.path(simPaths$outputPath, paste0("myExperiment", ".qs")))
 ```
 
 Try to execute the `spades` call twice to see how much faster it runs after many of the operations have been cached.
 Notice also, how the `init` events are retrieved from the cache thanks to the `.useCache` parameters passed to the modules (see also [Caching]).
 
-Some outputs of the model are shown below.
-From these results we can see that the MaxEnt predictions.
-This could be because we are missing important covariates, interactions, or simply a more appropriate algorithm.
+By default the data modules (*speciesAbundanceData* and *climateData*) save figures of the input species and climate layers (Figs. \@ref(fig:figSimulationSppAbund) and \@ref(fig:figSimulationClimate), respectively).
 
-We invite you to peruse the GLM results and for each model the evaluation results.
-For instance:
+```{r figSimulationSppAbund, echo = FALSE, warning = FALSE, message = FALSE, fig.align = 'center', out.width = "50%", fig.show='hold', fig.cap = "Prediction plots. Input (ref:Pice-gla) percent cover across the landscape. Note that values are converted to (ref:PA)."}
+knitr::include_graphics(normalizePath("outputs/GLM_rep1/figures/speciesAbundance.png", winslash = "/"))
+```
+
+```{r figSimulationClimate, echo = FALSE, warning = FALSE, message = FALSE, fig.align = 'center', out.width = "50%", fig.show='hold', fig.cap = "Prediction plots. Bioclimatic variables under baseline (year 1) and future conditions."}
+figs <- list.files("outputs/GLM_rep1/figures/", pattern = "climateRas", full.names = TRUE)
+knitr::include_graphics(normalizePath(figs, winslash = "/"))
+```
+
+The prediction module also outputs the projections for each climate period automatically (Figs. \@ref(fig:simulationProj) and \@ref(fig:simulationProj2)).
+
+```{r simulationProj, echo = FALSE, warning = FALSE, message = FALSE, fig.align = 'center', out.width = "80%", fig.show='hold', fig.cap = "Prediction plots: Raw predicted values of species probability of occurence under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt."}
+figs <- list.files("outputs/MaxEnt_rep1/figures/", pattern = "projRawVals_MaxEnt", full.names = TRUE)
+knitr::include_graphics(normalizePath(figs, winslash = "/"))
+```
+
+```{r simulationProj2, echo = FALSE, warning = FALSE, message = FALSE, fig.align = 'center', out.width = "80%", fig.show='hold', fig.cap = "Prediction plots: Predictions of (ref:Pice-gla) (ref:PA) under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt."}
+figs <- list.files("outputs/MaxEnt_rep1/figures/", pattern = "projPA_MaxEnt", full.names = TRUE)
+knitr::include_graphics(normalizePath(figs, winslash = "/"))
+```
+
+The projected layers can also be accessed and plotted via the `simList` object, as can the model validation results.
+
+From the results we can see that the MaxEnt and GLM predictions do not seem to agree, indicating a potential problem.
+We may be missing important covariates, interactions, or simply more appropriate algorithms.
+
+Peruse each model's estimated coefficients and residuals, and validation results will be a good first step to diagnosing the problem.
 
 ```{r evalOutSim, eval = FALSE}
 myExperiment$MaxEnt_rep1$sdmOut   ## this links to an html page
@@ -387,25 +403,117 @@ myExperiment$MaxEnt_rep1$evalOut
 myExperiment$GLM_rep1$evalOut
 ```
 
-```{r figSimulationSppAbund, echo = FALSE, fig.align = 'center', out.width = "50%", fig.show='hold', fig.cap = "**Simulation plots**: Input *Picea glauca* percent cover across the landscape - note that values are converted to presence/absence."}
-knitr::include_graphics(c("outputs/figures/speciesAbundance.png"))
+#### Adding a new climate scenario
+
+Because data were linked to the modules (and the forecasting) via the modules' metadata and inputs, adding a new climate scenario and re-running forecasts is easy.
+
+To do so, we need only to change the URLs for the climate layers, by passing a custom `projClimateURLs` `data.table` to the *climateData* module.
+`SpaDES` will take care of downloading and processing the new layers, as well as forecasting.
+Model fitting will also be repeated, even if the baseline data did not change, because the `kfold` function we use to partition the data into the training and testing subsets randomly assigns cases to each group.
+If this was not desired, we could set a random seed before running the fitting event (`fitSDM`) by passing the `.seed` parameter to the *projectSpeciesDist* module (e.g., `.seed = list("fitSDM" = 123)`).
+
+```{r newScenarios, eval = FALSE}
+## Run with another climate scenario - the most contrasting scenario to SSP 585
+## get the original table from one of the simulations and replace the climate scenario
+projClimateURLs <- myExperiment$MaxEnt_rep1$projClimateURLs
+projClimateURLs[, `:=`(URL = sub("ssp585", "ssp126", URL),
+                       targetFile = sub("ssp585", "ssp126", targetFile))]
+
+## this time we pass the new table or URLs to the modules, so that climate layers are changed
+simObjects2 <- list(
+  "studyAreaRas" = studyAreaRas,
+  "projClimateURLs" = projClimateURLs
+)
+
+mySimMaxEnt2 <- simInit(times = simTimes, params = simParamsMaxEnt, 
+                        modules = simModules, objects = simObjects2, 
+                        paths = simPaths)
+mySimGLM2 <- simInit(times = simTimes, params = simParamsGLM, 
+                     modules = simModules, objects = simObjects2, 
+                     paths = simPaths)
+
+myExperiment2 <- experiment2(MaxEnt = mySimMaxEnt2, 
+                             GLM = mySimGLM2, 
+                             debug = TRUE, 
+                             replicates = 1,
+                             clearSimEnv = FALSE)
+## save outputs
+qs::qsave(myExperiment2, file.path(simPaths$outputPath, paste0("myExperiment2", ".qs")))
 ```
 
-```{r figSimulationClimate, echo = FALSE, fig.align = 'center', out.width = "50%", fig.show='hold', fig.cap = "**Simulation plots**: Bioclimatic variables under baseline (year 1) and future conditions"}
-figs <- list.files("outputs/figures/", pattern = "climateRas", full.names = TRUE)
-knitr::include_graphics(figs)
+#### Making use of `simList` for reporting
+
+Another advantage of having all simulation parameters, inputs and outputs centralised in one object, is that we can easily inspect and manipulated them afterwards, without the need to load separate objects back into `R`.
+
+Here we show how we capitalize on this `SpaDES` feature to create figures of the outputs (Fig. \@ref(fig:newScenariosFig).
+
+```{r newScenariosFigCode, eval = FALSE}
+## MaxEnt predictions across time and for each climate scenario --------------
+## combine plots from two distinct simulations in a single figure
+## (the same can be done to compare MaxEnt and GLM, or plot all projections)
+
+## fetch the internal plotting function instead of repeating code here
+plotFun <- myExperiment$GLM_rep1@.envir$.mods$climateData$plotSpatRasterStk
+
+## raw predictions exported by the module
+sppDistProjMaxEnt <- myExperiment$MaxEnt_rep1$sppDistProj
+sppDistProjMaxEnt2 <- myExperiment2$MaxEnt_rep1$sppDistProj
+
+## we convert the raw predictions into presence absence
+## using exported threshold
+sppDistProjMaxEnt_PA <- myExperiment$MaxEnt_rep1$sppDistProj > myExperiment$MaxEnt_rep1$thresh
+sppDistProjMaxEnt2_PA <- myExperiment2$MaxEnt_rep1$sppDistProj > myExperiment2$MaxEnt_rep1$thresh
+
+## rename layers from plotting
+names(sppDistProjMaxEnt) <- names(sppDistProjMaxEnt2) <- c("2001", "2021-2040", "2041-2060", "2061-2080", "2081-2100")
+names(sppDistProjMaxEnt_PA) <- names(sppDistProjMaxEnt2_PA) <- c("2001", "2021-2040", "2041-2060", "2061-2080", "2081-2100")
+
+## for a simpler plot choose only years 2001, 2041-2060 and 2081-2100
+yrs <- c("2001", "2041-2060", "2081-2100")
+plotMaxEnt <- plotFun(sppDistProjMaxEnt[[yrs]], 
+                      xlab = "Longitude", y = "Latitude",
+                      plotTitle = "MaxEnt raw predictions - SSP 585") +
+  scale_fill_viridis_c(na.value = "grey90", limits = c(0,1), begin = 0.25)
+plotMaxEnt2 <- plotFun(sppDistProjMaxEnt2[[yrs]], 
+                       xlab = "Longitude", y = "Latitude",
+                       plotTitle = "MaxEnt raw predictions - SSP 126") +
+  scale_fill_viridis_c(na.value = "grey90", limits = c(0,1), begin = 0.25)
+plotMaxEnt_PA <- plotFun(sppDistProjMaxEnt_PA[[yrs]], 
+                         xlab = "Longitude", y = "Latitude",
+                         plotTitle = "MaxEnt presence/absence - SSP 585") +
+  scale_fill_viridis_c(na.value = "grey90", limits = c(0,1), begin = 0.25)
+plotMaxEnt2_PA <- plotFun(sppDistProjMaxEnt2_PA[[yrs]], 
+                          xlab = "Longitude", y = "Latitude",
+                          plotTitle = "MaxEnt presence/absence - SSP 126") +
+  scale_fill_viridis_c(na.value = "grey90", limits = c(0,1), begin = 0.25)
+
+## organise the plots with mildest scenario first
+## It is clear that MaxEnt and GLM do not agree in their prediction
+plotAll <- ggarrange(plotMaxEnt2 + labs(title = expression(bold("Scenario - SSP 126")),
+                                        y = expression(atop(bold("Raw predictions"), "Latitude"))) +
+                       theme(legend.title = element_blank(), legend.key.height = unit(3, "lines"),
+                             plot.title = element_text(hjust = 0.5), plot.margin = margin(0,0,0,0)), 
+                     plotMaxEnt + labs(title = expression(bold("Scenario - SSP 585")),
+                                       y = expression(atop(bold(""), ""))) +
+                       theme(plot.title = element_text(hjust = 0.5), plot.margin = margin(0,0,0,0)),
+                     plotMaxEnt2_PA + labs(title = expression(bold("")),
+                                           y = expression(atop(bold("Presence/absence"), "Latitude"))) +
+                       theme(plot.margin = margin(0,0,0,0)), 
+                     plotMaxEnt_PA + labs(title = expression(bold("")),
+                                          y = expression(atop(bold(""), ""))) +
+                       theme(plot.margin = margin(0,0,0,0)), 
+                     legend = "right", common.legend = TRUE, labels = c("a)", "b)", "c)", "d)"))
+
+## save figure:
+figDir <- checkPath(file.path(simPaths$outputPath, "generalFigures"), create = TRUE)
+ggsave(file.path(figDir, "MaxEntPredictions.tiff"), width = 13.5, height = 5.5, units = "in", dpi = 300)
 ```
 
-```{r figSimulationProj, echo = FALSE, fig.align = 'center', out.width = "20%", fig.show='hold', fig.cap = "**Simulation plots**: Raw predicted values of species probability of occurence under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt."}
-figs <- list.files("outputs/figures/", pattern = "projRawVals_MaxEnt", full.names = TRUE)
-knitr::include_graphics(figs)
+```{r newScenariosFig, echo = FALSE, warning = FALSE, message = FALSE, fig.align = 'center', out.width = "80%", fig.show='hold', fig.cap = "Adding a new scenario: Predictions of (ref:Pice-gla) probabilities of presences and (ref:PA) under (left to right) baseline climate conditions, 2041-2060, and 2081-2100 climate projections under two emission scenarios (SSP 136 and SSP 585, the default) -- showing MaxEnt forecasts only."}
+knitr::include_graphics(normalizePath("outputs/generalFigures/MaxEntPredictions.png", winslash = "/"))
 ```
 
-```{r figSimulationProj2, echo = FALSE, fig.align = 'center', out.width = "20%", fig.show='hold', fig.cap = "**Simulation plots**: Predictions of *Picea glauca* presences/absences under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt."}
-figs <- list.files("outputs/figures/", pattern = "projPA_MaxEnt", full.names = TRUE)
-knitr::include_graphics(figs)
-```
-
+------------------------------------------------------------------------
 
 ## Caching
 
@@ -436,7 +544,7 @@ In particular, read about `showCache`, `clearCache` and the argument `userTags`,
 
 **/!\\ ATTENTION /!\\**
 
-`Cache` does not deal well with the `apply` family of functions, which is why we used `Map` (instead of `mapply`) to iteratively apply `prepInputs` to several climate layer URLs.
+*`Cache` does not deal well with the `apply` family of functions, which is why we used `Map` (instead of `mapply`) to iteratively apply `prepInputs` to several climate layer URLs.*
 
 ### Implicit caching of events
 
@@ -449,8 +557,10 @@ In our example, we cached data preparation events across all modules (the `.inpu
 In truth, because none of the modules simulate any stochastic processes, we could have cached all events.
 Loading cached events produced a slightly different message from loading of other cached operations (see above):
 
+```
 Mar05 19:58:34 spcsbn 1 speciesAbundanceData init 1\
 Mar05 19:58:34 spcsbn ...(Object to retrieve (bffbc48cc055c846.rds)) Mar05 19:58:35 spcsbn loaded cached copy of init event in speciesAbundanceData module.
+```
 
 ### Controlling caching without changing module code
 
@@ -464,6 +574,8 @@ The user can turn caching on/off without caching module code via three different
 
 -   via the argument `spades(.useCache = ...)` -- this argument behaves in the same way as the `.useCache` module parameter, but supersedes it across *all* modules (i.e. if `spades(..., .useCache = FALSE)`, caching will be turned off even if a module's `.useCache` is `TRUE`).
 
+------------------------------------------------------------------------
+
 ## Best practices
 
 ### Reproducible package installation
@@ -474,7 +586,7 @@ In addition all modules should contain a full list of packages that they depend 
 If `options("spades.useRequire")` is set to `TRUE` (the default), `SpaDES` will automatically attempt to install any packages listed across all modules if they are not installed in `.libPaths()`, or if the installed version (or branch if installing from GitHub) does not correspond to what is listed in the module `.R` script.
 Users can also use `Require::pkgSnapshot()` to save a list of installed packages that can be used later by `Require` to install all necessary packages in another machine (see example below).
 
-Please beware that package installation should be done as much as possible from a clean R session especially in the context of a `SpaDES`-based project, where each module can potentially have many different dependencies, which have dependencies of their own (see, for instance, how we delayed package loading until after all modules were in place and had their dependencies checked in `Example2_SDMMaxent.R`)
+Please beware that package installation should be done as much as possible from a clean R session especially in the context of a `SpaDES`-based project, where each module can potentially have many different dependencies, which have dependencies of their own (see, for instance, how we delayed package loading until after all modules were in place and had their dependencies checked in `Part2_SDMs.R`)
 
 ```{r pkgSnapshot, eval = FALSE}
 Require::pkgSnapshot("pkgsnapshot.txt")
@@ -496,7 +608,7 @@ A common assertion is to verify that input format and class conform to what the 
 If this is not the case, the developer may add a mechanism to correct the faulty inputs (potentially with a warning or message telling the user it did so) or simply stop the computations with a meaningful error.
 We provide two examples in the `climateData` module, where the `climateInit` function checks whether the bioclimatic variable names are consistent between the baseline and projected climate data, and whether their raster layers match.
 
-Other assertions can prevent undesirable function behaviours, such as the `if` statement protecting the `newModule` call in `Example2_SDMMaxent.R`, or warn the user that something is missing early on, such as the check for `studyAreaRas` existence in the `.inputObjects` of the data modules).
+Other assertions can prevent undesirable function behaviours, such as the `if` statement protecting the `newModule` call in `Part2_SDMs.R`, or warn the user that something is missing early on, such as the check for `studyAreaRas` existence in the `.inputObjects` of the data modules).
 
 Bear in mind that these are just examples assertions and integration tests are as diverse as the code they test.
 
@@ -569,6 +681,3 @@ We wish to acknowledge the World Climate Research Programme, which coordinated a
 
 </center>
 
-## References
-
-<!-- automatically generated -->
