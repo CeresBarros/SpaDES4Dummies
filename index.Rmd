@@ -2,6 +2,7 @@
 title: "SpaDES 4 Dummies guide"
 author: "Ceres Barros"
 date: "`r Sys.Date()`"
+documentclass: krantz
 site: bookdown::bookdown_site
 knit: "bookdown::render_book"
 bibliography:
