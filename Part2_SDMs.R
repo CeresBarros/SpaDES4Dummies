@@ -1,4 +1,18 @@
+## ---------------------------------------------------
+## SPADES4DUMMIES PART 2
+## ---------------------------------------------------
+
+## /!\   If running this script from RStudio, please make sure you are using R v4.2.1   /!\ 
+## dismo::maxent throws a fatal error with 4.2.0 when called from RStudio
+
 options(repos = c(CRAN = "http://cloud.r-project.org"))
+
+if (paste(R.Version()[c("major", "minor")], collapse = ".") < "4.2.1") {
+  warning(paste("dismo::maxent may create a fatal error",
+                "when using R version < v4.2.1 and from RStudio.\n", 
+                "Please upgrade R, or run this script outside of RStudio.\n",
+                "See https://github.com/rspatial/dismo/issues/13"))
+}
 
 ## decide where you're working
 mainPath <- "~/SpaDES4Dummies_Part2"
