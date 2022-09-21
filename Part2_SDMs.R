@@ -1,24 +1,32 @@
-if (!require("Require")) install.packages("Require")
-Require::Require(c("ggpubr", "qs",
-                   "PredictiveEcology/SpaDES.install@development",
-                   "PredictiveEcology/SpaDES.experiment@development",
-                   "PredictiveEcology/reproducible@development (>= 1.2.8.9040)",
-                   "PredictiveEcology/SpaDES.core@development (>= 1.0.10.9007)"), update = TRUE)
-# SpaDES.install::installSpaDES(ask = TRUE)
-
+options(repos = c(CRAN = "http://cloud.r-project.org"))
 
 ## decide where you're working
-mainDir <- "."
+mainPath <- "~/SpaDES4Dummies_Part2"
+pkgPath <- file.path(mainPath, "packages", version$platform,
+                     paste0(version$major, ".", strsplit(version$minor, "[.]")[[1]][1]))
+dir.create(pkgPath, recursive = TRUE)
+.libPaths(pkgPath, include.site = FALSE) ## install packages in project library (proj-lib)
 
-# mainDir <- getwd()
-SpaDES.core::setPaths(cachePath = file.path(mainDir, "cache"),
-                      inputPath = file.path(mainDir, "inputs"),
-                      modulePath = file.path(mainDir, "modules"),
-                      outputPath = file.path(mainDir, "outputs"))
+if (!"remotes" %in% installed.packages(lib.loc = pkgPath))
+  install.packages("remotes")
 
-simPaths <- SpaDES.core::getPaths() ## check that this is what you wanted
+if (!"Require" %in% installed.packages(lib.loc = pkgPath) || 
+    packageVersion("Require", lib.loc = pkgPath) < "0.1.2") {
+  remotes::install_github("PredictiveEcology/Require@archivedPkg", upgrade = FALSE, force = TRUE)
+}
 
-## Let's create a self-contained module that will simulate the species' abundance for any given period of time and frequency.
+## use binary linux packages if on Ubuntu
+Require::setLinuxBinaryRepo()
+
+Require::Require(c("PredictiveEcology/SpaDES.install@development", "SpaDES.core"),
+                 upgrade = FALSE, standAlone = TRUE)
+
+simPaths <- list(cachePath = file.path(mainPath, "cache"),
+                 inputPath = file.path(mainPath, "inputs"),
+                 modulePath = file.path(mainPath, "modules"),
+                 outputPath = file.path(mainPath, "outputs"))
+
+## Let's create our modules. Please refer to the guide for code you could add to each module.
 if (!dir.exists(file.path(simPaths$modulePath, "speciesAbundanceData"))){
   SpaDES.core::newModule(name = "speciesAbundanceData", path = simPaths$modulePath)
 }
@@ -33,10 +41,15 @@ if (!dir.exists(file.path(simPaths$modulePath, "projectSpeciesDist"))){
 
 ## now, let's pretend you've created your modules and each sources a series of other packages
 ## it's a good idea to always make sure all necessary module dependencies are installed
-## this is a particularly useful line when sharing your pacakges with someone else.
-SpaDES.install::makeSureAllPackagesInstalled(simPaths$modulePath)
+## this is a particularly useful line when sharing your packages with someone else.
+outs <- SpaDES.install::packagesInModules(modulePath = simPaths$modulePath)  ## gets list of module dependencies
+Require::Require(c(unname(unlist(outs)),
+                   "ggpubr", "PredictiveEcology/SpaDES.experiment@development"), 
+                 require = FALSE,   ## don't load packages
+                 upgrade = FALSE,   ## don't upgrade dependencies
+                 standAlone = TRUE) ## install all dependencies in proj-lib (ignore user/system lib)
 
-## you should restart R again if any packages were installed
+## It may be a good idea to restart R after the installation is complete.
 
 ## load necessary packages now
 library(SpaDES)
@@ -47,7 +60,8 @@ library(ggpubr)
 options(reproducible.useCache = TRUE,
         reproducible.cachePath = simPaths$cachePath,
         reproducible.destinationPath = simPaths$inputPath, ## all downloaded and pre-processed layers go here
-        reproducible.useTerra = TRUE)  ## we want to use the terra R package
+        reproducible.useTerra = TRUE, ## we want to use the terra R package
+        spades.useRequire = FALSE)  
 
 ## list the modules to use
 simModules <- list("speciesAbundanceData", "climateData", "projectSpeciesDist")
@@ -100,9 +114,8 @@ mySimGLM <- simInit(times = simTimes, params = simParamsGLM,
                     modules = simModules, objects = simObjects, 
                     paths = simPaths)
 
-clearPlot(force = TRUE)   ## this forces wiping the graphics device and opening a new window
-moduleDiagram(mySim)
-objectDiagram(mySim)
+moduleDiagram(mySimMaxEnt)
+objectDiagram(mySimMaxEnt)
 
 ## run simulation
 clearPlot(force = TRUE)   ## this forces wiping the graphics device and opening a new window

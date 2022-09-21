@@ -22,7 +22,7 @@ In this example, we introduce `SpaDES` features that we most commonly use in our
 
 ### Setup
 
-Load the necessary packages
+Load the necessary packages (make sure they are installed first, of course)
 
 ```{r loadPkgs, message = FALSE, warning = FALSE}
 ## please start from a clean R session
@@ -30,6 +30,8 @@ library(raster)
 library(quickPlot)
 library(ggplot2)
 library(SpaDES.tools)
+
+remotes::install_github("achubaty/NLMR")  ## you will need this ;)
 ```
 
 And now create a raster template:
@@ -46,7 +48,16 @@ Our VERY simple "simulation" model (in form of a function) generates rasters tha
 abundance_model <- function(ras, Time) {
   abund_outputs <- list()
   for (t in 1:Time) { 
-    abund_outputs[[t]] <- gaussMap(ras, scale = 100, var = 0.03) 
+    # abund_outputs[[t]] <- gaussMap(ras, scale = 100, var = 0.03) ## RandomFields no longer available
+    abund_outputs[[t]] <- NLMR::nlm_mpd(
+      ncol = ncol(ras),
+      nrow = nrow(ras),
+      resolution = unique(res(ras)),
+      roughness = 0.5, ## TODO: adjust to approximate gaussMap version
+      rand_dev = 100,
+      rescale = TRUE,
+      verbose = FALSE
+    )
   }
   return(abund_outputs)
 }
@@ -69,7 +80,16 @@ The temperature simulation model will be similar to the vegetation one - remembe
 temp_model <- function(r, Time) {
   temp_outputs <- list()
   for (t in 1:Time) { 
-    temp_outputs[[t]] <- gaussMap(r, scale = 100, var = 0.1) 
+    # temp_outputs[[t]] <- gaussMap(r, scale = 100, var = 0.1) ## RandomFields no longer available
+    temp_outputs[[t]] <- NLMR::nlm_mpd(
+      ncol = ncol(r),
+      nrow = nrow(r),
+      resolution = unique(res(r)),
+      roughness = 0.5, ## TODO: adjust to approximate gaussMap version
+      rand_dev = 10,
+      rescale = FALSE,
+      verbose = FALSE
+    )
   }
   return(temp_outputs)
 }
@@ -153,13 +173,10 @@ if (!dir.exists(file.path(getPaths()$modulePath, "speciesAbundance"))) {
 rm(list = ls())
 library(SpaDES)  ## should automatically download all packages in the SpaDES family and their dependencies
 
-## decide where you're working
-mainDir <- "."
-
-setPaths(cachePath = file.path(mainDir, "cache"),
-         inputPath = file.path(mainDir, "inputs"),
-         modulePath = file.path(mainDir, "modules"),
-         outputPath = file.path(mainDir, "outputs"))
+setPaths(cachePath = "cache",
+         inputPath = "inputs",
+         modulePath = "modules",
+         outputPath = "outputs")
 ```
 
 We then create modules using `newModule`.

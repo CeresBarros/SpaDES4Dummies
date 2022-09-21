@@ -22,7 +22,7 @@ In this example, we introduce `SpaDES` features that we most commonly use in our
 
 ### Setup
 
-Load the necessary packages
+Load the necessary packages (make sure they are installed first, of course)
 
 
 ```r
@@ -49,7 +49,16 @@ Our VERY simple "simulation" model (in form of a function) generates rasters tha
 abundance_model <- function(ras, Time) {
   abund_outputs <- list()
   for (t in 1:Time) { 
-    abund_outputs[[t]] <- gaussMap(ras, scale = 100, var = 0.03) 
+    # abund_outputs[[t]] <- gaussMap(ras, scale = 100, var = 0.03) ## RandomFields no longer available
+    abund_outputs[[t]] <- NLMR::nlm_mpd(
+      ncol = ncol(ras),
+      nrow = nrow(ras),
+      resolution = unique(res(ras)),
+      roughness = 0.5, ## TODO: adjust to approximate gaussMap version
+      rand_dev = 100,
+      rescale = TRUE,
+      verbose = FALSE
+    )
   }
   return(abund_outputs)
 }
@@ -76,7 +85,16 @@ The temperature simulation model will be similar to the vegetation one - remembe
 temp_model <- function(r, Time) {
   temp_outputs <- list()
   for (t in 1:Time) { 
-    temp_outputs[[t]] <- gaussMap(r, scale = 100, var = 0.1) 
+    # temp_outputs[[t]] <- gaussMap(r, scale = 100, var = 0.1) ## RandomFields no longer available
+    temp_outputs[[t]] <- NLMR::nlm_mpd(
+      ncol = ncol(r),
+      nrow = nrow(r),
+      resolution = unique(res(r)),
+      roughness = 0.5, ## TODO: adjust to approximate gaussMap version
+      rand_dev = 100,
+      rescale = TRUE,
+      verbose = FALSE
+    )
   }
   return(temp_outputs)
 }
@@ -127,11 +145,11 @@ for (t in 1:Time) {
 
 ## AFTER `SpaDES`...
 
-### The controller script
+### The control script
 
 Let us now solve the same problem using the `SpaDES` approach.
 We start by creating an *.R* script (it can have any name) that sets up and runs the `SpaDES` model.
-The controller script for this example is located on the root of the *SpaDES4Dummies* GitHub repository under the name `Example1_DummyModel.R`.
+The control script for this example is located on the root of the *SpaDES4Dummies* GitHub repository under the name `Part1_DummyModel.R`.
 Note that Markdown (`.Rmd`) scripts can also be used instead of R scripts.
 
 We start by making sure all `SpaDES` packages and they dependencies are installed and up to date using `SpaDES.install::installSpaDES`.
@@ -171,7 +189,9 @@ The documentation should contain a the description of the module, its input, par
 `newModule` also created the folder `/data` where data necessary to the module can be put in, and the folder `/tests` that may contain testing scripts.
 We will not be using either of them in this example.
 
-***/!\\ ATTENTION /!\\**`newModule` should only be run once, otherwise it will replace all edits and contents of the module folder with the templates - this is why it is wrapped in an `if` statement above.*
+**/!\\ ATTENTION /!\\**
+
+*`newModule` should only be run once, otherwise it will replace all edits and contents of the module folder with the templates - this is why it is wrapped in an `if` statement above.*
 
 Now go ahead, open the `speciesAbundance.R` script and have a look at it.
 
@@ -216,7 +236,7 @@ Another way of explaining it for objects is illustrated in Fig.
 
 }
 
-\caption{**Inputs and outputs in `SpaDES`:** Object A comes from outside of the module (e.g. from an internet URL, from data you have, or from `.inputObjects`), while Module Z produces object C. Both objects serve as an **inputs** for Module Y, which in return produce as **outputs** objects B and D, respectivelly from objects A and C. As Module Z uses a simple function *internally* to create object C, it doesn't have any inputs, such as our dummy example.}(\#fig:figObj)
+\caption{Inputs and outputs in SpaDES: Object A comes from outside of the module (e.g. from an internet URL, from data you have, or from `.inputObjects`), while Module Z produces object C. Both objects serve as an inputs for Module Y, which in return produce as outputs objects B and D, respectivelly from objects A and C. As Module Z uses a simple function *internally* to create object C, it doesn't have any inputs, such as our dummy example.}(\#fig:figObj)
 \end{figure}
 
 The exception to this rule are the default input objects created by the `.inputObjects` function (see [.inputObjects function]) during the `simInit` call.
@@ -264,7 +284,9 @@ The `SpaDES` package version suggested by the template reflects the version on y
 
 The rest of the script defines the events and their sequences for this module - remember `SpaDES` = Spatial Discrete Event Simulator - and the events themselves.
 
-***/!\\ ATTENTION /!\\**`defineModule()` is not intended to be run directly by the user -- it is run internally during a `simInit()` call (see [Simulation setup in a "global" script]). In other words, you don't run any part of a module's code directly in your session; you run `simInit()` with that module listed in the modules argument.*
+**/!\\ ATTENTION /!\\**
+
+*`defineModule()` is not intended to be run directly by the user -- it is run internally during a `simInit()` call (see [Simulation setup in a "global" script]). In other words, you don't run any part of a module's code directly in your session; you run `simInit()` with that module listed in the modules argument.*
 
 #### **Events and event functions**
 
@@ -273,7 +295,9 @@ Each of these events can execute one or more functions.
 
 *Event functions* (actual R functions) mustn't be confused with *event names*, which are the names of the events appearing in the `doEvent.<module name>`.
 
-***/!\\*** **ATTENTION */!\\*** *Event functions take only one argument, `sim` (the `SpaDES.core::simList` object that stores all objects, modules, functions, etc., of a simulation; see `?simList`) and event functions always (and only) return `sim` (using `return(invisible(sim))`).*
+**/!\\ ATTENTION /!\\**
+
+*Event functions take only one argument, `sim` (the `SpaDES.core::simList` object that stores all objects, modules, functions, etc., of a simulation; see `?simList`) and event functions always (and only) return `sim` (using `return(invisible(sim))`).*
 
 ##### *Initialisation event function*
 
@@ -465,7 +489,9 @@ abundanceInit <- function(sim) {
 It is good practice to provide default input objects to all remaining modules, so that they can work stand-alone.
 We have done this below.
 
-***/!\\ ATTENTION /!\\** If R becomes an input with defaults it must be **added to the module metadata** inside an `expectsInput` call.*
+**/!\\ ATTENTION /!\\**
+
+*If R becomes an input with defaults it must be **added to the module metadata** inside an `expectsInput` call.*
 
 #### **Additional module functions**
 
@@ -482,9 +508,18 @@ Here we provide a description of the function, its parameters, returning value a
 #' 
 #' @param ras a raster layer used as template.
 #' @return a fake abundance raster generated as a Gaussian map with scale = 100 and variance = 0.01
-#' @import SpaDES.tools gaussMap 
+#' @import NLMR nlm_mpd
 abundance_model <- function(ras) {
-  abund_ras <- gaussMap(ras, scale = 100, var = 0.01) 
+  # abund_ras <- gaussMap(ras, scale = 100, var = 0.01) ## RandomFields no longer available
+  abund_ras <- NLMR::nlm_mpd(
+    ncol = ncol(ras),
+    nrow = nrow(ras),
+    resolution = unique(res(ras)),
+    roughness = 0.5, ## TODO: adjust to approximate gaussMap version
+    rand_dev = 100,
+    rescale = TRUE,
+    verbose = FALSE
+  )
   return(abund_ras)
 }
 ```
@@ -494,7 +529,7 @@ abundance_model <- function(ras) {
 ### Creating and adding additional modules: the *temperature* module
 
 The order in which modules are first executed (i.e. their `init` events) can be automatically determined by inter-module dependencies (i.e. module inputs that are the outputs of other modules).
-If there are no inter-module dependencies this order is determined by the order in which the modules are listed in the `Example1_DummyModel.R` script, or via the `simInit(loadOrder = ...)` argument.
+If there are no inter-module dependencies this order is determined by the order in which the modules are listed in the `Part1_DummyModel.R` script, or via the `simInit(loadOrder = ...)` argument.
 
 After the `init` event, the module execution order follows the order of events.
 This means that a module's events can be scheduled before and after another module's events within the same simulation time step.
@@ -525,7 +560,7 @@ defineModule(sim, list(
   citation = list("citation.bib"),
   documentation = list("README.txt", "temperature.Rmd"),
   reqdPkgs = list("PredictiveEcology/SpaDES.core@development (>=1.0.10.9000)",
-                  "raster"),
+                  "raster", "achubaty/NLMR"),
    parameters = bindrows(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
     defineParameter("simulationTimeStep", "numeric", 1, NA, NA, 
@@ -553,7 +588,7 @@ doEvent.temperature = function(sim, eventTime, eventType, debug = FALSE) {
     eventType,
     init = {
       ## do stuff for this event
-      sim <- temperatureInit(sim)
+      sim <- Init(sim)
       
       ## schedule future event(s)
       sim <- scheduleEvent(sim, eventTime = start(sim), moduleName = "temperature", eventType = "SimulTemp")
@@ -562,7 +597,7 @@ doEvent.temperature = function(sim, eventTime, eventType, debug = FALSE) {
     },
     SimulTemp = {
       ## do stuff for this event
-      sim <- temperatureSim(sim)
+      sim <- update(sim)
       
       ## schedule future event(s)
       sim <- scheduleEvent(sim, eventTime = time(sim) + P(sim)$simulationTimeStep, moduleName = "temperature", 
@@ -570,7 +605,7 @@ doEvent.temperature = function(sim, eventTime, eventType, debug = FALSE) {
     },
     tempPlot = {
       ## do stuff for this event
-      sim <- temperaturePlot(sim)
+      sim <- plotting(sim)
 
       ## schedule future event(s)
       sim <- scheduleEvent(sim, eventTime = time(sim) + P(sim)$.plotInterval, moduleName = "temperature", 
@@ -583,7 +618,7 @@ doEvent.temperature = function(sim, eventTime, eventType, debug = FALSE) {
 }
 
 ## This is the 'init' event:
-temperatureInit <- function(sim) {
+Init <- function(sim) {
   ## create storage list of species temperature
   sim$tempRasters <- list()
   
@@ -591,7 +626,7 @@ temperatureInit <- function(sim) {
 }
 
 ## This is the temperature simulation event function
-temperatureSim <- function(sim) {
+update <- function(sim) {
   ## Generate temperature - our "updated data"
   sim$tempRasters[[as.character(time(sim))]] <- temperature_model(ras = sim$r)
   
@@ -599,7 +634,7 @@ temperatureSim <- function(sim) {
 }
 
 ## This is the plotting event funciton
-temperaturePlot <- function(sim) {
+plotting <- function(sim) {
   ## plot temperature
   plotTitle <- paste("Temperature\nat time",
                       names(sim$tempRasters)[length(sim$tempRasters)])
@@ -628,10 +663,18 @@ Again, we added an accessory `temperature_model` function in a separate script `
 #' 
 #' @param ras a raster layer used as template.
 #' @return a fake temperature raster generated as a Gaussian map with scale = 100 and variance = 0.01
-#' @import SpaDES.tools gaussMap 
-
+#' @import NLMR nlm_mpd
 temperature_model <- function(ras) {
-  temp_ras <- gaussMap(ras, scale = 100, var = 0.01) 
+  # temp_ras <- gaussMap(ras, scale = 100, var = 0.01) ## RandomFields no longer available
+  temp_ras <- NLMR::nlm_mpd(
+    ncol = ncol(ras),
+    nrow = nrow(ras),
+    resolution = unique(res(ras)),
+    roughness = 0.5, ## TODO: adjust to approximate gaussMap version
+    rand_dev = 100,
+    rescale = TRUE,
+    verbose = FALSE
+  )
   return(temp_ras)
 }
 ```
@@ -844,7 +887,7 @@ linearModel <- function(Data){
 
 #### Simulation setup in a "global" script
 
-We can now go back to our `Example1_DummyModel.R` script and set the simulation up.
+We can now go back to our `Part1_DummyModel.R` script and set the simulation up.
 
 The function `simInit` needs a few arguments listing simulation folder directories, parameters, simulation times, modules and, optionally, input objects supplied by the user.
 `simInit` will prepare a simulation object that can later be run by the `spades` function:
@@ -857,7 +900,7 @@ The function `simInit` needs a few arguments listing simulation folder directori
     Note that because the module metadata will (or should) contain default parameter values, here we pass only parameters which we want to change with respect to their defaults.
     For instance, `.plotInterval` is used and defined in the *speciesAbundance* and *temperature* modules, but not passed to the `simInit` function because we want to use the default value.
     As a developer providing a reproducible example, we may also chose to list important and useful parameters, even if the value is the same as the default.
-    Here we chose to list `.plotInitialTime` (a parameter used and defined in the *speciesAbundance* and *temperature* modules), but provide the default value (we experimenting with it by changing its value in the `Example1_DummyModel.R`).
+    Here we chose to list `.plotInitialTime` (a parameter used and defined in the *speciesAbundance* and *temperature* modules), but provide the default value (we experimenting with it by changing its value in the `Part1_DummyModel.R`).
 
 -   `paths` contains the folder directory paths that we set earlier.
 
@@ -919,7 +962,7 @@ It explicitly shows module inter-dependencies by depicting the objects that esta
 objectDiagram(mySim)
 ```
 
-![](Part1_DummyModel_files/figure-latex/eventdiagram-1.pdf)<!-- --> 
+![](Part1_DummyModel_files/figure-latex/eventdiagram-1.png)<!-- --> 
 
 #### Running `SpaDES`
 
@@ -941,7 +984,7 @@ mySim2 <- spades(mySim, debug = TRUE)
 
 }
 
-\caption{**Simulation plots**: Final plot of the simulation}(\#fig:figSimulationFig)
+\caption{Simulation plots: Final plot of the simulation}(\#fig:figSimulationFig)
 \end{figure}
 
 We suggest experimenting with changing parameter values and trying to create and add other modules to further explore all the `SpaDES` flexibility.

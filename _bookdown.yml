@@ -10,3 +10,4 @@ rmd_files:
   - index.Rmd
   - Part1_DummyModel.Rmd
   - Part2_SDMs.Rmd
+  - References.Rmd

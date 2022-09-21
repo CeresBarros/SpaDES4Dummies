@@ -11,8 +11,8 @@ defineModule(sim, list(
   timeunit = "year",
   citation = list("citation.bib"),
   documentation = deparse(list("README.txt", "speciesAbundance.Rmd")),
-  reqdPkgs = list("PredictiveEcology/SpaDES.core@development (>=1.0.10.9000)",
-                  "raster", "quickPlot"),
+  reqdPkgs = list("PredictiveEcology/SpaDES.core@development (>= 1.0.10.9000)",
+                  "achubaty/NLMR", "raster", "quickPlot"),
    parameters = bindrows(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
     defineParameter("simulationTimeStep", "numeric", 1, NA, NA, 

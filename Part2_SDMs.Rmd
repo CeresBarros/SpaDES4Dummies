@@ -43,7 +43,7 @@ It then defines the necessary folder directories for the simulation and creates 
 
 ```{r globalscriptPart2, eval = FALSE}
 ## Get necessary R packages, but don't load any
-if (!require("Require")) install.packages("Require")
+if (!"Require" %in% installed.packages()) install.packages("Require")
 Require::Require("PredictiveEcology/SpaDES.install@development", require = FALSE)
 Require::Require("PredictiveEcology/SpaDES.experiment@development", require = FALSE)
 SpaDES.install::installSpaDES(ask = TRUE)
@@ -51,7 +51,6 @@ SpaDES.install::installSpaDES(ask = TRUE)
 ## decide where you're working
 mainDir <- "."
 
-# mainDir <- getwd()
 SpaDES.core::setPaths(cachePath = file.path(mainDir, "cache"),
                       inputPath = file.path(mainDir, "inputs"),
                       modulePath = file.path(mainDir, "modules"),
@@ -74,14 +73,11 @@ if (!dir.exists(file.path(simPaths$modulePath, "projectSpeciesDist"))){
 ```
 
 ```{r globalscriptHiddenPart2, include = FALSE}
-## decide where you're wtorking
-mainDir <- "."
-
-# mainDir <- getwd()
-SpaDES.core::setPaths(cachePath = file.path(mainDir, "cache"),
-                      inputPath = file.path(mainDir, "inputs"),
-                      modulePath = file.path(mainDir, "modules"),
-                      outputPath = file.path(mainDir, "outputs"))
+## decide where you're working
+SpaDES.core::setPaths(cachePath = file.path("cache"),
+                      inputPath = file.path("inputs"),
+                      modulePath = file.path("modules"),
+                      outputPath = file.path("outputs"))
 
 simPaths <- SpaDES.core::getPaths() ## check that this is what you wanted
 ```
@@ -188,6 +184,8 @@ We draw your attention to:
 
 -   How the fitted model object (`sdmOut`) and it's evaluation (`evalOut`) are both module outputs.
     This way these objects can not only be used by other events, but also inspected by the user after the simulation is finished (see [Transparent models]).
+    
+You will notice that this module performs model fitting (i.e., calibration), predictions and model validation. These three components could be broken into three separate modules. As an exercise, we recommend trying to do so on your own.
 
 ------------------------------------------------------------------------
 
@@ -223,10 +221,21 @@ library(SpaDES.experiment)
 
 *Windows can present problems when many packages are installed and further package installations fail. If you see errors like this after restarting R:*
 
-    Installing: glue Detaching is fraught with many potential problems; you may have to restart your session if things aren't working some packages don't seem to unload their dlls correctly.
-        These will not be unloaded: ellipsis, vctrs Unloading package bit64 -- Installing glue -- (1 of 1. Estimated time left: ...; est. finish: ...calculating) Installing package into '\~/R/win-library/4.0' (as 'lib' is unspecified) trying URL '<https://cran.rstudio.com/bin/windows/contrib/4.0/glue_1.6.2.zip>' Content type 'application/zip' length 171858 bytes (167 KB) downloaded 167 KB
+```
+Installing: glue Detaching is fraught with many potential problems; you may 
+have to restart your session if things aren't working some packages don't seem
+to unload their dlls correctly.
+These will not be unloaded: ellipsis, vctrs Unloading package bit64 -- 
+  Installing glue -- (1 of 1. Estimated time left: ...; est. finish: ...calculating) 
+Installing package into '\~/R/win-library/4.0' (as 'lib' is unspecified) trying URL
+'<https://cran.rstudio.com/bin/windows/contrib/4.0/glue_1.6.2.zip>' Content type
+'application/zip' length 171858 bytes (167 KB) downloaded 167 KB
 
-    package 'glue' successfully unpacked and MD5 sums checked Error in unpackPkgZip(foundpkgs[okp, 2L], foundpkgs[okp, 1L], lib, libs_only, : ERROR: failed to lock directory '\~\R\win-library\\4.0' for modifying Try removing '\~\R\win-library\\4.0/00LOCK'
+package 'glue' successfully unpacked and MD5 sums checked 
+Error in unpackPkgZip(foundpkgs[okp, 2L], foundpkgs[okp, 1L], lib, libs_only, : 
+                        ERROR: failed to lock directory '\~\R\win-library\\4.0' for modifying 
+             Try removing '\~\R\win-library\\4.0/00LOCK'
+```
 
 *If you encounter this error, delete the problematic file/folder and try again.*
 
@@ -305,8 +314,10 @@ mySimGLM <- simInit(times = simTimes, params = simParamsGLM,
 ```
 
 ```{r studyAreaCanada, echo = FALSE, fig.align = 'center', fig.cap = "Study area within Canada."}
-can1 <- raster::getData('GADM', country = "CAN", level = 1, path = simPaths$inputPath)
-can1 <- terra::vect(can1)
+## note that we need to make studyArea again because knitr cache and terra obj (which have pointers) do not work well togeher.
+studyArea <- terra::vect(SpaDES.tools::randomStudyArea(size = 1e10, seed = 123))
+
+can1 <- geodata::gadm(country = "CAN", level = 1, path = simPaths$inputPath) 
 can1 <- terra::project(can1, terra::crs(studyArea, proj = TRUE))
 
 terra::plot(can1)
@@ -441,6 +452,16 @@ myExperiment2 <- experiment2(MaxEnt = mySimMaxEnt2,
 qs::qsave(myExperiment2, file.path(simPaths$outputPath, paste0("myExperiment2", ".qs")))
 ```
 
+#### Proposed exercises
+
+1. try changing the climate layers (e.g., use different climate scenarios or General Circulation models) and rerunning predictions;
+
+2. try adding other statistical algorithms;
+
+3. try breaking up the prediction module into three modules: a calibration module, a prediction module and a validation module.
+
+Have fun!
+
 #### Making use of `simList` for reporting
 
 Another advantage of having all simulation parameters, inputs and outputs centralised in one object, is that we can easily inspect and manipulated them afterwards, without the need to load separate objects back into `R`.
@@ -559,7 +580,8 @@ Loading cached events produced a slightly different message from loading of othe
 
 ```
 Mar05 19:58:34 spcsbn 1 speciesAbundanceData init 1\
-Mar05 19:58:34 spcsbn ...(Object to retrieve (bffbc48cc055c846.rds)) Mar05 19:58:35 spcsbn loaded cached copy of init event in speciesAbundanceData module.
+Mar05 19:58:34 spcsbn ...(Object to retrieve (bffbc48cc055c846.rds)) 
+Mar05 19:58:35 spcsbn loaded cached copy of init event in speciesAbundanceData module.
 ```
 
 ### Controlling caching without changing module code

@@ -8,7 +8,7 @@ defineModule(sim, list(
   name = "projectSpeciesDist",
   description = "",
   keywords = "",
-  authors = structure(list(list(given = c("First", "Middle"), family = "Last", role = c("aut", "cre"), email = "email@example.com", comment = NULL)), class = "person"),
+  authors = structure(list(list(given = c("Ceres"), family = "Barros", role = c("aut", "cre"), email = "ceres.barros@ubc.ca", comment = NULL)), class = "person"),
   childModules = character(0),
   version = list(projectSpeciesDist = "0.0.0.9000"),
   timeframe = as.POSIXlt(c(NA, NA)),
@@ -60,7 +60,11 @@ defineModule(sim, list(
                   desc = "Input data used to fit `sdmOut`."),
     createsOutput(objectName = "sdmOut", objectClass = c("MaxEnt", "glm"),
                   desc = paste("Fitted species distribution model. Model fitted on 80%",
-                               "of `sdmData`, with remaining 20% used for evaluation."))
+                               "of `sdmData`, with remaining 20% used for evaluation.")),
+    createsOutput(objectName = "thresh", objectClass = "numeric",
+                  desc = paste("Threshold of presence that maximises the sum of the sensitivity",
+                               "(true positive rate) and specificity (true negative rate).",
+                               "See `dismo::threshold(..., stat = 'spec_sens')`."))
   )
 ))
 
@@ -196,7 +200,7 @@ evalSDMEvent <- function(sim) {
                           a = mod$testData[presAbs == 0, ..predVars],
                           model = sim$sdmOut)
   ## save the threshold of presence/absence in an internal object to this module
-  mod$thresh <- threshold(sim$evalOut, 'spec_sens')
+  sim$thresh <- threshold(sim$evalOut, 'spec_sens')
   
   # ! ----- STOP EDITING ----- ! #
   return(invisible(sim))
@@ -254,7 +258,7 @@ plotProjEvent <- function(sim) {
           usePlot = TRUE, filename = file.path(outputPath(sim), "figures", paste0("projRawVals_", fileSuffix)), 
           plotTitle = paste("Projected raw values -", "year", time(sim)),
           xlab = "Longitude", ylab = "Latitude")
-    PAsPlot <- sim$sppDistProj[[paste0("year", time(sim))]] > mod$thresh
+    PAsPlot <- sim$sppDistProj[[paste0("year", time(sim))]] > sim$thresh
     Plots(PAsPlot, fn = plotSpatRaster, types = P(sim)$.plots,
           usePlot = TRUE, filename = file.path(outputPath(sim), "figures", paste0("projPA_", fileSuffix)), 
           plotTitle = paste("Projected presence/absence -", "year", time(sim)),
