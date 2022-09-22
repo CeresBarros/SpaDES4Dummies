@@ -38,23 +38,46 @@ Our data modules are *speciesAbundanceData* and *climateData*.
 The simulation module is *projectSpeciesDist*.
 We start by creating an `.R` script to set up and control the simulation.
 In this example this script is called `Part2_SDMs.R`.
-The script begins with a few lines of code that ensure necessary packages are installed and loaded (see [Reproducible package installation]).
-It then defines the necessary folder directories for the simulation and creates the modules in the `modules/` folder:
+
+The script begins with a few lines of code that ensure a few packages are installed and loaded (see [Reproducible package installation]). 
+It then defines the necessary folder directories for the simulation and creates the modules in the `modules/` folder.
 
 ```{r globalscriptPart2, eval = FALSE}
-## Get necessary R packages, but don't load any
-if (!"Require" %in% installed.packages()) install.packages("Require")
-Require::Require("PredictiveEcology/SpaDES.install@development", require = FALSE)
-Require::Require("PredictiveEcology/SpaDES.experiment@development", require = FALSE)
-SpaDES.install::installSpaDES(ask = TRUE)
+options(repos = c(CRAN = "http://cloud.r-project.org"))
+
+if (paste(R.Version()[c("major", "minor")], collapse = ".") < "4.2.1") {
+  warning(paste("dismo::maxent may create a fatal error",
+                "when using R version < v4.2.1 and from RStudio.\n", 
+                "Please upgrade R, or run this script outside of RStudio.\n",
+                "See https://github.com/rspatial/dismo/issues/13"))
+}
 
 ## decide where you're working
-mainDir <- "."
+mainPath <- "~/SpaDES4Dummies_Part2"
+pkgPath <- file.path(mainPath, "packages", version$platform,
+                     paste0(version$major, ".", strsplit(version$minor, "[.]")[[1]][1]))
+dir.create(pkgPath, recursive = TRUE)
+.libPaths(pkgPath, include.site = FALSE) ## install packages in project library (proj-lib)
 
-SpaDES.core::setPaths(cachePath = file.path(mainDir, "cache"),
-                      inputPath = file.path(mainDir, "inputs"),
-                      modulePath = file.path(mainDir, "modules"),
-                      outputPath = file.path(mainDir, "outputs"))
+if (!"remotes" %in% installed.packages(lib.loc = pkgPath))
+  install.packages("remotes")
+
+if (!"Require" %in% installed.packages(lib.loc = pkgPath) || 
+    packageVersion("Require", lib.loc = pkgPath) < "0.1.2") {
+  remotes::install_github("PredictiveEcology/Require@86254b17ad2392de5c9e4dae6dd06a194b69a169",
+                          upgrade = FALSE, force = TRUE)
+}
+
+## use binary linux packages if on Ubuntu
+Require::setLinuxBinaryRepo()
+
+Require::Require(c("PredictiveEcology/SpaDES.project@transition", "SpaDES.core"),
+                 upgrade = FALSE, standAlone = TRUE)
+
+SpaDES.core::setPaths(cachePath = file.path(mainPath, "cache"),
+                      inputPath = file.path(mainPath, "inputs"),
+                      modulePath = file.path(mainPath, "modules"),
+                      outputPath = file.path(mainPath, "outputs"))
 
 simPaths <- SpaDES.core::getPaths() ## check that this is what you wanted
 
@@ -73,7 +96,37 @@ if (!dir.exists(file.path(simPaths$modulePath, "projectSpeciesDist"))){
 ```
 
 ```{r globalscriptHiddenPart2, include = FALSE}
+options(repos = c(CRAN = "http://cloud.r-project.org"))
+
+if (paste(R.Version()[c("major", "minor")], collapse = ".") < "4.2.1") {
+  warning(paste("dismo::maxent may create a fatal error",
+                "when using R version < v4.2.1 and from RStudio.\n", 
+                "Please upgrade R, or run this script outside of RStudio.\n",
+                "See https://github.com/rspatial/dismo/issues/13"))
+}
+
 ## decide where you're working
+mainPath <- "."
+pkgPath <- file.path(mainPath, "packages", version$platform,
+                     paste0(version$major, ".", strsplit(version$minor, "[.]")[[1]][1]))
+dir.create(pkgPath, recursive = TRUE)
+.libPaths(pkgPath, include.site = FALSE) ## install packages in project library (proj-lib)
+
+if (!"remotes" %in% installed.packages(lib.loc = pkgPath))
+  install.packages("remotes")
+
+if (!"Require" %in% installed.packages(lib.loc = pkgPath) || 
+    packageVersion("Require", lib.loc = pkgPath) < "0.1.2") {
+  remotes::install_github("PredictiveEcology/Require@86254b17ad2392de5c9e4dae6dd06a194b69a169",
+                          upgrade = FALSE, force = TRUE)
+}
+
+## use binary linux packages if on Ubuntu
+Require::setLinuxBinaryRepo()
+
+Require::Require(c("PredictiveEcology/SpaDES.project@transition", "SpaDES.core"),
+                 upgrade = FALSE, standAlone = TRUE)
+
 SpaDES.core::setPaths(cachePath = file.path("cache"),
                       inputPath = file.path("inputs"),
                       modulePath = file.path("modules"),
@@ -194,30 +247,45 @@ You will notice that this module performs model fitting (i.e., calibration), pre
 ### Ensuring all packages are installed
 
 After the modules are created, we go back to the `Part2_SDMs.R` script to set up and run the simulation.
-The first line of code ensures that all module dependencies (and their dependencies and so on) are installed in `.libPaths()`.
-If not it will attempt to install missing packages.
-Only then do we load `SpaDES` (necessary to run the simulation).
+We fist ensure that all module dependencies (and their dependencies and so on) are installed in `.libPaths()`.
+
+Only then do we load packages necessary to run the simulation.
+
+Note that the `dismo` package (a dependency of the `projectSpeciesDist` module) needs `rJava` to run `maxent`. In turn, `rJava` needs a working Java installation (Jave can be downloaded [here](See https://www.java.com/en/download/manual.jsp)). 
+Below you will see that we attempt to warn the user about problems loading `rJava`, which are likely related to Java not being found on the system.
 
 ```{r simulationPkgs, eval = FALSE}
-## this line can be used to make sure all packages are installed
-SpaDES.install::makeSureAllPackagesInstalled(simPaths$modulePath)
+outs <- SpaDES.project::packagesInModules(modulePath = simPaths$modulePath)  ## gets list of module dependencies
+Require::Require(c(unname(unlist(outs)),
+                   "ggpubr", "PredictiveEcology/SpaDES.experiment@development",
+                   "SpaDES.tools", "DiagrammeR"), 
+                 require = FALSE,   ## don't load packages
+                 upgrade = FALSE,   ## don't upgrade dependencies
+                 standAlone = TRUE) ## install all dependencies in proj-lib (ignore user/system lib)
+## dismo needs a few tweaks to run MaxEnt
+out <- reproducible::preProcess(targetFile = "maxent.jar",
+                                url = "https://github.com/mrmaxent/Maxent/blob/master/ArchivedReleases/3.4.4/maxent.jar?raw=true",
+                                destinationPath = simPaths$inputPath,
+                                fun = NA)
+file.move(out$targetFilePath, file.path(system.file("java", package="dismo"), "maxent.jar"))
 
-## you should restart R again if any packages were installed
+out <- require(rJava)
+if (!out) {
+  stop(paste("Your Java installation may have problems, please check.\n", 
+       "See https://www.java.com/en/download/manual.jsp for Java installation"))
+}
 
-## load necessary packages now
-library(SpaDES)
-library(SpaDES.experiment)
+## It may be a good idea to restart R after the installation is complete.
 ```
 
 ```{r simulationPkgsHidden, include = FALSE}
 ## load necessary packages now
-library(SpaDES)
-library(SpaDES.experiment)
+library(SpaDES.core)
+library(SpaDES.tools)
+library(ggpubr)
 ```
 
 **/!\\ ATTENTION /!\\**
-
-*`makeSureAllPackagesInstalled` may fail to install if other packages have been loaded already, so we recommend running this line from a clean R session. We also recommend restarting the R session after `makeSureAllPackagesInstalled` installs packages.*
 
 *Windows can present problems when many packages are installed and further package installations fail. If you see errors like this after restarting R:*
 
@@ -260,7 +328,8 @@ We also define a few useful global options:
 options(reproducible.useCache = TRUE,
         reproducible.cachePath = simPaths$cachePath,
         reproducible.destinationPath = simPaths$inputPath, ## all downloaded and pre-processed layers go here
-        reproducible.useTerra = TRUE)  ## we want to use the terra R package
+        reproducible.useTerra = TRUE, ## we want to use the terra R package
+        spades.useRequire = FALSE)  
 
 ## list the modules to use
 simModules <- list("speciesAbundanceData", "climateData", "projectSpeciesDist")
@@ -272,23 +341,19 @@ simTimes <- list(start = 1, end = 5, timeunit = "year")
 ## the other a GLM
 simParamsMaxEnt <- list(
   "speciesAbundanceData" = list(
-    ".plots" = c("screen", "png"),
-    # ".useCache" = c(".inputObjects", "init")
+    ".plots" = c("png"),
     ".useCache" = FALSE
   ),
   "climateData" = list(
-    ".plots" = c("screen", "png"),
-    # ".useCache" = c(".inputObjects", "init")
+    ".plots" = c("png"),
     ".useCache" = FALSE
   ),
   "projectSpeciesDist" = list(
     "statModel" = "MaxEnt",
-    ".plots" = c("screen", "png"),
-    # ".useCache" = c(".inputObjects", "init")
+    ".plots" = c("png"),
     ".useCache" = FALSE
   )
 )
-
 simParamsGLM <- simParamsMaxEnt
 simParamsGLM$projectSpeciesDist$statModel <- "GLM"
 
@@ -369,8 +434,7 @@ myExperiment <- experiment2(MaxEnt = mySimMaxEnt,
 qs::qsave(myExperiment, file.path(simPaths$outputPath, paste0("myExperiment", ".qs")))
 ```
 
-Try to execute the `spades` call twice to see how much faster it runs after many of the operations have been cached.
-Notice also, how the `init` events are retrieved from the cache thanks to the `.useCache` parameters passed to the modules (see also [Caching]).
+Try to execute the `spades` call twice to see how much faster it runs after many of the operations have been cached (see also [Caching]).
 
 By default the data modules (*speciesAbundanceData* and *climateData*) save figures of the input species and climate layers (Figs. \@ref(fig:figSimulationSppAbund) and \@ref(fig:figSimulationClimate), respectively).
 
@@ -541,8 +605,10 @@ knitr::include_graphics(normalizePath("outputs/generalFigures/MaxEntPredictions.
 In this example, we relied on caching to avoid having to repeat computationally intensive operations.
 Running the `simInit` and `spades` calls a second time (even after restarting R session) was faster and `SpaDES` informed us of instances where cached objects were being retrieved:
 
+```
 (...) Mar05 19:56:53 clmtDt 1 climateData init 1\
 Mar05 19:56:53 clmtDt ...(Object to retrieve (a7816e2d0deb3b29.rds)) Mar05 19:56:53 clmtDt loaded cached result from previous Map call (...)
+```
 
 Caching in `SpaDES` is managed by the `reproducible` package, and can be generally broken down into two types: explicitly coded by the module developer, or internal to `SpaDES` functions.
 
@@ -574,8 +640,8 @@ We call this "implicit" caching, because the developer does not need to add any 
 `SpaDES` automatically reads the value of the `.useCache` parameter and activates caching in the module accordingly.
 
 This parameter can be used to cache (or not) all or some module events (in their entirety).
-In our example, we cached data preparation events across all modules (the `.inputObjects` and `init` events in this example), but not the events that fitted the SDM and generated projections.
-In truth, because none of the modules simulate any stochastic processes, we could have cached all events.
+In our example, we cached have not cached events but passing `.useCache = ".inputObjects"` or `.useCache = "init"` would cache these events. 
+
 Loading cached events produced a slightly different message from loading of other cached operations (see above):
 
 ```
@@ -583,6 +649,8 @@ Mar05 19:58:34 spcsbn 1 speciesAbundanceData init 1\
 Mar05 19:58:34 spcsbn ...(Object to retrieve (bffbc48cc055c846.rds)) 
 Mar05 19:58:35 spcsbn loaded cached copy of init event in speciesAbundanceData module.
 ```
+
+We have noted that `terra` objects have issues with caching due to the fact that they rely on pointers. This is a behaviour that we started observing in September 2022 and may be resolved by `terra` developers in the future. 
 
 ### Controlling caching without changing module code
 
