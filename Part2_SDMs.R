@@ -164,7 +164,7 @@ qs::qsave(myExperiment, file.path(simPaths$outputPath, paste0("myExperiment", ".
 ## check models
 myExperiment$MaxEnt_rep1$sdmOut   ## this links to an html page
 sets <- par(mfrow = c(2,2))
-plot(myExperiment$GLM_rep1$sdmOut)
+plot(myExperiment$MaxEnt_rep1$sdmOut)
 par(sets)
 
 ## check validation results for the two models
