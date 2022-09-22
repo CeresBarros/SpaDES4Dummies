@@ -80,7 +80,8 @@ if (!out) {
 ## It may be a good idea to restart R after the installation is complete.
 
 ## load necessary packages now
-library(SpaDES)
+library(SpaDES.core)
+library(SpaDES.tools)
 library(SpaDES.experiment)
 library(ggpubr)
 
