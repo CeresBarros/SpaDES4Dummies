@@ -33,7 +33,7 @@ if (!"Require" %in% installed.packages(lib.loc = pkgPath) ||
 ## use binary linux packages if on Ubuntu
 Require::setLinuxBinaryRepo()
 
-Require::Require(c("PredictiveEcology/SpaDES.install@development", "SpaDES.core"),
+Require::Require(c("PredictiveEcology/SpaDES.project@transition", "SpaDES.core"),
                  upgrade = FALSE, standAlone = TRUE)
 
 simPaths <- list(cachePath = file.path(mainPath, "cache"),
@@ -57,7 +57,7 @@ if (!dir.exists(file.path(simPaths$modulePath, "projectSpeciesDist"))){
 ## now, let's pretend you've created your modules and each sources a series of other packages
 ## it's a good idea to always make sure all necessary module dependencies are installed
 ## this is a particularly useful line when sharing your packages with someone else.
-outs <- SpaDES.install::packagesInModules(modulePath = simPaths$modulePath)  ## gets list of module dependencies
+outs <- SpaDES.project::packagesInModules(modulePath = simPaths$modulePath)  ## gets list of module dependencies
 Require::Require(c(unname(unlist(outs)),
                    "ggpubr", "PredictiveEcology/SpaDES.experiment@development",
                    "SpaDES.tools", "DiagrammeR"), 
