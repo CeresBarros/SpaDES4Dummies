@@ -96,7 +96,6 @@ options(reproducible.useCache = TRUE,
 simModules <- list("speciesAbundanceData", "climateData", "projectSpeciesDist")
 
 ## Set simulation and module parameters
-## Set simulation and module parameters
 simTimes <- list(start = 1, end = 5, timeunit = "year")
 
 ## we create two lists of parameters, one using the default MaxEnt
@@ -154,11 +153,11 @@ clearPlot(force = TRUE)   ## this forces wiping the graphics device and opening 
 # mySimOut <- spades(mySimMaxEnt, debug = TRUE)  
 
 ## Better to use when spades runs error-free on the simLists
-myExperiment <- experiment2(MaxEnt = mySimMaxEnt, 
-                            GLM = mySimGLM, 
-                            debug = TRUE, 
-                            replicates = 1,
-                            clearSimEnv = FALSE)   ## prevent removing objects from the simLists at the end
+myExperiment <- SpaDES.experiment::experiment2(MaxEnt = mySimMaxEnt, 
+                                               GLM = mySimGLM, 
+                                               debug = TRUE, 
+                                               replicates = 1,
+                                               clearSimEnv = FALSE)   ## prevent removing objects from the simLists at the end
 ## save outputs
 qs::qsave(myExperiment, file.path(simPaths$outputPath, paste0("myExperiment", ".qs")))
 
