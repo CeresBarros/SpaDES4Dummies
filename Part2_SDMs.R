@@ -58,7 +58,8 @@ if (!dir.exists(file.path(simPaths$modulePath, "projectSpeciesDist"))){
 ## this is a particularly useful line when sharing your packages with someone else.
 outs <- SpaDES.install::packagesInModules(modulePath = simPaths$modulePath)  ## gets list of module dependencies
 Require::Require(c(unname(unlist(outs)),
-                   "ggpubr", "PredictiveEcology/SpaDES.experiment@development"), 
+                   "ggpubr", "PredictiveEcology/SpaDES.experiment@development",
+                   "SpaDES.tools", "DiagrammeR"), 
                  require = FALSE,   ## don't load packages
                  upgrade = FALSE,   ## don't upgrade dependencies
                  standAlone = TRUE) ## install all dependencies in proj-lib (ignore user/system lib)
