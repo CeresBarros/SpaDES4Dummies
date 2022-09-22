@@ -103,18 +103,18 @@ simTimes <- list(start = 1, end = 5, timeunit = "year")
 ## the other a GLM
 simParamsMaxEnt <- list(
   "speciesAbundanceData" = list(
-    ".plots" = c("screen", "png"),
+    ".plots" = c("png"),
     # ".useCache" = c(".inputObjects", "init")
     ".useCache" = FALSE
   ),
   "climateData" = list(
-    ".plots" = c("screen", "png"),
+    ".plots" = c("png"),
     # ".useCache" = c(".inputObjects", "init")
     ".useCache" = FALSE
   ),
   "projectSpeciesDist" = list(
     "statModel" = "MaxEnt",
-    ".plots" = c("screen", "png"),
+    ".plots" = c("png"),
     # ".useCache" = c(".inputObjects", "init")
     ".useCache" = FALSE
   )
