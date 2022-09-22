@@ -64,6 +64,19 @@ Require::Require(c(unname(unlist(outs)),
                  upgrade = FALSE,   ## don't upgrade dependencies
                  standAlone = TRUE) ## install all dependencies in proj-lib (ignore user/system lib)
 
+## dismo needs a few tweaks to run MaxEnt
+out <- reproducible::preProcess(targetFile = "maxent.jar",
+                                url = "https://github.com/mrmaxent/Maxent/blob/master/ArchivedReleases/3.4.4/maxent.jar?raw=true",
+                                destinationPath = simPaths$inputPath,
+                                fun = NA)
+file.move(out$targetFilePath, file.path(system.file("java", package="dismo"), "maxent.jar"))
+
+out <- require(rJava)
+if (!out) {
+  stop(paste("Your Java installation may have problems, please check.\n", 
+       "See https://www.java.com/en/download/manual.jsp for Java installation"))
+}
+
 ## It may be a good idea to restart R after the installation is complete.
 
 ## load necessary packages now
