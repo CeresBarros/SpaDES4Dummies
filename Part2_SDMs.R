@@ -36,10 +36,12 @@ Require::setLinuxBinaryRepo()
 Require::Require(c("PredictiveEcology/SpaDES.project@transition", "SpaDES.core"),
                  upgrade = FALSE, standAlone = TRUE)
 
-simPaths <- list(cachePath = file.path(mainPath, "cache"),
-                 inputPath = file.path(mainPath, "inputs"),
-                 modulePath = file.path(mainPath, "modules"),
-                 outputPath = file.path(mainPath, "outputs"))
+SpaDES.core::setPaths(cachePath = file.path(mainPath, "cache"),
+                      inputPath = file.path(mainPath, "inputs"),
+                      modulePath = file.path(mainPath, "modules"),
+                      outputPath = file.path(mainPath, "outputs"))
+
+simPaths <- SpaDES.core::getPaths() 
 
 ## Let's create our modules. Please refer to the guide for code you could add to each module.
 if (!dir.exists(file.path(simPaths$modulePath, "speciesAbundanceData"))){
@@ -83,7 +85,6 @@ if (!out) {
 ## load necessary packages now
 library(SpaDES.core)
 library(SpaDES.tools)
-library(SpaDES.experiment)
 library(ggpubr)
 
 ## a few important options:
@@ -104,18 +105,15 @@ simTimes <- list(start = 1, end = 5, timeunit = "year")
 simParamsMaxEnt <- list(
   "speciesAbundanceData" = list(
     ".plots" = c("png"),
-    # ".useCache" = c(".inputObjects", "init")
     ".useCache" = FALSE
   ),
   "climateData" = list(
     ".plots" = c("png"),
-    # ".useCache" = c(".inputObjects", "init")
     ".useCache" = FALSE
   ),
   "projectSpeciesDist" = list(
     "statModel" = "MaxEnt",
     ".plots" = c("png"),
-    # ".useCache" = c(".inputObjects", "init")
     ".useCache" = FALSE
   )
 )
