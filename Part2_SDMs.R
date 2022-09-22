@@ -26,7 +26,8 @@ if (!"remotes" %in% installed.packages(lib.loc = pkgPath))
 
 if (!"Require" %in% installed.packages(lib.loc = pkgPath) || 
     packageVersion("Require", lib.loc = pkgPath) < "0.1.2") {
-  remotes::install_github("PredictiveEcology/Require@development", upgrade = FALSE, force = TRUE)
+  remotes::install_github("PredictiveEcology/Require@86254b17ad2392de5c9e4dae6dd06a194b69a169",
+                          upgrade = FALSE, force = TRUE)
 }
 
 ## use binary linux packages if on Ubuntu
