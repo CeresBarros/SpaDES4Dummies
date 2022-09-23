@@ -582,8 +582,10 @@ In this example, we relied on caching to avoid having to repeat computationally 
 Running the `simInit` and `spades` calls a second time (even after restarting R session) was faster and `SpaDES` informed us of instances where cached objects were being retrieved:
 
 ```
-(...) Mar05 19:56:53 clmtDt 1 climateData init 1\
-Mar05 19:56:53 clmtDt ...(Object to retrieve (a7816e2d0deb3b29.rds)) Mar05 19:56:53 clmtDt loaded cached result from previous Map call (...)
+(...) 
+Mar05 19:56:53 clmtDt 1 climateData init 1\
+Mar05 19:56:53 clmtDt ...(Object to retrieve (a7816e2d0deb3b29.rds)) Mar05 19:56:53 clmtDt loaded cached result from previous Map call
+(...)
 ```
 
 Caching in `SpaDES` is managed by the `reproducible` package, and can be generally broken down into two types: explicitly coded by the module developer, or internal to `SpaDES` functions.
