@@ -255,5 +255,5 @@ plotAll <- ggarrange(plotMaxEnt2 + labs(title = expression(bold("Scenario - SSP 
                        theme(plot.margin = margin(0,0,0,0)), 
                      legend = "right", common.legend = TRUE, labels = c("a)", "b)", "c)", "d)"))
 figDir <- checkPath(file.path(simPaths$outputPath, "generalFigures"), create = TRUE)
-ggsave(file.path(figDir, "MaxEntPredictions.tiff"), width = 13.5, height = 5.5, units = "in", dpi = 300)
+ggsave(file.path(figDir, "MaxEntPredictions.png"), width = 13.5, height = 5.5, units = "in", dpi = 300)
 
