@@ -31,6 +31,8 @@ library(raster)
 library(quickPlot)
 library(ggplot2)
 library(SpaDES.tools)
+
+remotes::install_github("achubaty/NLMR")  ## you will need this ;)
 ```
 
 And now create a raster template:
@@ -74,7 +76,7 @@ dev()
 plot(stack(abundance))
 ```
 
-![](Part1_DummyModel_files/figure-latex/the_r_way_simulation_length-1.pdf)<!-- --> 
+<img src="Part1_DummyModel_files/figure-html/the_r_way_simulation_length-1.png" width="672" />
 
 ### Temperature "simulations"
 
@@ -91,8 +93,8 @@ temp_model <- function(r, Time) {
       nrow = nrow(r),
       resolution = unique(res(r)),
       roughness = 0.5, ## TODO: adjust to approximate gaussMap version
-      rand_dev = 100,
-      rescale = TRUE,
+      rand_dev = 10,
+      rescale = FALSE,
       verbose = FALSE
     )
   }
@@ -108,7 +110,7 @@ temperature <- temp_model(r = r, Time = Time)
 plot(stack(temperature))
 ```
 
-![](Part1_DummyModel_files/figure-latex/the_r_way_plot_results_TMP-1.pdf)<!-- --> 
+<img src="Part1_DummyModel_files/figure-html/the_r_way_plot_results_TMP-1.png" width="672" />
 
 ### Data analysis
 
@@ -157,24 +159,50 @@ We start by making sure all `SpaDES` packages and they dependencies are installe
 
 ```r
 ## start again from a clean R session
-if (!require("Require")) install.packages("Require")
-Require::Require("PredictiveEcology/SpaDES.install@development")
-SpaDES.install::installSpaDES(ask = TRUE)
+options(repos = c(CRAN = "http://cloud.r-project.org"))
 
-library(SpaDES)  ## should automatically download all packages in the SpaDES family and their dependencies
+if (paste(R.Version()[c("major", "minor")], collapse = ".") < "4.2.1") {
+  warning(paste("dismo::maxent may create a fatal error",
+                "when using R version < v4.2.1 and from RStudio.\n", 
+                "Please upgrade R, or run this script outside of RStudio.\n",
+                "See https://github.com/rspatial/dismo/issues/13"))
+}
 
 ## decide where you're working
-mainDir <- "."
+mainPath <- "~/SpaDES4Dummies_Part1"
+pkgPath <- file.path(mainPath, "packages", version$platform,
+                     paste0(version$major, ".", strsplit(version$minor, "[.]")[[1]][1]))
+dir.create(pkgPath, recursive = TRUE)
+.libPaths(pkgPath, include.site = FALSE) ## install packages in project library (proj-lib)
 
-setPaths(cachePath = file.path(mainDir, "cache"),
-         inputPath = file.path(mainDir, "inputs"),
-         modulePath = file.path(mainDir, "modules"),
-         outputPath = file.path(mainDir, "outputs"))
+if (!"remotes" %in% installed.packages(lib.loc = pkgPath))
+  install.packages("remotes")
+
+if (!"Require" %in% installed.packages(lib.loc = pkgPath) || 
+    packageVersion("Require", lib.loc = pkgPath) < "0.1.2") {
+  remotes::install_github("PredictiveEcology/Require@86254b17ad2392de5c9e4dae6dd06a194b69a169",
+                          upgrade = FALSE, force = TRUE)
+}
+
+## use binary linux packages if on Ubuntu
+Require::setLinuxBinaryRepo()
+
+Require::Require(c("SpaDES"), require = FALSE, upgrade = FALSE, standAlone = TRUE) ## automatically downloads all packages in the SpaDES family and their dependencies
+
+library(SpaDES)
+
+## decide where you're working
+mainPath <- "."
+
+setPaths(cachePath = file.path(mainPath, "cache"),
+         inputPath = file.path(mainPath, "inputs"),
+         modulePath = file.path(mainPath, "modules"),
+         outputPath = file.path(mainPath, "outputs"))
 
 getPaths() ## check that this is what you wanted
 
 ## Let's create a self-contained module that will simulate the species' abundance for any given period of time and frequency.
-if (!dir.exists(file.path(getPaths()$modulePath, "speciesAbundance"))) {
+if (!Path.exists(file.path(getPaths()$modulePath, "speciesAbundance"))) {
   newModule(name = "speciesAbundance", path = getPaths()$modulePath)
 }
 ```
@@ -230,14 +258,10 @@ To distinguish what input and output objects are in the context of a module, a g
 Another way of explaining it for objects is illustrated in Fig.
 \@ref(fig:figObj):
 
-\begin{figure}
-
-{\centering \includegraphics[width=0.8\linewidth]{obj} 
-
-}
-
-\caption{Inputs and outputs in SpaDES: Object A comes from outside of the module (e.g. from an internet URL, from data you have, or from `.inputObjects`), while Module Z produces object C. Both objects serve as an inputs for Module Y, which in return produce as outputs objects B and D, respectivelly from objects A and C. As Module Z uses a simple function *internally* to create object C, it doesn't have any inputs, such as our dummy example.}(\#fig:figObj)
-\end{figure}
+<div class="figure" style="text-align: center">
+<img src="obj.png" alt="Inputs and outputs in SpaDES: Object A comes from outside of the module (e.g. from an internet URL, from data you have, or from `.inputObjects`), while Module Z produces object C. Both objects serve as an inputs for Module Y, which in return produce as outputs objects B and D, respectivelly from objects A and C. As Module Z uses a simple function *internally* to create object C, it doesn't have any inputs, such as our dummy example." width="80%" />
+<p class="caption">(\#fig:figObj)Inputs and outputs in SpaDES: Object A comes from outside of the module (e.g. from an internet URL, from data you have, or from `.inputObjects`), while Module Z produces object C. Both objects serve as an inputs for Module Y, which in return produce as outputs objects B and D, respectivelly from objects A and C. As Module Z uses a simple function *internally* to create object C, it doesn't have any inputs, such as our dummy example.</p>
+</div>
 
 The exception to this rule are the default input objects created by the `.inputObjects` function (see [.inputObjects function]) during the `simInit` call.
 
@@ -286,7 +310,7 @@ The rest of the script defines the events and their sequences for this module - 
 
 **/!\\ ATTENTION /!\\**
 
-*`defineModule()` is not intended to be run directly by the user -- it is run internally during a `simInit()` call (see [Simulation setup in a "global" script]). In other words, you don't run any part of a module's code directly in your session; you run `simInit()` with that module listed in the modules argument.*
+*`defineModule()` is not intended to be run Pathectly by the user -- it is run internally during a `simInit()` call (see [Simulation setup in a "global" script]). In other words, you don't run any part of a module's code Pathectly in your session; you run `simInit()` with that module listed in the modules argument.*
 
 #### **Events and event functions**
 
@@ -889,7 +913,7 @@ linearModel <- function(Data){
 
 We can now go back to our `Part1_DummyModel.R` script and set the simulation up.
 
-The function `simInit` needs a few arguments listing simulation folder directories, parameters, simulation times, modules and, optionally, input objects supplied by the user.
+The function `simInit` needs a few arguments listing simulation folder Pathectories, parameters, simulation times, modules and, optionally, input objects supplied by the user.
 `simInit` will prepare a simulation object that can later be run by the `spades` function:
 
 -   The first list, `modules`, contains modules we want to activate.
@@ -902,7 +926,7 @@ The function `simInit` needs a few arguments listing simulation folder directori
     As a developer providing a reproducible example, we may also chose to list important and useful parameters, even if the value is the same as the default.
     Here we chose to list `.plotInitialTime` (a parameter used and defined in the *speciesAbundance* and *temperature* modules), but provide the default value (we experimenting with it by changing its value in the `Part1_DummyModel.R`).
 
--   `paths` contains the folder directory paths that we set earlier.
+-   `paths` contains the folder Pathectory paths that we set earlier.
 
 
 ```r
@@ -919,7 +943,7 @@ simParams <- list(
   speciesTempLM = list(statsTimestep = 5)
 )
 
-## make a list of directory paths
+## make a list of Pathectory paths
 simPaths <- getPaths()
 
 ## Simulation setup
@@ -941,7 +965,7 @@ Before starting the simulations we should check if the modules were linked corre
 **Module diagram**
 
 `moduleDiagram` is a useful function that shows module inter-dependencies as a network diagram.
-The direction of the arrows indicates an output to input flow.
+The Pathection of the arrows indicates an output to input flow.
 You can see that *speciesAbundance* and *temperature* inputs (specifically our R raster) are supplied by an external source ("*INPUT*") - the user or `.inputObjects`.
 Whereas the inputs to the *speciesTempLM* module are outputs of the *speciesAbundance* and *temperature* modules.
 
@@ -950,7 +974,7 @@ Whereas the inputs to the *speciesTempLM* module are outputs of the *speciesAbun
 moduleDiagram(mySim)
 ```
 
-![](Part1_DummyModel_files/figure-latex/modulediagram-1.pdf)<!-- --> 
+<img src="Part1_DummyModel_files/figure-html/modulediagram-1.png" width="960" />
 
 **Object diagram**
 
@@ -962,7 +986,10 @@ It explicitly shows module inter-dependencies by depicting the objects that esta
 objectDiagram(mySim)
 ```
 
-![](Part1_DummyModel_files/figure-latex/eventdiagram-1.png)<!-- --> 
+```{=html}
+<div id="htmlwidget-1ae83dbd208184ec8f03" style="width:672px;height:480px;" class="DiagrammeR html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1ae83dbd208184ec8f03">{"x":{"diagram":"sequenceDiagram\n_INPUT_ ->> speciesAbundance : r\n_INPUT_ ->> temperature : r\nspeciesAbundance ->> speciesTempLM : abundRasters\ntemperature ->> speciesTempLM : tempRasters\n"},"evals":[],"jsHooks":[]}</script>
+```
 
 #### Running `SpaDES`
 
@@ -978,14 +1005,10 @@ clearPlot()
 mySim2 <- spades(mySim, debug = TRUE)
 ```
 
-\begin{figure}
-
-{\centering \includegraphics[width=0.8\linewidth]{simul_plot} 
-
-}
-
-\caption{Simulation plots: Final plot of the simulation}(\#fig:figSimulationFig)
-\end{figure}
+<div class="figure" style="text-align: center">
+<img src="simul_plot.png" alt="Simulation plots: Final plot of the simulation" width="80%" />
+<p class="caption">(\#fig:figSimulationFig)Simulation plots: Final plot of the simulation</p>
+</div>
 
 We suggest experimenting with changing parameter values and trying to create and add other modules to further explore all the `SpaDES` flexibility.
 The more complex the project gets, the more advantageous it is to use `SpaDES` to turn modules *on* or *off*, swapping modules to run, e.g., different statistical analyses, or to include different data.

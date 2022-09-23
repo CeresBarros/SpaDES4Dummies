@@ -24,7 +24,7 @@ In this example, we introduce `SpaDES` features that we most commonly use in our
 
 Load the necessary packages (make sure they are installed first, of course)
 
-```{r loadPkgs, message = FALSE, warning = FALSE}
+```{r loadPkgs, message = FALSE, warning = FALSE, cache = FALSE}
 ## please start from a clean R session
 library(raster)
 library(quickPlot)

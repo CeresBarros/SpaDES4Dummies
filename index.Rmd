@@ -69,4 +69,4 @@ Part \@ref(part1) is very minimal, and uses only dummy data. It is meant to intr
 
 Part \@ref(part2) uses real and freely available data, and provides a deeper look into several useful aspects of `SpaDES`, notably caching and spatial data processing.
 
-To install `SpaDES`, please have a look at [SpaDES installation](https://github.com/PredictiveEcology/SpaDES/wiki/Installation), or follow steps at the start of Parts \@(part1) and \@(part2).
+To install `SpaDES`, please have a look at [SpaDES installation](https://github.com/PredictiveEcology/SpaDES/wiki/Installation), or follow steps at the start of Parts \@ref(part1) and \@ref(part2).

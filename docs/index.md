@@ -1,7 +1,7 @@
 ---
 title: "SpaDES 4 Dummies"
 author: "Ceres Barros"
-date: "2022-09-12"
+date: "2022-09-22"
 description: "A `SpaDES` crash-course"
 documentclass: krantz
 site: bookdown::bookdown_site
@@ -29,6 +29,7 @@ lof: yes
 This guide will take you through how to make and link your own modules using `SpaDES` in two examples. Both examples draw on basic uses of statistical models in ecology, notably the relationships between environmental variables and species abundance and presence. 
 
 Part \@ref(part1) is very minimal, and uses only dummy data. It is meant to introduce you to the different components of a `SpaDES` module.
+
 Part \@ref(part2) uses real and freely available data, and provides a deeper look into several useful aspects of `SpaDES`, notably caching and spatial data processing.
 
-To install `SpaDES`, please have a look at [SpaDES installation](https://github.com/PredictiveEcology/SpaDES.install/tree/installFromSource#readme).
+To install `SpaDES`, please have a look at [SpaDES installation](https://github.com/PredictiveEcology/SpaDES/wiki/Installation), or follow steps at the start of Part \@(part2).

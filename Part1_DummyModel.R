@@ -1,17 +1,37 @@
-if (!require("Require")) install.packages("Require")
-Require::Require("PredictiveEcology/SpaDES.install@development", install = "force")
-SpaDES.install::installSpaDES()
+options(repos = c(CRAN = "http://cloud.r-project.org"))
 
-library(SpaDES)  ## should automatically download all packages in the SpaDES family and their dependencies
+if (paste(R.Version()[c("major", "minor")], collapse = ".") < "4.2.1") {
+  warning(paste("dismo::maxent may create a fatal error",
+                "when using R version < v4.2.1 and from RStudio.\n", 
+                "Please upgrade R, or run this script outside of RStudio.\n",
+                "See https://github.com/rspatial/dismo/issues/13"))
+}
 
 ## decide where you're working
-mainDir <- "."
+mainPath <- "~/SpaDES4Dummies_Part1"
+pkgPath <- file.path(mainPath, "packages", version$platform,
+                     paste0(version$major, ".", strsplit(version$minor, "[.]")[[1]][1]))
+dir.create(pkgPath, recursive = TRUE)
+.libPaths(pkgPath, include.site = FALSE) ## install packages in project library (proj-lib)
 
-setPaths(cachePath = file.path(mainDir, "cache"),
-         inputPath = file.path(mainDir, "inputs"),
-         modulePath = file.path(mainDir, "modules"),
-         outputPath = file.path(mainDir, "outputs"))
+if (!"remotes" %in% installed.packages(lib.loc = pkgPath))
+  install.packages("remotes")
 
+if (!"Require" %in% installed.packages(lib.loc = pkgPath) || 
+    packageVersion("Require", lib.loc = pkgPath) < "0.1.2") {
+  remotes::install_github("PredictiveEcology/Require@86254b17ad2392de5c9e4dae6dd06a194b69a169",
+                          upgrade = FALSE, force = TRUE)
+}
+
+## use binary linux packages if on Ubuntu
+Require::setLinuxBinaryRepo()
+
+Require::Require(c("SpaDES"), upgrade = FALSE, standAlone = TRUE)
+
+setPaths(cachePath = file.path(mainPath, "cache"),
+                      inputPath = file.path(mainPath, "inputs"),
+                      modulePath = file.path(mainPath, "modules"),
+                      outputPath = file.path(mainPath, "outputs"))
 getPaths() ## check that this is what you wanted
 
 ## Let's create a self-contained module that will simulate the species' abundance for any given period of time and frequency.
