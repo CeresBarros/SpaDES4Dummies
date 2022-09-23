@@ -34,7 +34,7 @@ if (!"Require" %in% installed.packages(lib.loc = pkgPath) ||
 Require::setLinuxBinaryRepo()
 
 Require::Require(c("PredictiveEcology/SpaDES.project@transition", "SpaDES.core"),
-                 upgrade = FALSE, standAlone = TRUE)
+                 require = FALSE, upgrade = FALSE, standAlone = TRUE)
 
 SpaDES.core::setPaths(cachePath = file.path(mainPath, "cache"),
                       inputPath = file.path(mainPath, "inputs"),
