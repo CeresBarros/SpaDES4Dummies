@@ -3,8 +3,8 @@ pkgPath <- file.path("packages", version$platform,
 .libPaths(pkgPath)   ## need to include.side = TRUE to use bookdown and rmarkdown
 
 # example R options set globally
-options("width" = 60,
-        "repos" = c(CRAN = "https://cran.rstudio.com"))
+options("width" = 60)
+
 # example chunk options set globally
 knitr::opts_chunk$set(
   collapse = TRUE,
