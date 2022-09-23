@@ -57,7 +57,7 @@ mainPath <- "~/SpaDES4Dummies_Part2"
 pkgPath <- file.path(mainPath, "packages", version$platform,
                      paste0(version$major, ".", strsplit(version$minor, "[.]")[[1]][1]))
 dir.create(pkgPath, recursive = TRUE)
-.libPaths(pkgPath, include.site = FALSE) ## install packages in project library (proj-lib)
+.libPaths(pkgPath, include.site = FALSE) ## install and use packages from project library only 
 
 if (!"remotes" %in% installed.packages(lib.loc = pkgPath))
   install.packages("remotes")
@@ -262,6 +262,7 @@ Require::Require(c(unname(unlist(outs)),
                  require = FALSE,   ## don't load packages
                  upgrade = FALSE,   ## don't upgrade dependencies
                  standAlone = TRUE) ## install all dependencies in proj-lib (ignore user/system lib)
+
 ## dismo needs a few tweaks to run MaxEnt
 out <- reproducible::preProcess(targetFile = "maxent.jar",
                                 url = "https://github.com/mrmaxent/Maxent/blob/master/ArchivedReleases/3.4.4/maxent.jar?raw=true",
@@ -272,7 +273,7 @@ file.move(out$targetFilePath, file.path(system.file("java", package="dismo"), "m
 out <- require(rJava)
 if (!out) {
   stop(paste("Your Java installation may have problems, please check.\n", 
-       "See https://www.java.com/en/download/manual.jsp for Java installation"))
+             "See https://www.java.com/en/download/manual.jsp for Java installation"))
 }
 
 ## It may be a good idea to restart R after the installation is complete.
@@ -449,12 +450,12 @@ knitr::include_graphics(normalizePath(figs, winslash = "/"))
 
 The prediction module also outputs the projections for each climate period automatically (Figs. \@ref(fig:simulationProj) and \@ref(fig:simulationProj2)).
 
-```{r simulationProj, echo = FALSE, warning = FALSE, message = FALSE, fig.align = 'center', out.width = "80%", fig.show='hold', fig.cap = "Prediction plots: Raw predicted values of species probability of occurence under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt."}
+```{r simulationProj, echo = FALSE, warning = FALSE, message = FALSE, fig.align = 'center', out.width = "20%", fig.show='hold', fig.cap = "Prediction plots: Raw predicted values of species probability of occurence under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt."}
 figs <- list.files("outputs/MaxEnt_rep1/figures/", pattern = "projRawVals_MaxEnt", full.names = TRUE)
 knitr::include_graphics(normalizePath(figs, winslash = "/"))
 ```
 
-```{r simulationProj2, echo = FALSE, warning = FALSE, message = FALSE, fig.align = 'center', out.width = "80%", fig.show='hold', fig.cap = "Prediction plots: Predictions of (ref:Pice-gla) (ref:PA) under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt."}
+```{r simulationProj2, echo = FALSE, warning = FALSE, message = FALSE, fig.align = 'center', out.width = "20%", fig.show='hold', fig.cap = "Prediction plots: Predictions of (ref:Pice-gla) (ref:PA) under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt."}
 figs <- list.files("outputs/MaxEnt_rep1/figures/", pattern = "projPA_MaxEnt", full.names = TRUE)
 knitr::include_graphics(normalizePath(figs, winslash = "/"))
 ```
@@ -574,20 +575,25 @@ plotMaxEnt2_PA <- plotFun(sppDistProjMaxEnt2_PA[[yrs]],
 
 ## organise the plots with mildest scenario first
 ## It is clear that MaxEnt and GLM do not agree in their prediction
-plotAll <- ggarrange(plotMaxEnt2 + labs(title = expression(bold("Scenario - SSP 126")),
-                                        y = expression(atop(bold("Raw predictions"), "Latitude"))) +
-                       theme(legend.title = element_blank(), legend.key.height = unit(3, "lines"),
-                             plot.title = element_text(hjust = 0.5), plot.margin = margin(0,0,0,0)), 
-                     plotMaxEnt + labs(title = expression(bold("Scenario - SSP 585")),
-                                       y = expression(atop(bold(""), ""))) +
-                       theme(plot.title = element_text(hjust = 0.5), plot.margin = margin(0,0,0,0)),
-                     plotMaxEnt2_PA + labs(title = expression(bold("")),
-                                           y = expression(atop(bold("Presence/absence"), "Latitude"))) +
-                       theme(plot.margin = margin(0,0,0,0)), 
-                     plotMaxEnt_PA + labs(title = expression(bold("")),
-                                          y = expression(atop(bold(""), ""))) +
-                       theme(plot.margin = margin(0,0,0,0)), 
-                     legend = "right", common.legend = TRUE, labels = c("a)", "b)", "c)", "d)"))
+plotAll <- ggarrange(
+  plotMaxEnt2 + 
+    labs(title = expression(bold("Scenario - SSP 126")),
+         y = expression(atop(bold("Raw predictions"), "Latitude"))) +
+    theme(legend.title = element_blank(), legend.key.height = unit(3, "lines"),
+          plot.title = element_text(hjust = 0.5), plot.margin = margin(0,0,0,0)), 
+  plotMaxEnt + 
+    labs(title = expression(bold("Scenario - SSP 585")),
+         y = expression(atop(bold(""), ""))) +
+    theme(plot.title = element_text(hjust = 0.5), plot.margin = margin(0,0,0,0)),
+  plotMaxEnt2_PA + 
+    labs(title = expression(bold("")),
+         y = expression(atop(bold("Presence/absence"), "Latitude"))) +
+    theme(plot.margin = margin(0,0,0,0)), 
+  plotMaxEnt_PA + 
+    labs(title = expression(bold("")),
+         y = expression(atop(bold(""), ""))) +
+    theme(plot.margin = margin(0,0,0,0)), 
+  legend = "right", common.legend = TRUE, labels = c("a)", "b)", "c)", "d)"))
 
 ## save figure:
 figDir <- checkPath(file.path(simPaths$outputPath, "generalFigures"), create = TRUE)
@@ -679,7 +685,7 @@ Users can also use `Require::pkgSnapshot()` to save a list of installed packages
 Please beware that package installation should be done as much as possible from a clean R session especially in the context of a `SpaDES`-based project, where each module can potentially have many different dependencies, which have dependencies of their own (see, for instance, how we delayed package loading until after all modules were in place and had their dependencies checked in `Part2_SDMs.R`)
 
 ```{r pkgSnapshot, eval = FALSE}
-Require::pkgSnapshot("pkgsnapshot.txt")
+Require::pkgSnapshot("pkgsnapshot.txt", libPaths = .libPaths()[1])  ## you should make sure the right .libPath is chosen
 
 ## on another machine:
 Require::Require(packageVersionFile = "pkgsnapshot.txt")
