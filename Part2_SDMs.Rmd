@@ -95,7 +95,7 @@ if (!dir.exists(file.path(simPaths$modulePath, "projectSpeciesDist"))){
 }
 ```
 
-```{r globalscriptHiddenPart2, include = FALSE, cache = FALSE}
+```{r globalscriptHiddenPart2, include = FALSE}
 SpaDES.core::setPaths(cachePath = file.path("cache"),
                       inputPath = file.path("inputs"),
                       modulePath = file.path("modules"),
