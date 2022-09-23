@@ -162,7 +162,7 @@ myExperiment <- SpaDES.experiment::experiment2(MaxEnt = mySimMaxEnt,
 qs::qsave(myExperiment, file.path(simPaths$outputPath, paste0("myExperiment", ".qs")))
 
 ## check models
-myExperiment$MaxEnt_rep1$sdmOut   ## this links to an html page
+try(myExperiment$MaxEnt_rep1$sdmOut)   ## this links to an html page
 sets <- par(mfrow = c(2,2))
 plot(myExperiment$MaxEnt_rep1$sdmOut)
 par(sets)
