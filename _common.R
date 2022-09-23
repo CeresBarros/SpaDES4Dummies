@@ -14,3 +14,6 @@ knitr::opts_chunk$set(
   tidy.opts = list(width.cutoff = 60),
   size = "tiny"
 )
+
+rm(list = ls(all.names = TRUE))
+
