@@ -846,7 +846,7 @@ Before fitting the SDM, the module converts any non-binary species data into pre
 <span id="cb30-16"><a href="part2.html#cb30-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">citation =</span> <span class="fu">list</span>(<span class="st">&quot;citation.bib&quot;</span>),</span>
 <span id="cb30-17"><a href="part2.html#cb30-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">documentation =</span> <span class="fu">list</span>(<span class="st">&quot;README.md&quot;</span>, <span class="st">&quot;projectSpeciesDist.Rmd&quot;</span>), <span class="do">## same file</span></span>
 <span id="cb30-18"><a href="part2.html#cb30-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">reqdPkgs =</span> <span class="fu">list</span>(<span class="st">&quot;PredictiveEcology/SpaDES.core@development (&gt;=1.0.10.9000)&quot;</span>, <span class="st">&quot;ggplot2&quot;</span>,</span>
-<span id="cb30-19"><a href="part2.html#cb30-19" aria-hidden="true" tabindex="-1"></a>                  <span class="st">&quot;data.table&quot;</span>, <span class="st">&quot;dismo&quot;</span>, <span class="st">&quot;rJava&quot;</span>),</span>
+<span id="cb30-19"><a href="part2.html#cb30-19" aria-hidden="true" tabindex="-1"></a>                  <span class="st">&quot;data.table&quot;</span>, <span class="st">&quot;dismo&quot;</span>, <span class="st">&quot;rJava&quot;</span>, <span class="st">&quot;rasterVis&quot;</span>),</span>
 <span id="cb30-20"><a href="part2.html#cb30-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameters =</span> <span class="fu">bindrows</span>(</span>
 <span id="cb30-21"><a href="part2.html#cb30-21" aria-hidden="true" tabindex="-1"></a>    <span class="co">#defineParameter(&quot;paramName&quot;, &quot;paramClass&quot;, value, min, max, &quot;parameter description&quot;),</span></span>
 <span id="cb30-22"><a href="part2.html#cb30-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">defineParameter</span>(<span class="st">&quot;predVars&quot;</span>, <span class="st">&quot;character&quot;</span>, <span class="fu">c</span>(<span class="st">&quot;BIO1&quot;</span>, <span class="st">&quot;BIO4&quot;</span>, <span class="st">&quot;BIO12&quot;</span>, <span class="st">&quot;BIO15&quot;</span>), <span class="cn">NA</span>, <span class="cn">NA</span>,</span>
@@ -1166,15 +1166,15 @@ Below you will see that we attempt to warn the user about problems loading <code
 have to restart your session if things aren&#39;t working some packages don&#39;t seem
 to unload their dlls correctly.
 These will not be unloaded: ellipsis, vctrs Unloading package bit64 -- 
-Installing glue -- (1 of 1. Estimated time left: ...; est. finish: ...calculating) 
+  Installing glue -- (1 of 1. Estimated time left: ...; est. finish: ...calculating) 
 Installing package into &#39;\~/R/win-library/4.0&#39; (as &#39;lib&#39; is unspecified) trying URL
 &#39;&lt;https://cran.rstudio.com/bin/windows/contrib/4.0/glue_1.6.2.zip&gt;&#39; Content type
 &#39;application/zip&#39; length 171858 bytes (167 KB) downloaded 167 KB
 
 package &#39;glue&#39; successfully unpacked and MD5 sums checked 
 Error in unpackPkgZip(foundpkgs[okp, 2L], foundpkgs[okp, 1L], lib, libs_only, : 
-ERROR: failed to lock directory &#39;\~\R\win-library\\4.0&#39; for modifying 
-Try removing &#39;\~\R\win-library\\4.0/00LOCK&#39;</code></pre>
+                        ERROR: failed to lock directory &#39;\~\R\win-library\\4.0&#39; for modifying 
+             Try removing &#39;\~\R\win-library\\4.0/00LOCK&#39;</code></pre>
 <p><em>If you encounter this error, delete the problematic file/folder and try again.</em></p>
 <p><em>Sometimes <code>Require</code> may still unable to automatically install a package and a manual installation from a clean session is the only solution. In the error above, <code>Require</code> only detected that <code>glue</code> was missing during the <code>simInit</code> call, which meant that other packages had been loaded already causing failure when <code>Require</code> attempted the installation. This problem persisted even after we avoided loading <code>terra</code> before running <code>simInit</code> (we make the study area objects prefixing functions with <code>terra::</code>), so <code>glue</code> had to be manually installed.</em></p>
 </div>
@@ -1374,7 +1374,7 @@ If this was not desired, we could set a random seed before running the fitting e
 <div id="making-use-of-simlist-for-reporting" class="section level4 hasAnchor" number="2.3.3.3">
 <h4><span class="header-section-number">2.3.3.3</span> Making use of <code>simList</code> for reporting<a href="part2.html#making-use-of-simlist-for-reporting" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>Another advantage of having all simulation parameters, inputs and outputs centralised in one object, is that we can easily inspect and manipulated them afterwards, without the need to load separate objects back into <code>R</code>.</p>
-<p>Here we show how we capitalize on this <code>SpaDES</code> feature to create figures of the outputs (Fig. <a href="part2.html#fig:newScenariosFig">2.8</a>.</p>
+<p>Here we show how we capitalize on this <code>SpaDES</code> feature to create figures of the outputs (Fig. <a href="part2.html#fig:newScenariosFig">2.8</a>).</p>
 <div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="part2.html#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="do">## MaxEnt predictions across time and for each climate scenario --------------</span></span>
 <span id="cb38-2"><a href="part2.html#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="do">## combine plots from two distinct simulations in a single figure</span></span>
 <span id="cb38-3"><a href="part2.html#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="do">## (the same can be done to compare MaxEnt and GLM, or plot all projections)</span></span>
@@ -1438,9 +1438,9 @@ If this was not desired, we could set a random seed before running the fitting e
 <span id="cb38-61"><a href="part2.html#cb38-61" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb38-62"><a href="part2.html#cb38-62" aria-hidden="true" tabindex="-1"></a><span class="do">## save figure:</span></span>
 <span id="cb38-63"><a href="part2.html#cb38-63" aria-hidden="true" tabindex="-1"></a>figDir <span class="ot">&lt;-</span> <span class="fu">checkPath</span>(<span class="fu">file.path</span>(simPaths<span class="sc">$</span>outputPath, <span class="st">&quot;generalFigures&quot;</span>), <span class="at">create =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb38-64"><a href="part2.html#cb38-64" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="fu">file.path</span>(figDir, <span class="st">&quot;MaxEntPredictions.tiff&quot;</span>), <span class="at">width =</span> <span class="fl">13.5</span>, <span class="at">height =</span> <span class="fl">5.5</span>, <span class="at">units =</span> <span class="st">&quot;in&quot;</span>, <span class="at">dpi =</span> <span class="dv">300</span>)</span></code></pre></div>
+<span id="cb38-64"><a href="part2.html#cb38-64" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="fu">file.path</span>(figDir, <span class="st">&quot;MaxEntPredictions.png&quot;</span>), <span class="at">width =</span> <span class="fl">13.5</span>, <span class="at">height =</span> <span class="fl">5.5</span>, <span class="at">units =</span> <span class="st">&quot;in&quot;</span>, <span class="at">dpi =</span> <span class="dv">300</span>)</span></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:newScenariosFig"></span>
-<img src="outputs/generalFigures/MaxEntPredictions.tiff" alt="Adding a new scenario: Predictions of Picea glauca probabilities of presences and presence/absence under (left to right) baseline climate conditions, 2041-2060, and 2081-2100 climate projections under two emission scenarios (SSP 136 and SSP 585, the default) -- showing MaxEnt forecasts only." width="80%" />
+<img src="outputs/generalFigures/MaxEntPredictions.png" alt="Adding a new scenario: Predictions of Picea glauca probabilities of presences and presence/absence under (left to right) baseline climate conditions, 2041-2060, and 2081-2100 climate projections under two emission scenarios (SSP 136 and SSP 585, the default) -- showing MaxEnt forecasts only." width="80%" />
 <p class="caption">
 Figure 2.8: Adding a new scenario: Predictions of <em>Picea glauca</em> probabilities of presences and presence/absence under (left to right) baseline climate conditions, 2041-2060, and 2081-2100 climate projections under two emission scenarios (SSP 136 and SSP 585, the default) – showing MaxEnt forecasts only.
 </p>
@@ -1453,8 +1453,10 @@ Figure 2.8: Adding a new scenario: Predictions of <em>Picea glauca</em> probabil
 <h2><span class="header-section-number">2.4</span> Caching<a href="part2.html#caching" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>In this example, we relied on caching to avoid having to repeat computationally intensive operations.
 Running the <code>simInit</code> and <code>spades</code> calls a second time (even after restarting R session) was faster and <code>SpaDES</code> informed us of instances where cached objects were being retrieved:</p>
-<pre><code>(...) Mar05 19:56:53 clmtDt 1 climateData init 1\
-Mar05 19:56:53 clmtDt ...(Object to retrieve (a7816e2d0deb3b29.rds)) Mar05 19:56:53 clmtDt loaded cached result from previous Map call (...)</code></pre>
+<pre><code>(...) 
+Mar05 19:56:53 clmtDt 1 climateData init 1\
+Mar05 19:56:53 clmtDt ...(Object to retrieve (a7816e2d0deb3b29.rds)) Mar05 19:56:53 clmtDt loaded cached result from previous Map call
+(...)</code></pre>
 <p>Caching in <code>SpaDES</code> is managed by the <code>reproducible</code> package, and can be generally broken down into two types: explicitly coded by the module developer, or internal to <code>SpaDES</code> functions.</p>
 <div id="explicitly-caching-operations" class="section level3 hasAnchor" number="2.4.1">
 <h3><span class="header-section-number">2.4.1</span> Explicitly caching operations<a href="part2.html#explicitly-caching-operations" class="anchor-section" aria-label="Anchor link to header"></a></h3>

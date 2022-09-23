@@ -310,7 +310,7 @@ The rest of the script defines the events and their sequences for this module - 
 
 **/!\\ ATTENTION /!\\**
 
-*`defineModule()` is not intended to be run Pathectly by the user -- it is run internally during a `simInit()` call (see [Simulation setup in a "global" script]). In other words, you don't run any part of a module's code Pathectly in your session; you run `simInit()` with that module listed in the modules argument.*
+*`defineModule()` is not intended to be run directly by the user -- it is run internally during a `simInit()` call (see [Simulation setup in a "global" script]). In other words, you don't run any part of a module's code directly in your session; you run `simInit()` with that module listed in the modules argument.*
 
 #### **Events and event functions**
 
@@ -913,7 +913,7 @@ linearModel <- function(Data){
 
 We can now go back to our `Part1_DummyModel.R` script and set the simulation up.
 
-The function `simInit` needs a few arguments listing simulation folder Pathectories, parameters, simulation times, modules and, optionally, input objects supplied by the user.
+The function `simInit` needs a few arguments listing simulation folder directories, parameters, simulation times, modules and, optionally, input objects supplied by the user.
 `simInit` will prepare a simulation object that can later be run by the `spades` function:
 
 -   The first list, `modules`, contains modules we want to activate.
@@ -926,7 +926,7 @@ The function `simInit` needs a few arguments listing simulation folder Pathector
     As a developer providing a reproducible example, we may also chose to list important and useful parameters, even if the value is the same as the default.
     Here we chose to list `.plotInitialTime` (a parameter used and defined in the *speciesAbundance* and *temperature* modules), but provide the default value (we experimenting with it by changing its value in the `Part1_DummyModel.R`).
 
--   `paths` contains the folder Pathectory paths that we set earlier.
+-   `paths` contains the folder directory paths that we set earlier.
 
 
 ```r
@@ -943,7 +943,7 @@ simParams <- list(
   speciesTempLM = list(statsTimestep = 5)
 )
 
-## make a list of Pathectory paths
+## make a list of directory paths
 simPaths <- getPaths()
 
 ## Simulation setup
@@ -965,7 +965,7 @@ Before starting the simulations we should check if the modules were linked corre
 **Module diagram**
 
 `moduleDiagram` is a useful function that shows module inter-dependencies as a network diagram.
-The Pathection of the arrows indicates an output to input flow.
+The direction of the arrows indicates an output to input flow.
 You can see that *speciesAbundance* and *temperature* inputs (specifically our R raster) are supplied by an external source ("*INPUT*") - the user or `.inputObjects`.
 Whereas the inputs to the *speciesTempLM* module are outputs of the *speciesAbundance* and *temperature* modules.
 
@@ -987,8 +987,8 @@ objectDiagram(mySim)
 ```
 
 ```{=html}
-<div id="htmlwidget-1ae83dbd208184ec8f03" style="width:672px;height:480px;" class="DiagrammeR html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1ae83dbd208184ec8f03">{"x":{"diagram":"sequenceDiagram\n_INPUT_ ->> speciesAbundance : r\n_INPUT_ ->> temperature : r\nspeciesAbundance ->> speciesTempLM : abundRasters\ntemperature ->> speciesTempLM : tempRasters\n"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-9ab661c87e329d6bbc23" style="width:672px;height:480px;" class="DiagrammeR html-widget"></div>
+<script type="application/json" data-for="htmlwidget-9ab661c87e329d6bbc23">{"x":{"diagram":"sequenceDiagram\n_INPUT_ ->> speciesAbundance : r\n_INPUT_ ->> temperature : r\nspeciesAbundance ->> speciesTempLM : abundRasters\ntemperature ->> speciesTempLM : tempRasters\n"},"evals":[],"jsHooks":[]}</script>
 ```
 
 #### Running `SpaDES`

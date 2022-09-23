@@ -605,23 +605,23 @@ We draw your attention to a few particular aspects of the data modules:
 -   How we added additional R packages necessary to run the module to the metadata;
 
 -   How we added default values for parameters and inputs explicitly used by the modules (others like `.plotInterval` were left as `NA`).
-The exception was the `studyAreaRas` input object for which we do not provide a default.
-However, we added a code check in `.inputObject` that stops interrupts R if this object is not in `sim` (see [Protect yourself and others from common mistakes/problems])
+    The exception was the `studyAreaRas` input object for which we do not provide a default.
+    However, we added a code check in `.inputObject` that stops interrupts R if this object is not in `sim` (see [Protect yourself and others from common mistakes/problems])
 
 -   How we use the function `prepInputs` to do most of the heavy-lifting of downloading data and spatial pre-processing.
-This function is able to recognize whether the data has already been downloaded, and can cache all spatial processing tasks (see [Caching]).
-In some cases, we wrapped `prepInputs` in a `Map` call to loop through several URLs and download and pre-process many data layers.
-This `Map` call can also be cached with `Cache`.
+    This function is able to recognize whether the data has already been downloaded, and can cache all spatial processing tasks (see [Caching]).
+    In some cases, we wrapped `prepInputs` in a `Map` call to loop through several URLs and download and pre-process many data layers.
+    This `Map` call can also be cached with `Cache`.
 
 -   How we use the function `Plots` to control plotting to the screen device and/or save to image files depending on the `P(sim)$.plots` argument.
-Note that `Plots` works best with functions that output `ggplot` objects, or that are compatible with `quickPlot::Plot`.
+    Note that `Plots` works best with functions that output `ggplot` objects, or that are compatible with `quickPlot::Plot`.
 
 -   The fact that neither module depends on the other.
-This is not a required feature of data modules, but just so happens to be the case in this example.
-In fact, in more complex modelling frameworks, like the LandR model [@BarrosEtAlinreview], we often have several data modules that depend on each other (e.g., [LandR *Biomass_speciesData*](https://github.com/PredictiveEcology/Biomass_speciesData) sources and processes tree species percent cover data that is used by [LandR *Biomass_borealDataPrep*](https://github.com/PredictiveEcology/Biomass_borealDataPrep) to estimate several parameters for the forest landscape simulation model [LandR *Biomass_core*](https://github.com/PredictiveEcology/Biomass_core)).
+    This is not a required feature of data modules, but just so happens to be the case in this example.
+    In fact, in more complex modelling frameworks, like the LandR model [@BarrosEtAlinreview], we often have several data modules that depend on each other (e.g., [LandR *Biomass_speciesData*](https://github.com/PredictiveEcology/Biomass_speciesData) sources and processes tree species percent cover data that is used by [LandR *Biomass_borealDataPrep*](https://github.com/PredictiveEcology/Biomass_borealDataPrep) to estimate several parameters for the forest landscape simulation model [LandR *Biomass_core*](https://github.com/PredictiveEcology/Biomass_core)).
 
 -   How we export objects created within the module functions to `sim`.
-Without doing so, these objects are lost after the function is executed.
+    Without doing so, these objects are lost after the function is executed.
 
 #### Prediction module
 
@@ -655,7 +655,7 @@ defineModule(sim, list(
   citation = list("citation.bib"),
   documentation = list("README.md", "projectSpeciesDist.Rmd"), ## same file
   reqdPkgs = list("PredictiveEcology/SpaDES.core@development (>=1.0.10.9000)", "ggplot2",
-                  "data.table", "dismo", "rJava"),
+                  "data.table", "dismo", "rJava", "rasterVis"),
   parameters = bindrows(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
     defineParameter("predVars", "character", c("BIO1", "BIO4", "BIO12", "BIO15"), NA, NA,
@@ -927,8 +927,8 @@ plotProjEvent <- function(sim) {
 We draw your attention to:
 
 -   As we said earlier, we could have added yearly projected values to the `sppAbundanceDT` table.
-In this case we probably would have changed this object's name, since MaxEnt is not modelling species abundance, but probability of occurrence.
-We suggest this as an exercise to do on your own
+    In this case we probably would have changed this object's name, since MaxEnt is not modelling species abundance, but probability of occurrence.
+    We suggest this as an exercise to do on your own
 
 -   How links with the data modules are established by declaring data modules' output objects as expected inputs for this module.
 
@@ -937,8 +937,8 @@ We suggest this as an exercise to do on your own
 -   How, unlike `fitSDM`, the `projSDM` event schedules itself so that model projections are executed for each year of the simulation, provided that there is corresponding environmental data -- notice how the functions `fitSDMEvent` and `projSDMEvent` both check that there is data for the current year of the simulation (`time(sim)`).
 
 -   How the fitted model object (`sdmOut`) and it's evaluation (`evalOut`) are both module outputs.
-This way these objects can not only be used by other events, but also inspected by the user after the simulation is finished (see [Transparent models]).
-
+    This way these objects can not only be used by other events, but also inspected by the user after the simulation is finished (see [Transparent models]).
+    
 You will notice that this module performs model fitting (i.e., calibration), predictions and model validation. These three components could be broken into three separate modules. As an exercise, we recommend trying to do so on your own.
 
 ------------------------------------------------------------------------
@@ -992,15 +992,15 @@ Installing: glue Detaching is fraught with many potential problems; you may
 have to restart your session if things aren't working some packages don't seem
 to unload their dlls correctly.
 These will not be unloaded: ellipsis, vctrs Unloading package bit64 -- 
-Installing glue -- (1 of 1. Estimated time left: ...; est. finish: ...calculating) 
+  Installing glue -- (1 of 1. Estimated time left: ...; est. finish: ...calculating) 
 Installing package into '\~/R/win-library/4.0' (as 'lib' is unspecified) trying URL
 '<https://cran.rstudio.com/bin/windows/contrib/4.0/glue_1.6.2.zip>' Content type
 'application/zip' length 171858 bytes (167 KB) downloaded 167 KB
 
 package 'glue' successfully unpacked and MD5 sums checked 
 Error in unpackPkgZip(foundpkgs[okp, 2L], foundpkgs[okp, 1L], lib, libs_only, : 
-ERROR: failed to lock directory '\~\R\win-library\\4.0' for modifying 
-Try removing '\~\R\win-library\\4.0/00LOCK'
+                        ERROR: failed to lock directory '\~\R\win-library\\4.0' for modifying 
+             Try removing '\~\R\win-library\\4.0/00LOCK'
 ```
 
 *If you encounter this error, delete the problematic file/folder and try again.*
@@ -1234,7 +1234,7 @@ Have fun!
 
 Another advantage of having all simulation parameters, inputs and outputs centralised in one object, is that we can easily inspect and manipulated them afterwards, without the need to load separate objects back into `R`.
 
-Here we show how we capitalize on this `SpaDES` feature to create figures of the outputs (Fig. \@ref(fig:newScenariosFig).
+Here we show how we capitalize on this `SpaDES` feature to create figures of the outputs (Fig. \@ref(fig:newScenariosFig)).
 
 
 ```r
@@ -1301,11 +1301,12 @@ plotAll <- ggarrange(
 
 ## save figure:
 figDir <- checkPath(file.path(simPaths$outputPath, "generalFigures"), create = TRUE)
-ggsave(file.path(figDir, "MaxEntPredictions.tiff"), width = 13.5, height = 5.5, units = "in", dpi = 300)
+ggsave(file.path(figDir, "MaxEntPredictions.png"), width = 13.5, height = 5.5, units = "in", dpi = 300)
 ```
 
+
 <div class="figure" style="text-align: center">
-<img src="outputs/generalFigures/MaxEntPredictions.tiff" alt="Adding a new scenario: Predictions of (ref:Pice-gla) probabilities of presences and (ref:PA) under (left to right) baseline climate conditions, 2041-2060, and 2081-2100 climate projections under two emission scenarios (SSP 136 and SSP 585, the default) -- showing MaxEnt forecasts only." width="80%" />
+<img src="outputs/generalFigures/MaxEntPredictions.png" alt="Adding a new scenario: Predictions of (ref:Pice-gla) probabilities of presences and (ref:PA) under (left to right) baseline climate conditions, 2041-2060, and 2081-2100 climate projections under two emission scenarios (SSP 136 and SSP 585, the default) -- showing MaxEnt forecasts only." width="80%" />
 <p class="caption">(\#fig:newScenariosFig)Adding a new scenario: Predictions of (ref:Pice-gla) probabilities of presences and (ref:PA) under (left to right) baseline climate conditions, 2041-2060, and 2081-2100 climate projections under two emission scenarios (SSP 136 and SSP 585, the default) -- showing MaxEnt forecasts only.</p>
 </div>
 
@@ -1317,8 +1318,10 @@ In this example, we relied on caching to avoid having to repeat computationally 
 Running the `simInit` and `spades` calls a second time (even after restarting R session) was faster and `SpaDES` informed us of instances where cached objects were being retrieved:
 
 ```
-(...) Mar05 19:56:53 clmtDt 1 climateData init 1\
-Mar05 19:56:53 clmtDt ...(Object to retrieve (a7816e2d0deb3b29.rds)) Mar05 19:56:53 clmtDt loaded cached result from previous Map call (...)
+(...) 
+Mar05 19:56:53 clmtDt 1 climateData init 1\
+Mar05 19:56:53 clmtDt ...(Object to retrieve (a7816e2d0deb3b29.rds)) Mar05 19:56:53 clmtDt loaded cached result from previous Map call
+(...)
 ```
 
 Caching in `SpaDES` is managed by the `reproducible` package, and can be generally broken down into two types: explicitly coded by the module developer, or internal to `SpaDES` functions.

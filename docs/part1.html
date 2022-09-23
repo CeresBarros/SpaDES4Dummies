@@ -476,7 +476,7 @@ So take care to change them accordingly.
 The <code>SpaDES</code> package version suggested by the template reflects the version on your computer.</p>
 <p>The rest of the script defines the events and their sequences for this module - remember <code>SpaDES</code> = Spatial Discrete Event Simulator - and the events themselves.</p>
 <p><strong>/!\ ATTENTION /!\</strong></p>
-<p><em><code>defineModule()</code> is not intended to be run Pathectly by the user – it is run internally during a <code>simInit()</code> call (see <a href="part1.html#simulation-setup-in-a-global-script">Simulation setup in a “global” script</a>). In other words, you don’t run any part of a module’s code Pathectly in your session; you run <code>simInit()</code> with that module listed in the modules argument.</em></p>
+<p><em><code>defineModule()</code> is not intended to be run directly by the user – it is run internally during a <code>simInit()</code> call (see <a href="part1.html#simulation-setup-in-a-global-script">Simulation setup in a “global” script</a>). In other words, you don’t run any part of a module’s code directly in your session; you run <code>simInit()</code> with that module listed in the modules argument.</em></p>
 </div>
 <div id="events-and-event-functions" class="section level4 hasAnchor" number="1.2.2.2">
 <h4><span class="header-section-number">1.2.2.2</span> <strong>Events and event functions</strong><a href="part1.html#events-and-event-functions" class="anchor-section" aria-label="Anchor link to header"></a></h4>
@@ -1003,7 +1003,7 @@ Notice how the future events where scheduled to <code>P(sim)$statsTimestep + 0.1
 <div id="simulation-setup-in-a-global-script" class="section level4 hasAnchor" number="1.2.5.1">
 <h4><span class="header-section-number">1.2.5.1</span> Simulation setup in a “global” script<a href="part1.html#simulation-setup-in-a-global-script" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>We can now go back to our <code>Part1_DummyModel.R</code> script and set the simulation up.</p>
-<p>The function <code>simInit</code> needs a few arguments listing simulation folder Pathectories, parameters, simulation times, modules and, optionally, input objects supplied by the user.
+<p>The function <code>simInit</code> needs a few arguments listing simulation folder directories, parameters, simulation times, modules and, optionally, input objects supplied by the user.
 <code>simInit</code> will prepare a simulation object that can later be run by the <code>spades</code> function:</p>
 <ul>
 <li><p>The first list, <code>modules</code>, contains modules we want to activate.</p></li>
@@ -1013,7 +1013,7 @@ Note that because the module metadata will (or should) contain default parameter
 For instance, <code>.plotInterval</code> is used and defined in the <em>speciesAbundance</em> and <em>temperature</em> modules, but not passed to the <code>simInit</code> function because we want to use the default value.
 As a developer providing a reproducible example, we may also chose to list important and useful parameters, even if the value is the same as the default.
 Here we chose to list <code>.plotInitialTime</code> (a parameter used and defined in the <em>speciesAbundance</em> and <em>temperature</em> modules), but provide the default value (we experimenting with it by changing its value in the <code>Part1_DummyModel.R</code>).</p></li>
-<li><p><code>paths</code> contains the folder Pathectory paths that we set earlier.</p></li>
+<li><p><code>paths</code> contains the folder directory paths that we set earlier.</p></li>
 </ul>
 <div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="part1.html#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="do">## list the modules to use</span></span>
 <span id="cb22-2"><a href="part1.html#cb22-2" aria-hidden="true" tabindex="-1"></a>simModules <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="st">&quot;speciesAbundance&quot;</span>, <span class="st">&quot;temperature&quot;</span>, <span class="st">&quot;speciesTempLM&quot;</span>)</span>
@@ -1028,7 +1028,7 @@ Here we chose to list <code>.plotInitialTime</code> (a parameter used and define
 <span id="cb22-11"><a href="part1.html#cb22-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">speciesTempLM =</span> <span class="fu">list</span>(<span class="at">statsTimestep =</span> <span class="dv">5</span>)</span>
 <span id="cb22-12"><a href="part1.html#cb22-12" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb22-13"><a href="part1.html#cb22-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-14"><a href="part1.html#cb22-14" aria-hidden="true" tabindex="-1"></a><span class="do">## make a list of Pathectory paths</span></span>
+<span id="cb22-14"><a href="part1.html#cb22-14" aria-hidden="true" tabindex="-1"></a><span class="do">## make a list of directory paths</span></span>
 <span id="cb22-15"><a href="part1.html#cb22-15" aria-hidden="true" tabindex="-1"></a>simPaths <span class="ot">&lt;-</span> <span class="fu">getPaths</span>()</span>
 <span id="cb22-16"><a href="part1.html#cb22-16" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb22-17"><a href="part1.html#cb22-17" aria-hidden="true" tabindex="-1"></a><span class="do">## Simulation setup</span></span>
@@ -1042,7 +1042,7 @@ Here we chose to list <code>.plotInitialTime</code> (a parameter used and define
 <p>Before starting the simulations we should check if the modules were linked correctly.</p>
 <p><strong>Module diagram</strong></p>
 <p><code>moduleDiagram</code> is a useful function that shows module inter-dependencies as a network diagram.
-The Pathection of the arrows indicates an output to input flow.
+The direction of the arrows indicates an output to input flow.
 You can see that <em>speciesAbundance</em> and <em>temperature</em> inputs (specifically our R raster) are supplied by an external source (“<em>INPUT</em>”) - the user or <code>.inputObjects</code>.
 Whereas the inputs to the <em>speciesTempLM</em> module are outputs of the <em>speciesAbundance</em> and <em>temperature</em> modules.</p>
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="part1.html#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">moduleDiagram</span>(mySim)</span></code></pre></div>
@@ -1051,8 +1051,8 @@ Whereas the inputs to the <em>speciesTempLM</em> module are outputs of the <em>s
 <p><code>objectDiagram</code> provides another way of checking module linkages.
 It explicitly shows module inter-dependencies by depicting the objects that establish links between modules.</p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="part1.html#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">objectDiagram</span>(mySim)</span></code></pre></div>
-<div id="htmlwidget-1ae83dbd208184ec8f03" style="width:672px;height:480px;" class="DiagrammeR html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1ae83dbd208184ec8f03">{"x":{"diagram":"sequenceDiagram\n_INPUT_ ->> speciesAbundance : r\n_INPUT_ ->> temperature : r\nspeciesAbundance ->> speciesTempLM : abundRasters\ntemperature ->> speciesTempLM : tempRasters\n"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-9ab661c87e329d6bbc23" style="width:672px;height:480px;" class="DiagrammeR html-widget"></div>
+<script type="application/json" data-for="htmlwidget-9ab661c87e329d6bbc23">{"x":{"diagram":"sequenceDiagram\n_INPUT_ ->> speciesAbundance : r\n_INPUT_ ->> temperature : r\nspeciesAbundance ->> speciesTempLM : abundRasters\ntemperature ->> speciesTempLM : tempRasters\n"},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="running-spades" class="section level4 hasAnchor" number="1.2.5.3">
 <h4><span class="header-section-number">1.2.5.3</span> Running <code>SpaDES</code><a href="part1.html#running-spades" class="anchor-section" aria-label="Anchor link to header"></a></h4>
