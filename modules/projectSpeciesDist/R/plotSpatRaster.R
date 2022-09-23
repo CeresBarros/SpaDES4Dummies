@@ -8,7 +8,7 @@
 #' @param ylab character. Y-axis title
 #' 
 #' @importFrom rasterVis gplot 
-#' @importFrom ggplot geom_tile scale_fill_brewer coord_equal theme_bw
+#' @importFrom ggplot2 geom_tile scale_fill_brewer coord_equal theme_bw
 
 plotSpatRaster <- function(ras, plotTitle = "", xlab = "x", ylab = "y") {
   gplot(ras) + 
