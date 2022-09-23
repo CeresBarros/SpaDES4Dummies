@@ -42,7 +42,7 @@ In this example this script is called `Part2_SDMs.R`.
 The script begins with a few lines of code that ensure a few packages are installed and loaded (see [Reproducible package installation]). 
 It then defines the necessary folder directories for the simulation and creates the modules in the `modules/` folder.
 
-```{r globalscriptPart2, eval = FALSE, cache = FALSE}
+```{r globalscriptPart2, eval = FALSE}
 options(repos = c(CRAN = "http://cloud.r-project.org"))
 
 if (paste(R.Version()[c("major", "minor")], collapse = ".") < "4.2.1") {
@@ -248,7 +248,7 @@ if (!out) {
 ## It may be a good idea to restart R after the installation is complete.
 ```
 
-```{r simulationPkgsHidden, include = FALSE, cache = FALSE}
+```{r simulationPkgsHidden, include = FALSE}
 ## load necessary packages now
 library(SpaDES.core)
 library(SpaDES.tools)
@@ -500,7 +500,7 @@ Have fun!
 
 Another advantage of having all simulation parameters, inputs and outputs centralised in one object, is that we can easily inspect and manipulated them afterwards, without the need to load separate objects back into `R`.
 
-Here we show how we capitalize on this `SpaDES` feature to create figures of the outputs (Fig. \@ref(fig:newScenariosFig).
+Here we show how we capitalize on this `SpaDES` feature to create figures of the outputs (Fig. \@ref(fig:newScenariosFig)).
 
 ```{r newScenariosFigCode, eval = FALSE}
 ## MaxEnt predictions across time and for each climate scenario --------------
