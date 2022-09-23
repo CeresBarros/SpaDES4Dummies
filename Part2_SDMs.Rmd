@@ -566,11 +566,12 @@ plotAll <- ggarrange(
 
 ## save figure:
 figDir <- checkPath(file.path(simPaths$outputPath, "generalFigures"), create = TRUE)
-ggsave(file.path(figDir, "MaxEntPredictions.tiff"), width = 13.5, height = 5.5, units = "in", dpi = 300)
+ggsave(file.path(figDir, "MaxEntPredictions.png"), width = 13.5, height = 5.5, units = "in", dpi = 300)
 ```
 
-```{r newScenariosFig, echo = FALSE, warning = FALSE, message = FALSE, fig.align = 'center', out.width = "80%", fig.show='hold', fig.cap = "Adding a new scenario: Predictions of (ref:Pice-gla) probabilities of presences and (ref:PA) under (left to right) baseline climate conditions, 2041-2060, and 2081-2100 climate projections under two emission scenarios (SSP 136 and SSP 585, the default) -- showing MaxEnt forecasts only."}
-knitr::include_graphics(normalizePath("outputs/generalFigures/MaxEntPredictions.tiff", winslash = "/"))
+
+```{r newScenariosFig, echo = FALSE, warning = FALSE, message = FALSE, fig.align = 'center', out.width = "80%", fig.show='hold', fig.cap="test"}
+knitr::include_graphics(normalizePath("outputs/generalFigures/MaxEntPredictions.png", winslash = "/"))
 ```
 
 ------------------------------------------------------------------------
