@@ -22,19 +22,7 @@ lot: yes
 lof: yes
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  cache = 2, 
-  cache.rebuild = FALSE, 
-  tidy = TRUE, 
-  tidy.opts = list(width.cutoff = 60),
-  size = "tiny"
-  )
-
-options("width" = 60,
-        "repos" = c(CRAN = "https://cran.rstudio.com"))
-
+```{r setup, include = FALSE}
 ## get citation style
 if (!file.exists("citations/ecology-letters.csl")) {
   dir.create("citations", showWarnings = FALSE)
