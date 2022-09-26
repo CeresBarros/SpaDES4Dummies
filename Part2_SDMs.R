@@ -7,7 +7,7 @@
 
 options(repos = c(CRAN = "http://cloud.r-project.org"))
 
-if (paste(R.Version()[c("major", "minor")], collapse = ".") < "4.2.1") {
+if (getRversion() < "4.2.1") {
   warning(paste("dismo::maxent may create a fatal error",
                 "when using R version < v4.2.1 and from RStudio.\n", 
                 "Please upgrade R, or run this script outside of RStudio.\n",

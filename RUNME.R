@@ -37,9 +37,8 @@ Require::Require(c("PredictiveEcology/SpaDES.project@transition", "SpaDES"),
 
 outs <- SpaDES.project::packagesInModules(modulePath = file.path("modules"))  ## gets list of module dependencies
 Require::Require(c(unname(unlist(outs)),
-                   "ggpubr", "PredictiveEcology/SpaDES.experiment@development",
-                   "ggplot2", "DiagrammeR", "geodata", "rmarkdown", 
-                   "bookdown", "htmlwidgets"), 
+                   "bookdown", "DiagrammeR", "htmlwidgets", "geodata", "ggplot2", "ggpubr", "rmarkdown",
+                   "PredictiveEcology/SpaDES.experiment@development"), 
                  require = FALSE,   ## don't load packages
                  upgrade = FALSE,   ## don't upgrade dependencies
                  standAlone = TRUE) 
