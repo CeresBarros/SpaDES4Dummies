@@ -1,4 +1,4 @@
-options(repos = c(CRAN = "http://cloud.r-project.org"))
+options(repos = c(CRAN = "https://cloud.r-project.org"))
 
 if (paste(R.Version()[c("major", "minor")], collapse = ".") < "4.2.1") {
   warning(paste("dismo::maxent may create a fatal error",

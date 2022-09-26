@@ -14,6 +14,6 @@ See also:
 
 [SpaDES installation](https://github.com/PredictiveEcology/SpaDES/wiki/Installation)
 
-[caching and debugging](http://spades-workshops.predictiveecology.org/articles/09c-CachingAndDebugging.html)
+[caching and debugging](https://spades-workshops.predictiveecology.org/articles/09c-CachingAndDebugging.html)
 
 **Happy SpaDESing!**
