@@ -20,8 +20,8 @@ packages/*
 !packages/pkgSnapshot.txt
 citations/*
 
-inputs/
-outputs/
+inputs/*
+outputs/*
 !modules/*/data/CHECKSUMS.txt
 !inputs/CHECKSUMS.txt
 !outputs/figures/
