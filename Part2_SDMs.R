@@ -5,7 +5,7 @@
 ## /!\   If running this script from RStudio, please make sure you are using R v4.2.1   /!\ 
 ## dismo::maxent throws a fatal error with 4.2.0 when called from RStudio
 
-options(repos = c(CRAN = "http://cloud.r-project.org"))
+options(repos = c(CRAN = "https://cloud.r-project.org"))
 
 if (getRversion() < "4.2.1") {
   warning(paste("dismo::maxent may create a fatal error",
@@ -15,7 +15,7 @@ if (getRversion() < "4.2.1") {
 }
 
 ## decide where you're working
-mainPath <- "~/SpaDES4Dummies_Part2"
+mainPath <- file.path(tempdir(), "SpaDES4Dummies_Part2")
 pkgPath <- file.path(mainPath, "packages", version$platform,
                      paste0(version$major, ".", strsplit(version$minor, "[.]")[[1]][1]))
 dir.create(pkgPath, recursive = TRUE)
@@ -44,15 +44,15 @@ SpaDES.core::setPaths(cachePath = file.path(mainPath, "cache"),
 simPaths <- SpaDES.core::getPaths() 
 
 ## Let's create our modules. Please refer to the guide for code you could add to each module.
-if (!dir.exists(file.path(simPaths$modulePath, "speciesAbundanceData"))){
+if (!dir.exists(file.path(simPaths$modulePath, "speciesAbundanceData"))) {
   SpaDES.core::newModule(name = "speciesAbundanceData", path = simPaths$modulePath)
 }
 
-if (!dir.exists(file.path(simPaths$modulePath, "climateData"))){
+if (!dir.exists(file.path(simPaths$modulePath, "climateData"))) {
   SpaDES.core::newModule(name = "climateData", path = simPaths$modulePath)
 }
 
-if (!dir.exists(file.path(simPaths$modulePath, "projectSpeciesDist"))){
+if (!dir.exists(file.path(simPaths$modulePath, "projectSpeciesDist"))) {
   SpaDES.core::newModule(name = "projectSpeciesDist", path = simPaths$modulePath)
 }
 
@@ -73,7 +73,7 @@ out <- reproducible::preProcess(targetFile = "maxent.jar",
                                 destinationPath = simPaths$inputPath,
                                 fun = NA)
 file.copy(from = out$targetFilePath, 
-          to = file.path(system.file("java", package="dismo"), "maxent.jar"))
+          to = file.path(system.file("java", package = "dismo"), "maxent.jar"))
 
 out <- require(rJava)
 if (!out) {
