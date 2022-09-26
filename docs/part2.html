@@ -23,7 +23,7 @@
 <meta name="author" content="Ceres Barros" />
 
 
-<meta name="date" content="2022-09-22" />
+<meta name="date" content="2022-09-26" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -270,7 +270,7 @@ We start by creating an <code>.R</code> script to set up and control the simulat
 In this example this script is called <code>Part2_SDMs.R</code>.</p>
 <p>The script begins with a few lines of code that ensure a few packages are installed and loaded (see <a href="part2.html#reproducible-package-installation">Reproducible package installation</a>).
 It then defines the necessary folder directories for the simulation and creates the modules in the <code>modules/</code> folder.</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="part2.html#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">repos =</span> <span class="fu">c</span>(<span class="at">CRAN =</span> <span class="st">&quot;http://cloud.r-project.org&quot;</span>))</span>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="part2.html#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">repos =</span> <span class="fu">c</span>(<span class="at">CRAN =</span> <span class="st">&quot;https://cloud.r-project.org&quot;</span>))</span>
 <span id="cb27-2"><a href="part2.html#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb27-3"><a href="part2.html#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">paste</span>(<span class="fu">R.Version</span>()[<span class="fu">c</span>(<span class="st">&quot;major&quot;</span>, <span class="st">&quot;minor&quot;</span>)], <span class="at">collapse =</span> <span class="st">&quot;.&quot;</span>) <span class="sc">&lt;</span> <span class="st">&quot;4.2.1&quot;</span>) {</span>
 <span id="cb27-4"><a href="part2.html#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">warning</span>(<span class="fu">paste</span>(<span class="st">&quot;dismo::maxent may create a fatal error&quot;</span>,</span>
@@ -1194,53 +1194,54 @@ These lists define the modules used in the simulation (<code>simModules</code>),
 <span id="cb33-3"><a href="part2.html#cb33-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">reproducible.cachePath =</span> simPaths<span class="sc">$</span>cachePath,</span>
 <span id="cb33-4"><a href="part2.html#cb33-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">reproducible.destinationPath =</span> simPaths<span class="sc">$</span>inputPath, <span class="do">## all downloaded and pre-processed layers go here</span></span>
 <span id="cb33-5"><a href="part2.html#cb33-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">reproducible.useTerra =</span> <span class="cn">TRUE</span>, <span class="do">## we want to use the terra R package</span></span>
-<span id="cb33-6"><a href="part2.html#cb33-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">spades.useRequire =</span> <span class="cn">FALSE</span>)  </span>
-<span id="cb33-7"><a href="part2.html#cb33-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-8"><a href="part2.html#cb33-8" aria-hidden="true" tabindex="-1"></a><span class="do">## list the modules to use</span></span>
-<span id="cb33-9"><a href="part2.html#cb33-9" aria-hidden="true" tabindex="-1"></a>simModules <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="st">&quot;speciesAbundanceData&quot;</span>, <span class="st">&quot;climateData&quot;</span>, <span class="st">&quot;projectSpeciesDist&quot;</span>)</span>
-<span id="cb33-10"><a href="part2.html#cb33-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-11"><a href="part2.html#cb33-11" aria-hidden="true" tabindex="-1"></a><span class="do">## Set simulation and module parameters</span></span>
-<span id="cb33-12"><a href="part2.html#cb33-12" aria-hidden="true" tabindex="-1"></a>simTimes <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">start =</span> <span class="dv">1</span>, <span class="at">end =</span> <span class="dv">5</span>, <span class="at">timeunit =</span> <span class="st">&quot;year&quot;</span>)</span>
-<span id="cb33-13"><a href="part2.html#cb33-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-14"><a href="part2.html#cb33-14" aria-hidden="true" tabindex="-1"></a><span class="do">## we create two lists of parameters, one using the default MaxEnt</span></span>
-<span id="cb33-15"><a href="part2.html#cb33-15" aria-hidden="true" tabindex="-1"></a><span class="do">## the other a GLM</span></span>
-<span id="cb33-16"><a href="part2.html#cb33-16" aria-hidden="true" tabindex="-1"></a>simParamsMaxEnt <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb33-17"><a href="part2.html#cb33-17" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;speciesAbundanceData&quot;</span> <span class="ot">=</span> <span class="fu">list</span>(</span>
-<span id="cb33-18"><a href="part2.html#cb33-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;.plots&quot;</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;png&quot;</span>),</span>
-<span id="cb33-19"><a href="part2.html#cb33-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;.useCache&quot;</span> <span class="ot">=</span> <span class="cn">FALSE</span></span>
-<span id="cb33-20"><a href="part2.html#cb33-20" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb33-21"><a href="part2.html#cb33-21" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;climateData&quot;</span> <span class="ot">=</span> <span class="fu">list</span>(</span>
-<span id="cb33-22"><a href="part2.html#cb33-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;.plots&quot;</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;png&quot;</span>),</span>
-<span id="cb33-23"><a href="part2.html#cb33-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;.useCache&quot;</span> <span class="ot">=</span> <span class="cn">FALSE</span></span>
-<span id="cb33-24"><a href="part2.html#cb33-24" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb33-25"><a href="part2.html#cb33-25" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;projectSpeciesDist&quot;</span> <span class="ot">=</span> <span class="fu">list</span>(</span>
-<span id="cb33-26"><a href="part2.html#cb33-26" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;statModel&quot;</span> <span class="ot">=</span> <span class="st">&quot;MaxEnt&quot;</span>,</span>
-<span id="cb33-27"><a href="part2.html#cb33-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;.plots&quot;</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;png&quot;</span>),</span>
-<span id="cb33-28"><a href="part2.html#cb33-28" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;.useCache&quot;</span> <span class="ot">=</span> <span class="cn">FALSE</span></span>
-<span id="cb33-29"><a href="part2.html#cb33-29" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb33-30"><a href="part2.html#cb33-30" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb33-31"><a href="part2.html#cb33-31" aria-hidden="true" tabindex="-1"></a>simParamsGLM <span class="ot">&lt;-</span> simParamsMaxEnt</span>
-<span id="cb33-32"><a href="part2.html#cb33-32" aria-hidden="true" tabindex="-1"></a>simParamsGLM<span class="sc">$</span>projectSpeciesDist<span class="sc">$</span>statModel <span class="ot">&lt;-</span> <span class="st">&quot;GLM&quot;</span></span>
-<span id="cb33-33"><a href="part2.html#cb33-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-34"><a href="part2.html#cb33-34" aria-hidden="true" tabindex="-1"></a><span class="do">## make a random study area.</span></span>
-<span id="cb33-35"><a href="part2.html#cb33-35" aria-hidden="true" tabindex="-1"></a><span class="do">##  Here use seed to make sure the same study area is always generated</span></span>
-<span id="cb33-36"><a href="part2.html#cb33-36" aria-hidden="true" tabindex="-1"></a>studyArea <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">vect</span>(SpaDES.tools<span class="sc">::</span><span class="fu">randomStudyArea</span>(<span class="at">size =</span> <span class="fl">1e10</span>, <span class="at">seed =</span> <span class="dv">123</span>))</span>
-<span id="cb33-37"><a href="part2.html#cb33-37" aria-hidden="true" tabindex="-1"></a>studyAreaRas <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">rasterize</span>(studyArea, </span>
-<span id="cb33-38"><a href="part2.html#cb33-38" aria-hidden="true" tabindex="-1"></a>                                 terra<span class="sc">::</span><span class="fu">rast</span>(<span class="at">extent =</span> terra<span class="sc">::</span><span class="fu">ext</span>(studyArea), </span>
-<span id="cb33-39"><a href="part2.html#cb33-39" aria-hidden="true" tabindex="-1"></a>                                             <span class="at">crs =</span> terra<span class="sc">::</span><span class="fu">crs</span>(studyArea, <span class="at">proj =</span> <span class="cn">TRUE</span>), </span>
-<span id="cb33-40"><a href="part2.html#cb33-40" aria-hidden="true" tabindex="-1"></a>                                             <span class="at">resolution =</span> <span class="dv">1000</span>))</span>
-<span id="cb33-41"><a href="part2.html#cb33-41" aria-hidden="true" tabindex="-1"></a>simObjects <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb33-42"><a href="part2.html#cb33-42" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;studyAreaRas&quot;</span> <span class="ot">=</span> studyAreaRas</span>
-<span id="cb33-43"><a href="part2.html#cb33-43" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb33-44"><a href="part2.html#cb33-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-45"><a href="part2.html#cb33-45" aria-hidden="true" tabindex="-1"></a><span class="do">## Simulation setup - create two simulations, one for MaxEnt another for GLM</span></span>
-<span id="cb33-46"><a href="part2.html#cb33-46" aria-hidden="true" tabindex="-1"></a><span class="do">## SpaDES.experiment::experiment2, will take care of subdirectories to store outputs</span></span>
-<span id="cb33-47"><a href="part2.html#cb33-47" aria-hidden="true" tabindex="-1"></a>mySimMaxEnt <span class="ot">&lt;-</span> <span class="fu">simInit</span>(<span class="at">times =</span> simTimes, <span class="at">params =</span> simParamsMaxEnt, </span>
-<span id="cb33-48"><a href="part2.html#cb33-48" aria-hidden="true" tabindex="-1"></a>                       <span class="at">modules =</span> simModules, <span class="at">objects =</span> simObjects, </span>
-<span id="cb33-49"><a href="part2.html#cb33-49" aria-hidden="true" tabindex="-1"></a>                       <span class="at">paths =</span> simPaths)</span>
-<span id="cb33-50"><a href="part2.html#cb33-50" aria-hidden="true" tabindex="-1"></a>mySimGLM <span class="ot">&lt;-</span> <span class="fu">simInit</span>(<span class="at">times =</span> simTimes, <span class="at">params =</span> simParamsGLM, </span>
-<span id="cb33-51"><a href="part2.html#cb33-51" aria-hidden="true" tabindex="-1"></a>                    <span class="at">modules =</span> simModules, <span class="at">objects =</span> simObjects, </span>
-<span id="cb33-52"><a href="part2.html#cb33-52" aria-hidden="true" tabindex="-1"></a>                    <span class="at">paths =</span> simPaths)</span></code></pre></div>
+<span id="cb33-6"><a href="part2.html#cb33-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">spades.moduleCodeChecks =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb33-7"><a href="part2.html#cb33-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">spades.useRequire =</span> <span class="cn">FALSE</span>)  </span>
+<span id="cb33-8"><a href="part2.html#cb33-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-9"><a href="part2.html#cb33-9" aria-hidden="true" tabindex="-1"></a><span class="do">## list the modules to use</span></span>
+<span id="cb33-10"><a href="part2.html#cb33-10" aria-hidden="true" tabindex="-1"></a>simModules <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="st">&quot;speciesAbundanceData&quot;</span>, <span class="st">&quot;climateData&quot;</span>, <span class="st">&quot;projectSpeciesDist&quot;</span>)</span>
+<span id="cb33-11"><a href="part2.html#cb33-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-12"><a href="part2.html#cb33-12" aria-hidden="true" tabindex="-1"></a><span class="do">## Set simulation and module parameters</span></span>
+<span id="cb33-13"><a href="part2.html#cb33-13" aria-hidden="true" tabindex="-1"></a>simTimes <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">start =</span> <span class="dv">1</span>, <span class="at">end =</span> <span class="dv">5</span>, <span class="at">timeunit =</span> <span class="st">&quot;year&quot;</span>)</span>
+<span id="cb33-14"><a href="part2.html#cb33-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-15"><a href="part2.html#cb33-15" aria-hidden="true" tabindex="-1"></a><span class="do">## we create two lists of parameters, one using the default MaxEnt</span></span>
+<span id="cb33-16"><a href="part2.html#cb33-16" aria-hidden="true" tabindex="-1"></a><span class="do">## the other a GLM</span></span>
+<span id="cb33-17"><a href="part2.html#cb33-17" aria-hidden="true" tabindex="-1"></a>simParamsMaxEnt <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb33-18"><a href="part2.html#cb33-18" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;speciesAbundanceData&quot;</span> <span class="ot">=</span> <span class="fu">list</span>(</span>
+<span id="cb33-19"><a href="part2.html#cb33-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;.plots&quot;</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;png&quot;</span>),</span>
+<span id="cb33-20"><a href="part2.html#cb33-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;.useCache&quot;</span> <span class="ot">=</span> <span class="cn">FALSE</span></span>
+<span id="cb33-21"><a href="part2.html#cb33-21" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb33-22"><a href="part2.html#cb33-22" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;climateData&quot;</span> <span class="ot">=</span> <span class="fu">list</span>(</span>
+<span id="cb33-23"><a href="part2.html#cb33-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;.plots&quot;</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;png&quot;</span>),</span>
+<span id="cb33-24"><a href="part2.html#cb33-24" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;.useCache&quot;</span> <span class="ot">=</span> <span class="cn">FALSE</span></span>
+<span id="cb33-25"><a href="part2.html#cb33-25" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb33-26"><a href="part2.html#cb33-26" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;projectSpeciesDist&quot;</span> <span class="ot">=</span> <span class="fu">list</span>(</span>
+<span id="cb33-27"><a href="part2.html#cb33-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;statModel&quot;</span> <span class="ot">=</span> <span class="st">&quot;MaxEnt&quot;</span>,</span>
+<span id="cb33-28"><a href="part2.html#cb33-28" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;.plots&quot;</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;png&quot;</span>),</span>
+<span id="cb33-29"><a href="part2.html#cb33-29" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;.useCache&quot;</span> <span class="ot">=</span> <span class="cn">FALSE</span></span>
+<span id="cb33-30"><a href="part2.html#cb33-30" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb33-31"><a href="part2.html#cb33-31" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb33-32"><a href="part2.html#cb33-32" aria-hidden="true" tabindex="-1"></a>simParamsGLM <span class="ot">&lt;-</span> simParamsMaxEnt</span>
+<span id="cb33-33"><a href="part2.html#cb33-33" aria-hidden="true" tabindex="-1"></a>simParamsGLM<span class="sc">$</span>projectSpeciesDist<span class="sc">$</span>statModel <span class="ot">&lt;-</span> <span class="st">&quot;GLM&quot;</span></span>
+<span id="cb33-34"><a href="part2.html#cb33-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-35"><a href="part2.html#cb33-35" aria-hidden="true" tabindex="-1"></a><span class="do">## make a random study area.</span></span>
+<span id="cb33-36"><a href="part2.html#cb33-36" aria-hidden="true" tabindex="-1"></a><span class="do">##  Here use seed to make sure the same study area is always generated</span></span>
+<span id="cb33-37"><a href="part2.html#cb33-37" aria-hidden="true" tabindex="-1"></a>studyArea <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">vect</span>(SpaDES.tools<span class="sc">::</span><span class="fu">randomStudyArea</span>(<span class="at">size =</span> <span class="fl">1e10</span>, <span class="at">seed =</span> <span class="dv">123</span>))</span>
+<span id="cb33-38"><a href="part2.html#cb33-38" aria-hidden="true" tabindex="-1"></a>studyAreaRas <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">rasterize</span>(studyArea, </span>
+<span id="cb33-39"><a href="part2.html#cb33-39" aria-hidden="true" tabindex="-1"></a>                                 terra<span class="sc">::</span><span class="fu">rast</span>(<span class="at">extent =</span> terra<span class="sc">::</span><span class="fu">ext</span>(studyArea), </span>
+<span id="cb33-40"><a href="part2.html#cb33-40" aria-hidden="true" tabindex="-1"></a>                                             <span class="at">crs =</span> terra<span class="sc">::</span><span class="fu">crs</span>(studyArea, <span class="at">proj =</span> <span class="cn">TRUE</span>), </span>
+<span id="cb33-41"><a href="part2.html#cb33-41" aria-hidden="true" tabindex="-1"></a>                                             <span class="at">resolution =</span> <span class="dv">1000</span>))</span>
+<span id="cb33-42"><a href="part2.html#cb33-42" aria-hidden="true" tabindex="-1"></a>simObjects <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb33-43"><a href="part2.html#cb33-43" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;studyAreaRas&quot;</span> <span class="ot">=</span> studyAreaRas</span>
+<span id="cb33-44"><a href="part2.html#cb33-44" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb33-45"><a href="part2.html#cb33-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-46"><a href="part2.html#cb33-46" aria-hidden="true" tabindex="-1"></a><span class="do">## Simulation setup - create two simulations, one for MaxEnt another for GLM</span></span>
+<span id="cb33-47"><a href="part2.html#cb33-47" aria-hidden="true" tabindex="-1"></a><span class="do">## SpaDES.experiment::experiment2, will take care of subdirectories to store outputs</span></span>
+<span id="cb33-48"><a href="part2.html#cb33-48" aria-hidden="true" tabindex="-1"></a>mySimMaxEnt <span class="ot">&lt;-</span> <span class="fu">simInit</span>(<span class="at">times =</span> simTimes, <span class="at">params =</span> simParamsMaxEnt, </span>
+<span id="cb33-49"><a href="part2.html#cb33-49" aria-hidden="true" tabindex="-1"></a>                       <span class="at">modules =</span> simModules, <span class="at">objects =</span> simObjects, </span>
+<span id="cb33-50"><a href="part2.html#cb33-50" aria-hidden="true" tabindex="-1"></a>                       <span class="at">paths =</span> simPaths)</span>
+<span id="cb33-51"><a href="part2.html#cb33-51" aria-hidden="true" tabindex="-1"></a>mySimGLM <span class="ot">&lt;-</span> <span class="fu">simInit</span>(<span class="at">times =</span> simTimes, <span class="at">params =</span> simParamsGLM, </span>
+<span id="cb33-52"><a href="part2.html#cb33-52" aria-hidden="true" tabindex="-1"></a>                    <span class="at">modules =</span> simModules, <span class="at">objects =</span> simObjects, </span>
+<span id="cb33-53"><a href="part2.html#cb33-53" aria-hidden="true" tabindex="-1"></a>                    <span class="at">paths =</span> simPaths)</span></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:studyAreaCanada"></span>
 <img src="Part2_SDMs_files/figure-html/studyAreaCanada-1.png" alt="Study area within Canada." width="672" />
 <p class="caption">
@@ -1534,7 +1535,7 @@ Even if the developer is forever the sole reader of their own code, there are be
 First, working on it is less tiresome.
 Second, we quickly forget why we wrote code in a certain away.
 Code that is well documented and readable is easier to “come back to” and adapt.</p>
-<p>We follow many of the <a href="http://adv-r.had.co.nz/Style.html">recommendations by Hadley Wickham</a>, and highlight below those that we find particularly important:</p>
+<p>We follow many of the <a href="https://adv-r.had.co.nz/Style.html">recommendations by Hadley Wickham</a>, and highlight below those that we find particularly important:</p>
 <ul>
 <li><p>spacing around operators;</p></li>
 <li><p>spacing before left parenthesis, except in a function call;</p></li>
@@ -1574,8 +1575,8 @@ Because objects are saved as <code>.rds</code> files by default, any object clas
 <div id="additional-notes-1" class="section level3 hasAnchor" number="2.5.7">
 <h3><span class="header-section-number">2.5.7</span> Additional notes<a href="part2.html#additional-notes-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p><code>SpaDES</code> is an extremely powerful family of R packages, whose potential goes well beyond what has been discussed here.
-We recommend going to the <a href="http://predictiveecology.org/"><code>SpaDES</code> webpage</a> to find out more about the <code>SpaDES</code> R modelling platform, upcoming workshops and publications.
-See also the <a href="http://https://github.com/PredictiveEcology/">Predictive Ecology Github repository</a> for a list of all available <code>SpaDES</code> modules and <code>SpaDES</code>-related packages that we maintain.</p>
+We recommend going to the <a href="https://predictiveecology.org/"><code>SpaDES</code> webpage</a> to find out more about the <code>SpaDES</code> R modelling platform, upcoming workshops and publications.
+See also the <a href="https://https://github.com/PredictiveEcology/">Predictive Ecology Github repository</a> for a list of all available <code>SpaDES</code> modules and <code>SpaDES</code>-related packages that we maintain.</p>
 <p>We wish to acknowledge the World Climate Research Programme, which coordinated and promoted CMIP6, and thank the climate modelling groups for producing and making available their model output, the Earth System Grid Federation (ESGF) for archiving the data and providing access, and WorldClim for downscaling and sharing climate projections and preparing bioclimatic variables.</p>
 <hr />
 <center>

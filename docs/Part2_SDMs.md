@@ -44,7 +44,7 @@ It then defines the necessary folder directories for the simulation and creates 
 
 
 ```r
-options(repos = c(CRAN = "http://cloud.r-project.org"))
+options(repos = c(CRAN = "https://cloud.r-project.org"))
 
 if (paste(R.Version()[c("major", "minor")], collapse = ".") < "4.2.1") {
   warning(paste("dismo::maxent may create a fatal error",
@@ -1028,6 +1028,7 @@ options(reproducible.useCache = TRUE,
         reproducible.cachePath = simPaths$cachePath,
         reproducible.destinationPath = simPaths$inputPath, ## all downloaded and pre-processed layers go here
         reproducible.useTerra = TRUE, ## we want to use the terra R package
+        spades.moduleCodeChecks = FALSE,
         spades.useRequire = FALSE)  
 
 ## list the modules to use
@@ -1425,7 +1426,7 @@ First, working on it is less tiresome.
 Second, we quickly forget why we wrote code in a certain away.
 Code that is well documented and readable is easier to "come back to" and adapt.
 
-We follow many of the [recommendations by Hadley Wickham](http://adv-r.had.co.nz/Style.html), and highlight below those that we find particularly important:
+We follow many of the [recommendations by Hadley Wickham](https://adv-r.had.co.nz/Style.html), and highlight below those that we find particularly important:
 
 -   spacing around operators;
 
@@ -1473,8 +1474,8 @@ Because objects are saved as `.rds` files by default, any object class can be sa
 ### Additional notes
 
 `SpaDES` is an extremely powerful family of R packages, whose potential goes well beyond what has been discussed here.
-We recommend going to the [`SpaDES` webpage](http://predictiveecology.org/) to find out more about the `SpaDES` R modelling platform, upcoming workshops and publications.
-See also the [Predictive Ecology Github repository](http://https://github.com/PredictiveEcology/) for a list of all available `SpaDES` modules and `SpaDES`-related packages that we maintain.
+We recommend going to the [`SpaDES` webpage](https://predictiveecology.org/) to find out more about the `SpaDES` R modelling platform, upcoming workshops and publications.
+See also the [Predictive Ecology Github repository](https://https://github.com/PredictiveEcology/) for a list of all available `SpaDES` modules and `SpaDES`-related packages that we maintain.
 
 We wish to acknowledge the World Climate Research Programme, which coordinated and promoted CMIP6, and thank the climate modelling groups for producing and making available their model output, the Earth System Grid Federation (ESGF) for archiving the data and providing access, and WorldClim for downscaling and sharing climate projections and preparing bioclimatic variables.
 

@@ -23,7 +23,7 @@
 <meta name="author" content="Ceres Barros" />
 
 
-<meta name="date" content="2022-09-22" />
+<meta name="date" content="2022-09-26" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -263,7 +263,17 @@ In this example, we introduce <code>SpaDES</code> features that we most commonly
 <span id="cb1-4"><a href="part1.html#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
 <span id="cb1-5"><a href="part1.html#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(SpaDES.tools)</span>
 <span id="cb1-6"><a href="part1.html#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="part1.html#cb1-7" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;achubaty/NLMR&quot;</span>)  <span class="do">## you will need this ;)</span></span></code></pre></div>
+<span id="cb1-7"><a href="part1.html#cb1-7" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;achubaty/NLMR&quot;</span>)  <span class="do">## you will need this ;)</span></span>
+<span id="cb1-8"><a href="part1.html#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb1-9"><a href="part1.html#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="do">## * checking for file ‘/tmp/RtmpGCKZAR/remotes3197b91a0e93ba/achubaty-NLMR-b4e16bc/DESCRIPTION’ ... OK</span></span>
+<span id="cb1-10"><a href="part1.html#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="do">## * preparing ‘NLMR’:</span></span>
+<span id="cb1-11"><a href="part1.html#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="do">## * checking DESCRIPTION meta-information ... OK</span></span>
+<span id="cb1-12"><a href="part1.html#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="do">## * cleaning src</span></span>
+<span id="cb1-13"><a href="part1.html#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="do">## * checking for LF line-endings in source and make files and shell scripts</span></span>
+<span id="cb1-14"><a href="part1.html#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="do">## * checking for empty or unneeded directories</span></span>
+<span id="cb1-15"><a href="part1.html#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="do">## Removed empty directory ‘NLMR/figure’</span></span>
+<span id="cb1-16"><a href="part1.html#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="do">## Omitted ‘LazyData’ from DESCRIPTION</span></span>
+<span id="cb1-17"><a href="part1.html#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="do">## * building ‘NLMR_1.1.1.tar.gz’</span></span></code></pre></div>
 <p>And now create a raster template:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="part1.html#cb2-1" aria-hidden="true" tabindex="-1"></a>r <span class="ot">&lt;-</span> <span class="fu">raster</span>(<span class="at">nrows =</span> <span class="dv">100</span>, <span class="at">ncols =</span> <span class="dv">100</span>, <span class="at">xmn =</span> <span class="sc">-</span><span class="dv">50</span>, <span class="at">xmx =</span> <span class="dv">50</span>, <span class="at">ymn =</span> <span class="sc">-</span><span class="dv">50</span>, <span class="at">ymx =</span> <span class="dv">50</span>)</span></code></pre></div>
 </div>
@@ -352,55 +362,56 @@ The control script for this example is located on the root of the <em>SpaDES4Dum
 Note that Markdown (<code>.Rmd</code>) scripts can also be used instead of R scripts.</p>
 <p>We start by making sure all <code>SpaDES</code> packages and they dependencies are installed and up to date using <code>SpaDES.install::installSpaDES</code>.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="part1.html#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="do">## start again from a clean R session</span></span>
-<span id="cb9-2"><a href="part1.html#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">repos =</span> <span class="fu">c</span>(<span class="at">CRAN =</span> <span class="st">&quot;http://cloud.r-project.org&quot;</span>))</span>
-<span id="cb9-3"><a href="part1.html#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-4"><a href="part1.html#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">paste</span>(<span class="fu">R.Version</span>()[<span class="fu">c</span>(<span class="st">&quot;major&quot;</span>, <span class="st">&quot;minor&quot;</span>)], <span class="at">collapse =</span> <span class="st">&quot;.&quot;</span>) <span class="sc">&lt;</span> <span class="st">&quot;4.2.1&quot;</span>) {</span>
-<span id="cb9-5"><a href="part1.html#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">warning</span>(<span class="fu">paste</span>(<span class="st">&quot;dismo::maxent may create a fatal error&quot;</span>,</span>
-<span id="cb9-6"><a href="part1.html#cb9-6" aria-hidden="true" tabindex="-1"></a>                <span class="st">&quot;when using R version &lt; v4.2.1 and from RStudio.</span><span class="sc">\n</span><span class="st">&quot;</span>, </span>
-<span id="cb9-7"><a href="part1.html#cb9-7" aria-hidden="true" tabindex="-1"></a>                <span class="st">&quot;Please upgrade R, or run this script outside of RStudio.</span><span class="sc">\n</span><span class="st">&quot;</span>,</span>
-<span id="cb9-8"><a href="part1.html#cb9-8" aria-hidden="true" tabindex="-1"></a>                <span class="st">&quot;See https://github.com/rspatial/dismo/issues/13&quot;</span>))</span>
-<span id="cb9-9"><a href="part1.html#cb9-9" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb9-10"><a href="part1.html#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-11"><a href="part1.html#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="do">## decide where you&#39;re working</span></span>
-<span id="cb9-12"><a href="part1.html#cb9-12" aria-hidden="true" tabindex="-1"></a>mainPath <span class="ot">&lt;-</span> <span class="st">&quot;~/SpaDES4Dummies_Part1&quot;</span></span>
-<span id="cb9-13"><a href="part1.html#cb9-13" aria-hidden="true" tabindex="-1"></a>pkgPath <span class="ot">&lt;-</span> <span class="fu">file.path</span>(mainPath, <span class="st">&quot;packages&quot;</span>, version<span class="sc">$</span>platform,</span>
-<span id="cb9-14"><a href="part1.html#cb9-14" aria-hidden="true" tabindex="-1"></a>                     <span class="fu">paste0</span>(version<span class="sc">$</span>major, <span class="st">&quot;.&quot;</span>, <span class="fu">strsplit</span>(version<span class="sc">$</span>minor, <span class="st">&quot;[.]&quot;</span>)[[<span class="dv">1</span>]][<span class="dv">1</span>]))</span>
-<span id="cb9-15"><a href="part1.html#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(pkgPath, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb9-16"><a href="part1.html#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="fu">.libPaths</span>(pkgPath, <span class="at">include.site =</span> <span class="cn">FALSE</span>) <span class="do">## install packages in project library (proj-lib)</span></span>
-<span id="cb9-17"><a href="part1.html#cb9-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-18"><a href="part1.html#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="st">&quot;remotes&quot;</span> <span class="sc">%in%</span> <span class="fu">installed.packages</span>(<span class="at">lib.loc =</span> pkgPath))</span>
-<span id="cb9-19"><a href="part1.html#cb9-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">&quot;remotes&quot;</span>)</span>
-<span id="cb9-20"><a href="part1.html#cb9-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-21"><a href="part1.html#cb9-21" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="st">&quot;Require&quot;</span> <span class="sc">%in%</span> <span class="fu">installed.packages</span>(<span class="at">lib.loc =</span> pkgPath) <span class="sc">||</span> </span>
-<span id="cb9-22"><a href="part1.html#cb9-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">packageVersion</span>(<span class="st">&quot;Require&quot;</span>, <span class="at">lib.loc =</span> pkgPath) <span class="sc">&lt;</span> <span class="st">&quot;0.1.2&quot;</span>) {</span>
-<span id="cb9-23"><a href="part1.html#cb9-23" aria-hidden="true" tabindex="-1"></a>  remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;PredictiveEcology/Require@86254b17ad2392de5c9e4dae6dd06a194b69a169&quot;</span>,</span>
-<span id="cb9-24"><a href="part1.html#cb9-24" aria-hidden="true" tabindex="-1"></a>                          <span class="at">upgrade =</span> <span class="cn">FALSE</span>, <span class="at">force =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb9-25"><a href="part1.html#cb9-25" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb9-26"><a href="part1.html#cb9-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-27"><a href="part1.html#cb9-27" aria-hidden="true" tabindex="-1"></a><span class="do">## use binary linux packages if on Ubuntu</span></span>
-<span id="cb9-28"><a href="part1.html#cb9-28" aria-hidden="true" tabindex="-1"></a>Require<span class="sc">::</span><span class="fu">setLinuxBinaryRepo</span>()</span>
-<span id="cb9-29"><a href="part1.html#cb9-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-30"><a href="part1.html#cb9-30" aria-hidden="true" tabindex="-1"></a>Require<span class="sc">::</span><span class="fu">Require</span>(<span class="fu">c</span>(<span class="st">&quot;SpaDES&quot;</span>), <span class="at">require =</span> <span class="cn">FALSE</span>, <span class="at">upgrade =</span> <span class="cn">FALSE</span>, <span class="at">standAlone =</span> <span class="cn">TRUE</span>) <span class="do">## automatically downloads all packages in the SpaDES family and their dependencies</span></span>
-<span id="cb9-31"><a href="part1.html#cb9-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-32"><a href="part1.html#cb9-32" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(SpaDES)</span>
-<span id="cb9-33"><a href="part1.html#cb9-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-34"><a href="part1.html#cb9-34" aria-hidden="true" tabindex="-1"></a><span class="do">## decide where you&#39;re working</span></span>
-<span id="cb9-35"><a href="part1.html#cb9-35" aria-hidden="true" tabindex="-1"></a>mainPath <span class="ot">&lt;-</span> <span class="st">&quot;.&quot;</span></span>
-<span id="cb9-36"><a href="part1.html#cb9-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-37"><a href="part1.html#cb9-37" aria-hidden="true" tabindex="-1"></a><span class="fu">setPaths</span>(<span class="at">cachePath =</span> <span class="fu">file.path</span>(mainPath, <span class="st">&quot;cache&quot;</span>),</span>
-<span id="cb9-38"><a href="part1.html#cb9-38" aria-hidden="true" tabindex="-1"></a>         <span class="at">inputPath =</span> <span class="fu">file.path</span>(mainPath, <span class="st">&quot;inputs&quot;</span>),</span>
-<span id="cb9-39"><a href="part1.html#cb9-39" aria-hidden="true" tabindex="-1"></a>         <span class="at">modulePath =</span> <span class="fu">file.path</span>(mainPath, <span class="st">&quot;modules&quot;</span>),</span>
-<span id="cb9-40"><a href="part1.html#cb9-40" aria-hidden="true" tabindex="-1"></a>         <span class="at">outputPath =</span> <span class="fu">file.path</span>(mainPath, <span class="st">&quot;outputs&quot;</span>))</span>
-<span id="cb9-41"><a href="part1.html#cb9-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-42"><a href="part1.html#cb9-42" aria-hidden="true" tabindex="-1"></a><span class="fu">getPaths</span>() <span class="do">## check that this is what you wanted</span></span>
-<span id="cb9-43"><a href="part1.html#cb9-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-44"><a href="part1.html#cb9-44" aria-hidden="true" tabindex="-1"></a><span class="do">## Let&#39;s create a self-contained module that will simulate the species&#39; abundance for any given period of time and frequency.</span></span>
-<span id="cb9-45"><a href="part1.html#cb9-45" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">Path.exists</span>(<span class="fu">file.path</span>(<span class="fu">getPaths</span>()<span class="sc">$</span>modulePath, <span class="st">&quot;speciesAbundance&quot;</span>))) {</span>
-<span id="cb9-46"><a href="part1.html#cb9-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">newModule</span>(<span class="at">name =</span> <span class="st">&quot;speciesAbundance&quot;</span>, <span class="at">path =</span> <span class="fu">getPaths</span>()<span class="sc">$</span>modulePath)</span>
-<span id="cb9-47"><a href="part1.html#cb9-47" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<span id="cb9-2"><a href="part1.html#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">repos =</span> <span class="fu">c</span>(<span class="at">CRAN =</span> <span class="st">&quot;https://cloud.r-project.org&quot;</span>),</span>
+<span id="cb9-3"><a href="part1.html#cb9-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">spades.moduleCodeChecks =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb9-4"><a href="part1.html#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="part1.html#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">paste</span>(<span class="fu">R.Version</span>()[<span class="fu">c</span>(<span class="st">&quot;major&quot;</span>, <span class="st">&quot;minor&quot;</span>)], <span class="at">collapse =</span> <span class="st">&quot;.&quot;</span>) <span class="sc">&lt;</span> <span class="st">&quot;4.2.1&quot;</span>) {</span>
+<span id="cb9-6"><a href="part1.html#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">warning</span>(<span class="fu">paste</span>(<span class="st">&quot;dismo::maxent may create a fatal error&quot;</span>,</span>
+<span id="cb9-7"><a href="part1.html#cb9-7" aria-hidden="true" tabindex="-1"></a>                <span class="st">&quot;when using R version &lt; v4.2.1 and from RStudio.</span><span class="sc">\n</span><span class="st">&quot;</span>, </span>
+<span id="cb9-8"><a href="part1.html#cb9-8" aria-hidden="true" tabindex="-1"></a>                <span class="st">&quot;Please upgrade R, or run this script outside of RStudio.</span><span class="sc">\n</span><span class="st">&quot;</span>,</span>
+<span id="cb9-9"><a href="part1.html#cb9-9" aria-hidden="true" tabindex="-1"></a>                <span class="st">&quot;See https://github.com/rspatial/dismo/issues/13&quot;</span>))</span>
+<span id="cb9-10"><a href="part1.html#cb9-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb9-11"><a href="part1.html#cb9-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="part1.html#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="do">## decide where you&#39;re working</span></span>
+<span id="cb9-13"><a href="part1.html#cb9-13" aria-hidden="true" tabindex="-1"></a>mainPath <span class="ot">&lt;-</span> <span class="st">&quot;~/SpaDES4Dummies_Part1&quot;</span></span>
+<span id="cb9-14"><a href="part1.html#cb9-14" aria-hidden="true" tabindex="-1"></a>pkgPath <span class="ot">&lt;-</span> <span class="fu">file.path</span>(mainPath, <span class="st">&quot;packages&quot;</span>, version<span class="sc">$</span>platform,</span>
+<span id="cb9-15"><a href="part1.html#cb9-15" aria-hidden="true" tabindex="-1"></a>                     <span class="fu">paste0</span>(version<span class="sc">$</span>major, <span class="st">&quot;.&quot;</span>, <span class="fu">strsplit</span>(version<span class="sc">$</span>minor, <span class="st">&quot;[.]&quot;</span>)[[<span class="dv">1</span>]][<span class="dv">1</span>]))</span>
+<span id="cb9-16"><a href="part1.html#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(pkgPath, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb9-17"><a href="part1.html#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="fu">.libPaths</span>(pkgPath, <span class="at">include.site =</span> <span class="cn">FALSE</span>) <span class="do">## install packages in project library (proj-lib)</span></span>
+<span id="cb9-18"><a href="part1.html#cb9-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-19"><a href="part1.html#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="st">&quot;remotes&quot;</span> <span class="sc">%in%</span> <span class="fu">installed.packages</span>(<span class="at">lib.loc =</span> pkgPath))</span>
+<span id="cb9-20"><a href="part1.html#cb9-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">&quot;remotes&quot;</span>)</span>
+<span id="cb9-21"><a href="part1.html#cb9-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-22"><a href="part1.html#cb9-22" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="st">&quot;Require&quot;</span> <span class="sc">%in%</span> <span class="fu">installed.packages</span>(<span class="at">lib.loc =</span> pkgPath) <span class="sc">||</span> </span>
+<span id="cb9-23"><a href="part1.html#cb9-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">packageVersion</span>(<span class="st">&quot;Require&quot;</span>, <span class="at">lib.loc =</span> pkgPath) <span class="sc">&lt;</span> <span class="st">&quot;0.1.2&quot;</span>) {</span>
+<span id="cb9-24"><a href="part1.html#cb9-24" aria-hidden="true" tabindex="-1"></a>  remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;PredictiveEcology/Require@86254b17ad2392de5c9e4dae6dd06a194b69a169&quot;</span>,</span>
+<span id="cb9-25"><a href="part1.html#cb9-25" aria-hidden="true" tabindex="-1"></a>                          <span class="at">upgrade =</span> <span class="cn">FALSE</span>, <span class="at">force =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb9-26"><a href="part1.html#cb9-26" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb9-27"><a href="part1.html#cb9-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-28"><a href="part1.html#cb9-28" aria-hidden="true" tabindex="-1"></a><span class="do">## use binary linux packages if on Ubuntu</span></span>
+<span id="cb9-29"><a href="part1.html#cb9-29" aria-hidden="true" tabindex="-1"></a>Require<span class="sc">::</span><span class="fu">setLinuxBinaryRepo</span>()</span>
+<span id="cb9-30"><a href="part1.html#cb9-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-31"><a href="part1.html#cb9-31" aria-hidden="true" tabindex="-1"></a>Require<span class="sc">::</span><span class="fu">Require</span>(<span class="fu">c</span>(<span class="st">&quot;SpaDES&quot;</span>), <span class="at">require =</span> <span class="cn">FALSE</span>, <span class="at">upgrade =</span> <span class="cn">FALSE</span>, <span class="at">standAlone =</span> <span class="cn">TRUE</span>) <span class="do">## automatically downloads all packages in the SpaDES family and their dependencies</span></span>
+<span id="cb9-32"><a href="part1.html#cb9-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-33"><a href="part1.html#cb9-33" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(SpaDES)</span>
+<span id="cb9-34"><a href="part1.html#cb9-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-35"><a href="part1.html#cb9-35" aria-hidden="true" tabindex="-1"></a><span class="do">## decide where you&#39;re working</span></span>
+<span id="cb9-36"><a href="part1.html#cb9-36" aria-hidden="true" tabindex="-1"></a>mainPath <span class="ot">&lt;-</span> <span class="st">&quot;.&quot;</span></span>
+<span id="cb9-37"><a href="part1.html#cb9-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-38"><a href="part1.html#cb9-38" aria-hidden="true" tabindex="-1"></a><span class="fu">setPaths</span>(<span class="at">cachePath =</span> <span class="fu">file.path</span>(mainPath, <span class="st">&quot;cache&quot;</span>),</span>
+<span id="cb9-39"><a href="part1.html#cb9-39" aria-hidden="true" tabindex="-1"></a>         <span class="at">inputPath =</span> <span class="fu">file.path</span>(mainPath, <span class="st">&quot;inputs&quot;</span>),</span>
+<span id="cb9-40"><a href="part1.html#cb9-40" aria-hidden="true" tabindex="-1"></a>         <span class="at">modulePath =</span> <span class="fu">file.path</span>(mainPath, <span class="st">&quot;modules&quot;</span>),</span>
+<span id="cb9-41"><a href="part1.html#cb9-41" aria-hidden="true" tabindex="-1"></a>         <span class="at">outputPath =</span> <span class="fu">file.path</span>(mainPath, <span class="st">&quot;outputs&quot;</span>))</span>
+<span id="cb9-42"><a href="part1.html#cb9-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-43"><a href="part1.html#cb9-43" aria-hidden="true" tabindex="-1"></a><span class="fu">getPaths</span>() <span class="do">## check that this is what you wanted</span></span>
+<span id="cb9-44"><a href="part1.html#cb9-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-45"><a href="part1.html#cb9-45" aria-hidden="true" tabindex="-1"></a><span class="do">## Let&#39;s create a self-contained module that will simulate the species&#39; abundance for any given period of time and frequency.</span></span>
+<span id="cb9-46"><a href="part1.html#cb9-46" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">Path.exists</span>(<span class="fu">file.path</span>(<span class="fu">getPaths</span>()<span class="sc">$</span>modulePath, <span class="st">&quot;speciesAbundance&quot;</span>))) {</span>
+<span id="cb9-47"><a href="part1.html#cb9-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">newModule</span>(<span class="at">name =</span> <span class="st">&quot;speciesAbundance&quot;</span>, <span class="at">path =</span> <span class="fu">getPaths</span>()<span class="sc">$</span>modulePath)</span>
+<span id="cb9-48"><a href="part1.html#cb9-48" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 <p>We then create modules using <code>newModule</code>.
 <code>newModule</code> creates a module folder (<em>speciesAbundance</em>) inside <code>/modules</code> that contains both the module <code>.R</code> script template, as well as the documentation template (the <code>.Rmd</code> file).
-Although we will not be discussing the <code>.Rmd</code> file, please bear in mind that this is a <strong>fundamental</strong> part of creating a reproducible and transparent module - check out the <a href="http://www.britishecologicalsociety.org/wp-content/uploads/2017/12/guide-to-reproducible-code.pdf">Guide to Reproducible Code in Ecology and Evolution</a> from the British Ecological Society).
+Although we will not be discussing the <code>.Rmd</code> file, please bear in mind that this is a <strong>fundamental</strong> part of creating a reproducible and transparent module - check out the <a href="https://www.britishecologicalsociety.org/wp-content/uploads/2017/12/guide-to-reproducible-code.pdf">Guide to Reproducible Code in Ecology and Evolution</a> from the British Ecological Society).
 The documentation should contain a the description of the module, its input, parameters and outputs, and potentially a reproducible examples of how the module is executed.</p>
 <p><code>newModule</code> also created the folder <code>/data</code> where data necessary to the module can be put in, and the folder <code>/tests</code> that may contain testing scripts.
 We will not be using either of them in this example.</p>
@@ -423,7 +434,7 @@ The function <code>simInit()</code> will do so when it sets up the simulation.
 We will see this see this later in detail.</p>
 <div id="defining-the-module" class="section level4 hasAnchor" number="1.2.2.1">
 <h4><span class="header-section-number">1.2.2.1</span> <strong>Defining the Module</strong><a href="part1.html#defining-the-module" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<p>The first section of the script is defines the module’s <a href="http://data-informed.com/what-is-metadata-a-simple-guide-to-what-everyone-should-know/">metadata</a>.
+<p>The first section of the script is defines the module’s <a href="https://data-informed.com/what-is-metadata-a-simple-guide-to-what-everyone-should-know/">metadata</a>.
 It allows defining the module’s author, keywords, any required packages and module(s) and their versions, but also parameters (and their default values) and input objects that the module requires, and the output objects it creates.</p>
 <p>Although this dummy module example requires no true input data, we will define the template raster R as an “input” in the <code>expectsInput</code> function, and provide a default object in <code>.inputObjects</code> (see below).
 As for the outputs, it produces a list of abundance rasters (produced during the <code>abundanceSim</code> event).
@@ -1051,8 +1062,8 @@ Whereas the inputs to the <em>speciesTempLM</em> module are outputs of the <em>s
 <p><code>objectDiagram</code> provides another way of checking module linkages.
 It explicitly shows module inter-dependencies by depicting the objects that establish links between modules.</p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="part1.html#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">objectDiagram</span>(mySim)</span></code></pre></div>
-<div id="htmlwidget-9ab661c87e329d6bbc23" style="width:672px;height:480px;" class="DiagrammeR html-widget"></div>
-<script type="application/json" data-for="htmlwidget-9ab661c87e329d6bbc23">{"x":{"diagram":"sequenceDiagram\n_INPUT_ ->> speciesAbundance : r\n_INPUT_ ->> temperature : r\nspeciesAbundance ->> speciesTempLM : abundRasters\ntemperature ->> speciesTempLM : tempRasters\n"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-fddfd674825364eec256" style="width:672px;height:480px;" class="DiagrammeR html-widget"></div>
+<script type="application/json" data-for="htmlwidget-fddfd674825364eec256">{"x":{"diagram":"sequenceDiagram\n_INPUT_ ->> speciesAbundance : r\n_INPUT_ ->> temperature : r\nspeciesAbundance ->> speciesTempLM : abundRasters\ntemperature ->> speciesTempLM : tempRasters\n"},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="running-spades" class="section level4 hasAnchor" number="1.2.5.3">
 <h4><span class="header-section-number">1.2.5.3</span> Running <code>SpaDES</code><a href="part1.html#running-spades" class="anchor-section" aria-label="Anchor link to header"></a></h4>
@@ -1078,7 +1089,7 @@ The more complex the project gets, the more advantageous it is to use <code>SpaD
 <h3><span class="header-section-number">1.2.6</span> Additional notes<a href="part1.html#additional-notes" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p><code>SpaDES</code> is an extremely powerful package, whose potential goes well beyond what has been discussed in this dummy example.
 If you want to explore it further, we recommend following Part <a href="part2.html#part2">2</a> for a more realistic (but still simple) <code>SpaDES</code> application.</p>
-<p>Also, do go to the <a href="http://predictiveecology.org/"><code>SpaDES</code> webpage</a> to find further information about the platform, as well as upcoming workshops and publications and to the <a href="http://https://github.com/PredictiveEcology/">Predictive Ecology Github repository</a> to see all the <code>SpaDES</code> modules and SpaDES-related packages that we maintain.</p>
+<p>Also, do go to the <a href="https://predictiveecology.org/"><code>SpaDES</code> webpage</a> to find further information about the platform, as well as upcoming workshops and publications and to the <a href="https://github.com/PredictiveEcology/">Predictive Ecology Github repository</a> to see all the <code>SpaDES</code> modules and SpaDES-related packages that we maintain.</p>
 <hr />
 <center>
 <p><strong>Happy SpaDESing!</strong></p>

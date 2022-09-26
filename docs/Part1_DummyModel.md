@@ -33,6 +33,16 @@ library(ggplot2)
 library(SpaDES.tools)
 
 remotes::install_github("achubaty/NLMR")  ## you will need this ;)
+## 
+## * checking for file ‘/tmp/RtmpGCKZAR/remotes3197b91a0e93ba/achubaty-NLMR-b4e16bc/DESCRIPTION’ ... OK
+## * preparing ‘NLMR’:
+## * checking DESCRIPTION meta-information ... OK
+## * cleaning src
+## * checking for LF line-endings in source and make files and shell scripts
+## * checking for empty or unneeded directories
+## Removed empty directory ‘NLMR/figure’
+## Omitted ‘LazyData’ from DESCRIPTION
+## * building ‘NLMR_1.1.1.tar.gz’
 ```
 
 And now create a raster template:
@@ -159,7 +169,8 @@ We start by making sure all `SpaDES` packages and they dependencies are installe
 
 ```r
 ## start again from a clean R session
-options(repos = c(CRAN = "http://cloud.r-project.org"))
+options(repos = c(CRAN = "https://cloud.r-project.org"),
+        spades.moduleCodeChecks = FALSE)
 
 if (paste(R.Version()[c("major", "minor")], collapse = ".") < "4.2.1") {
   warning(paste("dismo::maxent may create a fatal error",
@@ -211,7 +222,7 @@ if (!Path.exists(file.path(getPaths()$modulePath, "speciesAbundance"))) {
 
 We then create modules using `newModule`.
 `newModule` creates a module folder (*speciesAbundance*) inside `/modules` that contains both the module `.R` script template, as well as the documentation template (the `.Rmd` file).
-Although we will not be discussing the `.Rmd` file, please bear in mind that this is a **fundamental** part of creating a reproducible and transparent module - check out the [Guide to Reproducible Code in Ecology and Evolution](http://www.britishecologicalsociety.org/wp-content/uploads/2017/12/guide-to-reproducible-code.pdf) from the British Ecological Society).
+Although we will not be discussing the `.Rmd` file, please bear in mind that this is a **fundamental** part of creating a reproducible and transparent module - check out the [Guide to Reproducible Code in Ecology and Evolution](https://www.britishecologicalsociety.org/wp-content/uploads/2017/12/guide-to-reproducible-code.pdf) from the British Ecological Society).
 The documentation should contain a the description of the module, its input, parameters and outputs, and potentially a reproducible examples of how the module is executed.
 
 `newModule` also created the folder `/data` where data necessary to the module can be put in, and the folder `/tests` that may contain testing scripts.
@@ -245,7 +256,7 @@ We will see this see this later in detail.
 
 #### **Defining the Module**
 
-The first section of the script is defines the module's [metadata](http://data-informed.com/what-is-metadata-a-simple-guide-to-what-everyone-should-know/).
+The first section of the script is defines the module's [metadata](https://data-informed.com/what-is-metadata-a-simple-guide-to-what-everyone-should-know/).
 It allows defining the module's author, keywords, any required packages and module(s) and their versions, but also parameters (and their default values) and input objects that the module requires, and the output objects it creates.
 
 Although this dummy module example requires no true input data, we will define the template raster R as an "input" in the `expectsInput` function, and provide a default object in `.inputObjects` (see below).
@@ -987,8 +998,8 @@ objectDiagram(mySim)
 ```
 
 ```{=html}
-<div id="htmlwidget-9ab661c87e329d6bbc23" style="width:672px;height:480px;" class="DiagrammeR html-widget"></div>
-<script type="application/json" data-for="htmlwidget-9ab661c87e329d6bbc23">{"x":{"diagram":"sequenceDiagram\n_INPUT_ ->> speciesAbundance : r\n_INPUT_ ->> temperature : r\nspeciesAbundance ->> speciesTempLM : abundRasters\ntemperature ->> speciesTempLM : tempRasters\n"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-fddfd674825364eec256" style="width:672px;height:480px;" class="DiagrammeR html-widget"></div>
+<script type="application/json" data-for="htmlwidget-fddfd674825364eec256">{"x":{"diagram":"sequenceDiagram\n_INPUT_ ->> speciesAbundance : r\n_INPUT_ ->> temperature : r\nspeciesAbundance ->> speciesTempLM : abundRasters\ntemperature ->> speciesTempLM : tempRasters\n"},"evals":[],"jsHooks":[]}</script>
 ```
 
 #### Running `SpaDES`
@@ -1020,7 +1031,7 @@ The more complex the project gets, the more advantageous it is to use `SpaDES` t
 `SpaDES` is an extremely powerful package, whose potential goes well beyond what has been discussed in this dummy example.
 If you want to explore it further, we recommend following Part \@ref(part2) for a more realistic (but still simple) `SpaDES` application.
 
-Also, do go to the [`SpaDES` webpage](http://predictiveecology.org/) to find further information about the platform, as well as upcoming workshops and publications and to the [Predictive Ecology Github repository](http://https://github.com/PredictiveEcology/) to see all the `SpaDES` modules and SpaDES-related packages that we maintain.
+Also, do go to the [`SpaDES` webpage](https://predictiveecology.org/) to find further information about the platform, as well as upcoming workshops and publications and to the [Predictive Ecology Github repository](https://github.com/PredictiveEcology/) to see all the `SpaDES` modules and SpaDES-related packages that we maintain.
 
 ------------------------------------------------------------------------
 

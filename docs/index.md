@@ -1,12 +1,12 @@
 ---
 title: "SpaDES 4 Dummies"
 author: "Ceres Barros"
-date: "2022-09-22"
+date: "2022-09-26"
 description: "A `SpaDES` crash-course"
 documentclass: krantz
 site: bookdown::bookdown_site
 github-repo: CeresBarros/SpaDES4Dummies
-url: 'https\://ceresbarros.github.io/SpaDES4Dummies/'
+url: 'https://ceresbarros.github.io/SpaDES4Dummies/'
 knit: "bookdown::render_book"
 bibliography:
   - citations/references.bib
