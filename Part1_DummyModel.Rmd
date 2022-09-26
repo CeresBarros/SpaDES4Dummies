@@ -148,6 +148,7 @@ We start by making sure all `SpaDES` packages and they dependencies are installe
 ```{r globalscriptPart1, eval = FALSE}
 ## start again from a clean R session
 options(repos = c(CRAN = "https://cloud.r-project.org"),
+        spades.moduleCodeChecks = FALSE)
 
 if (paste(R.Version()[c("major", "minor")], collapse = ".") < "4.2.1") {
   warning(paste("dismo::maxent may create a fatal error",

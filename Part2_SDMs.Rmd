@@ -299,6 +299,7 @@ options(reproducible.useCache = TRUE,
         reproducible.cachePath = simPaths$cachePath,
         reproducible.destinationPath = simPaths$inputPath, ## all downloaded and pre-processed layers go here
         reproducible.useTerra = TRUE, ## we want to use the terra R package
+        spades.moduleCodeChecks = FALSE,
         spades.useRequire = FALSE)  
 
 ## list the modules to use
