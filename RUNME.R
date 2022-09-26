@@ -3,7 +3,7 @@
 ## ---------------------------------------
 
 ## Sets up project library and renders book
-options(repos = c(CRAN = "http://cloud.r-project.org"))
+options(repos = c(CRAN = "https://cloud.r-project.org"))
 
 ## note that "rmarkdown", "bookdown", "htmlwidgets" need to be installed in the default
 ## libraries, because each .Rmd starts from a clean R session
