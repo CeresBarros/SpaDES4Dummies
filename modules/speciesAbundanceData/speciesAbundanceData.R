@@ -17,7 +17,7 @@ defineModule(sim, list(
   citation = list("citation.bib"),
   documentation = list("README.md", "speciesAbundanceData.Rmd"), ## same file
   reqdPkgs = list("PredictiveEcology/SpaDES.core@development (>=1.0.10.9000)",
-                  "terra", "ggplot2", "rasterVis"),
+                  "httr", "terra", "ggplot2", "rasterVis"),
   parameters = bindrows(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
     defineParameter("sppAbundURL", "character", 
@@ -101,17 +101,22 @@ abundanceInit <- function(sim) {
   opts <- options("reproducible.useTerra" = FALSE,
                   "reproducible.useGDAL" = FALSE)   
   on.exit(options(opts), add = TRUE)
-  sppAbundanceRas <- prepInputs(targetFile = "NFI_MODIS250m_2001_kNN_Species_Pice_Gla_v1.tif",
-                                url = P(sim)$sppAbundURL,
-                                # fun = "terra::rast",
-                                # projectTo = sim$studyAreaRas,
-                                # cropTo = sim$studyAreaRas,
-                                # maskTo = sim$studyAreaRas,
-                                rasterToMatch = raster::raster(sim$studyAreaRas),
-                                maskWithRTM = TRUE,
-                                overwrite = TRUE,
-                                cacheRepo = cachePath(sim))
+
+  httr::with_config(config = httr::config(ssl_verifypeer = 0L), {
+    sppAbundanceRas <- prepInputs(targetFile = "NFI_MODIS250m_2001_kNN_Species_Pice_Gla_v1.tif",
+                                  url = P(sim)$sppAbundURL,
+                                  # fun = "terra::rast",
+                                  # projectTo = sim$studyAreaRas,
+                                  # cropTo = sim$studyAreaRas,
+                                  # maskTo = sim$studyAreaRas,
+                                  rasterToMatch = raster::raster(sim$studyAreaRas),
+                                  maskWithRTM = TRUE,
+                                  overwrite = TRUE,
+                                  cacheRepo = cachePath(sim))
+  })
+  
   options(opts)
+  
   if (is(sppAbundanceRas, "RasterLayer")) {
     sppAbundanceRas <- terra::rast(sppAbundanceRas)
   }
@@ -140,7 +145,6 @@ abundancePlot <- function(sim) {
 
 
 .inputObjects <- function(sim) {
-  
   #cacheTags <- c(currentModule(sim), "function:.inputObjects") ## uncomment this if Cache is being used
   dPath <- asPath(getOption("reproducible.destinationPath", dataPath(sim)), 1)
   message(currentModule(sim), ": using dataPath '", dPath, "'.")
@@ -155,4 +159,3 @@ abundancePlot <- function(sim) {
   # ! ----- STOP EDITING ----- ! #
   return(invisible(sim))
 }
-

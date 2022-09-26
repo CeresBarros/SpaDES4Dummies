@@ -106,7 +106,7 @@ abundancePlot <- function(sim) {
 
 
 .inputObjects <- function(sim) {
-  if(!suppliedElsewhere("r")) {
+  if (!suppliedElsewhere("r")) {
     ## make template raster if not supplied elsewhere.
     sim$r <- raster(nrows = 100, ncols = 100, xmn = -50, xmx = 50, ymn = -50, ymx = 50)
   }

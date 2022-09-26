@@ -75,6 +75,9 @@ out <- reproducible::preProcess(targetFile = "maxent.jar",
 file.copy(from = out$targetFilePath, 
           to = file.path(system.file("java", package = "dismo"), "maxent.jar"))
 
+## TODO: may need to link rJava with system java version
+## e.g., sudo R CMD javareconf
+
 out <- require(rJava)
 if (!out) {
   stop(paste("Your Java installation may have problems, please check.\n", 
@@ -93,6 +96,7 @@ options(reproducible.useCache = TRUE,
         reproducible.cachePath = simPaths$cachePath,
         reproducible.destinationPath = simPaths$inputPath, ## all downloaded and pre-processed layers go here
         reproducible.useTerra = TRUE, ## we want to use the terra R package
+        spades.moduleCodeChecks = FALSE,
         spades.useRequire = FALSE)  
 
 ## list the modules to use
