@@ -179,8 +179,8 @@ myExperiment$GLM_rep1$evalOut
 ## Run with another climate scenario - the most contrasting scenario to SSP 585
 ## get the original table from one of the simulations and replace the climate scenario
 projClimateURLs <- myExperiment$MaxEnt_rep1$projClimateURLs
-projClimateURLs[, `:=`(URL = sub("ssp585", "ssp126", URL),
-                       targetFile = sub("ssp585", "ssp126", targetFile))]
+projClimateURLs[, `:=`(URL = gsub("ssp585", "ssp126", URL),
+                       targetFile = gsub("ssp585", "ssp126", targetFile))]
 
 ## this time we pass the new table or URLs to the modules, so that climate layers are changed
 simObjects2 <- list(
