@@ -49,7 +49,6 @@ Our VERY simple "simulation" model (in form of a function) generates rasters tha
 abundance_model <- function(ras, Time) {
   abund_outputs <- list()
   for (t in 1:Time) { 
-    # abund_outputs[[t]] <- gaussMap(ras, scale = 100, var = 0.03) ## RandomFields no longer available
     abund_outputs[[t]] <- NLMR::nlm_mpd(
       ncol = ncol(ras),
       nrow = nrow(ras),
@@ -81,7 +80,6 @@ The temperature simulation model will be similar to the vegetation one - remembe
 temperature_model <- function(ras, Time) {
   temp_outputs <- list()
   for (t in 1:Time) { 
-    # temp_outputs[[t]] <- gaussMap(r, scale = 100, var = 0.1) ## RandomFields no longer available
     temp_outputs[[t]] <- NLMR::nlm_mpd(
       ncol = ncol(ras),
       nrow = nrow(ras),
