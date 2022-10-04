@@ -10,8 +10,8 @@ temperature_model <- function(ras) {
     nrow = nrow(ras),
     resolution = unique(res(ras)),
     roughness = 0.5, ## TODO: adjust to approximate gaussMap version
-    rand_dev = 100,
-    rescale = TRUE,
+    rand_dev = 10,
+    rescale = FALSE,
     verbose = FALSE
   )
   return(temp_ras)
