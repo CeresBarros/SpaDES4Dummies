@@ -68,7 +68,7 @@ Set the length of the simulation (or simply the number of model iterations), run
 
 ```{r the_r_way_simulation_length, message=FALSE}
 Time <- 10
-abundance <- abundance_model(r = r, Time = Time)
+abundance <- abundance_model(ras = r, Time = Time)
 dev()
 plot(stack(abundance))
 ```
@@ -78,14 +78,14 @@ plot(stack(abundance))
 The temperature simulation model will be similar to the vegetation one - remember this is a dummy example.
 
 ```{r the_r_way_simulation_function_TMP}
-temp_model <- function(r, Time) {
+temperature_model <- function(ras, Time) {
   temp_outputs <- list()
   for (t in 1:Time) { 
     # temp_outputs[[t]] <- gaussMap(r, scale = 100, var = 0.1) ## RandomFields no longer available
     temp_outputs[[t]] <- NLMR::nlm_mpd(
-      ncol = ncol(r),
-      nrow = nrow(r),
-      resolution = unique(res(r)),
+      ncol = ncol(ras),
+      nrow = nrow(ras),
+      resolution = unique(res(ras)),
       roughness = 0.5,
       rand_dev = 10,
       rescale = FALSE,
@@ -99,7 +99,7 @@ temp_model <- function(r, Time) {
 Run the model and plot results (all temperature plots together)
 
 ```{r the_r_way_plot_results_TMP}
-temperature <- temp_model(r = r, Time = Time)
+temperature <- temperature_model(ras = r, Time = Time)
 plot(stack(temperature))
 ```
 
