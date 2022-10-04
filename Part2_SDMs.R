@@ -75,13 +75,11 @@ out <- reproducible::preProcess(targetFile = "maxent.jar",
 file.copy(from = out$targetFilePath, 
           to = file.path(system.file("java", package = "dismo"), "maxent.jar"))
 
-## TODO: may need to link rJava with system java version
-## e.g., sudo R CMD javareconf
-
 out <- require(rJava)
 if (!out) {
   stop(paste("Your Java installation may have problems, please check.\n", 
-       "See https://www.java.com/en/download/manual.jsp for Java installation"))
+       "See https://www.java.com/en/download/manual.jsp for Java installation.\n",
+       "Alternatively, 'rJava' could be having issues assessing your system Java installation."))
 }
 
 ## It may be a good idea to restart R after the installation is complete.
