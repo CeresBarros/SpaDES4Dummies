@@ -53,7 +53,7 @@ abundance_model <- function(ras, Time) {
       ncol = ncol(ras),
       nrow = nrow(ras),
       resolution = unique(res(ras)),
-      roughness = 0.5, ## TODO: adjust to approximate gaussMap version
+      roughness = 0.5, 
       rand_dev = 100,
       rescale = TRUE,
       verbose = FALSE
@@ -85,7 +85,7 @@ temp_model <- function(r, Time) {
       ncol = ncol(r),
       nrow = nrow(r),
       resolution = unique(res(r)),
-      roughness = 0.5, ## TODO: adjust to approximate gaussMap version
+      roughness = 0.5,
       rand_dev = 10,
       rescale = FALSE,
       verbose = FALSE
