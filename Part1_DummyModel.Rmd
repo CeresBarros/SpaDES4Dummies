@@ -30,6 +30,7 @@ library(raster)
 library(quickPlot)
 library(ggplot2)
 library(SpaDES.tools)
+library(ggpubr)
 
 remotes::install_github("achubaty/NLMR")  ## you will need this ;)
 ```
@@ -126,12 +127,13 @@ stats_analysis <- function(Data) {
 
 Then we create a loop to analyse each plot of our time-series:
 
-```{r data_analysis, echo=-1}
-par(mfrow = c(2, 5)) # This plots in 2 lines and 4 columns
+```{r data_analysis}
+lmPlots <- list()
 for (t in 1:Time) {
   outputdata <- data.frame(abund = abundance[[t]][], temp = temperature[[t]][])
-  stats_analysis(Data = outputdata)
+  lmPlots[[t]] <- stats_analysis(Data = outputdata)
 }
+ggarrange(plotlist = lmPlots)
 ```
 
 ## AFTER `SpaDES`...
