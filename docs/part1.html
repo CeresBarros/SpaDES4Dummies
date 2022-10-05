@@ -23,7 +23,7 @@
 <meta name="author" content="Ceres Barros" />
 
 
-<meta name="date" content="2022-09-26" />
+<meta name="date" content="2022-10-05" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -253,7 +253,7 @@ This makes changing, updating and sharing code - or modules - easier, as well as
 <p>The example below is so minimal that it is unlikely to show the full benefits of using <code>SpaDES</code> - the same could be accomplished with a fairly short script.
 However, it introduces the different parts of a module and how to link modules.</p>
 <p>Part <a href="part2.html#part2">2</a> goes a step further and uses real datasets to project species presences across a landscape in Canada.
-In this example, we introduce <code>SpaDES</code> features that we most commonly use in our work (e.g., caching and spatial data processing) and provide some coding best practices that we use ourselves (e.g., code assertions).</p>
+In Part <a href="part2.html#part2">2</a>, we introduce <code>SpaDES</code> features that we most commonly use in our work (e.g., caching and spatial data processing) and provide some coding best practices that we use ourselves (e.g., code assertions).</p>
 <div id="setup" class="section level3 hasAnchor" number="1.1.1">
 <h3><span class="header-section-number">1.1.1</span> Setup<a href="part1.html#setup" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Load the necessary packages (make sure they are installed first, of course)</p>
@@ -262,18 +262,9 @@ In this example, we introduce <code>SpaDES</code> features that we most commonly
 <span id="cb1-3"><a href="part1.html#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(quickPlot)</span>
 <span id="cb1-4"><a href="part1.html#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
 <span id="cb1-5"><a href="part1.html#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(SpaDES.tools)</span>
-<span id="cb1-6"><a href="part1.html#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="part1.html#cb1-7" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;achubaty/NLMR&quot;</span>)  <span class="do">## you will need this ;)</span></span>
-<span id="cb1-8"><a href="part1.html#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb1-9"><a href="part1.html#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="do">## * checking for file ‘/tmp/RtmpGCKZAR/remotes3197b91a0e93ba/achubaty-NLMR-b4e16bc/DESCRIPTION’ ... OK</span></span>
-<span id="cb1-10"><a href="part1.html#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="do">## * preparing ‘NLMR’:</span></span>
-<span id="cb1-11"><a href="part1.html#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="do">## * checking DESCRIPTION meta-information ... OK</span></span>
-<span id="cb1-12"><a href="part1.html#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="do">## * cleaning src</span></span>
-<span id="cb1-13"><a href="part1.html#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="do">## * checking for LF line-endings in source and make files and shell scripts</span></span>
-<span id="cb1-14"><a href="part1.html#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="do">## * checking for empty or unneeded directories</span></span>
-<span id="cb1-15"><a href="part1.html#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="do">## Removed empty directory ‘NLMR/figure’</span></span>
-<span id="cb1-16"><a href="part1.html#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="do">## Omitted ‘LazyData’ from DESCRIPTION</span></span>
-<span id="cb1-17"><a href="part1.html#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="do">## * building ‘NLMR_1.1.1.tar.gz’</span></span></code></pre></div>
+<span id="cb1-6"><a href="part1.html#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggpubr)</span>
+<span id="cb1-7"><a href="part1.html#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="part1.html#cb1-8" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;achubaty/NLMR&quot;</span>)  <span class="do">## you will need this ;)</span></span></code></pre></div>
 <p>And now create a raster template:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="part1.html#cb2-1" aria-hidden="true" tabindex="-1"></a>r <span class="ot">&lt;-</span> <span class="fu">raster</span>(<span class="at">nrows =</span> <span class="dv">100</span>, <span class="at">ncols =</span> <span class="dv">100</span>, <span class="at">xmn =</span> <span class="sc">-</span><span class="dv">50</span>, <span class="at">xmx =</span> <span class="dv">50</span>, <span class="at">ymn =</span> <span class="sc">-</span><span class="dv">50</span>, <span class="at">ymx =</span> <span class="dv">50</span>)</span></code></pre></div>
 </div>
@@ -283,22 +274,21 @@ In this example, we introduce <code>SpaDES</code> features that we most commonly
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="part1.html#cb3-1" aria-hidden="true" tabindex="-1"></a>abundance_model <span class="ot">&lt;-</span> <span class="cf">function</span>(ras, Time) {</span>
 <span id="cb3-2"><a href="part1.html#cb3-2" aria-hidden="true" tabindex="-1"></a>  abund_outputs <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
 <span id="cb3-3"><a href="part1.html#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>Time) { </span>
-<span id="cb3-4"><a href="part1.html#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># abund_outputs[[t]] &lt;- gaussMap(ras, scale = 100, var = 0.03) ## RandomFields no longer available</span></span>
-<span id="cb3-5"><a href="part1.html#cb3-5" aria-hidden="true" tabindex="-1"></a>    abund_outputs[[t]] <span class="ot">&lt;-</span> NLMR<span class="sc">::</span><span class="fu">nlm_mpd</span>(</span>
-<span id="cb3-6"><a href="part1.html#cb3-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">ncol =</span> <span class="fu">ncol</span>(ras),</span>
-<span id="cb3-7"><a href="part1.html#cb3-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">nrow =</span> <span class="fu">nrow</span>(ras),</span>
-<span id="cb3-8"><a href="part1.html#cb3-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">resolution =</span> <span class="fu">unique</span>(<span class="fu">res</span>(ras)),</span>
-<span id="cb3-9"><a href="part1.html#cb3-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">roughness =</span> <span class="fl">0.5</span>, <span class="do">## </span><span class="al">TODO</span><span class="do">: adjust to approximate gaussMap version</span></span>
-<span id="cb3-10"><a href="part1.html#cb3-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">rand_dev =</span> <span class="dv">100</span>,</span>
-<span id="cb3-11"><a href="part1.html#cb3-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">rescale =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb3-12"><a href="part1.html#cb3-12" aria-hidden="true" tabindex="-1"></a>      <span class="at">verbose =</span> <span class="cn">FALSE</span></span>
-<span id="cb3-13"><a href="part1.html#cb3-13" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb3-14"><a href="part1.html#cb3-14" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb3-15"><a href="part1.html#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(abund_outputs)</span>
-<span id="cb3-16"><a href="part1.html#cb3-16" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<span id="cb3-4"><a href="part1.html#cb3-4" aria-hidden="true" tabindex="-1"></a>    abund_outputs[[t]] <span class="ot">&lt;-</span> NLMR<span class="sc">::</span><span class="fu">nlm_mpd</span>(</span>
+<span id="cb3-5"><a href="part1.html#cb3-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">ncol =</span> <span class="fu">ncol</span>(ras),</span>
+<span id="cb3-6"><a href="part1.html#cb3-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">nrow =</span> <span class="fu">nrow</span>(ras),</span>
+<span id="cb3-7"><a href="part1.html#cb3-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">resolution =</span> <span class="fu">unique</span>(<span class="fu">res</span>(ras)),</span>
+<span id="cb3-8"><a href="part1.html#cb3-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">roughness =</span> <span class="fl">0.5</span>, </span>
+<span id="cb3-9"><a href="part1.html#cb3-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">rand_dev =</span> <span class="dv">100</span>,</span>
+<span id="cb3-10"><a href="part1.html#cb3-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">rescale =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb3-11"><a href="part1.html#cb3-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">verbose =</span> <span class="cn">FALSE</span></span>
+<span id="cb3-12"><a href="part1.html#cb3-12" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb3-13"><a href="part1.html#cb3-13" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-14"><a href="part1.html#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(abund_outputs)</span>
+<span id="cb3-15"><a href="part1.html#cb3-15" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 <p>Set the length of the simulation (or simply the number of model iterations), run it and plot results (all ABUNDANCE plots together):</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="part1.html#cb4-1" aria-hidden="true" tabindex="-1"></a>Time <span class="ot">&lt;-</span> <span class="dv">10</span></span>
-<span id="cb4-2"><a href="part1.html#cb4-2" aria-hidden="true" tabindex="-1"></a>abundance <span class="ot">&lt;-</span> <span class="fu">abundance_model</span>(<span class="at">r =</span> r, <span class="at">Time =</span> Time)</span>
+<span id="cb4-2"><a href="part1.html#cb4-2" aria-hidden="true" tabindex="-1"></a>abundance <span class="ot">&lt;-</span> <span class="fu">abundance_model</span>(<span class="at">ras =</span> r, <span class="at">Time =</span> Time)</span>
 <span id="cb4-3"><a href="part1.html#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dev</span>()</span>
 <span id="cb4-4"><a href="part1.html#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">stack</span>(abundance))</span></code></pre></div>
 <p><img src="Part1_DummyModel_files/figure-html/the_r_way_simulation_length-1.png" width="672" /></p>
@@ -306,31 +296,31 @@ In this example, we introduce <code>SpaDES</code> features that we most commonly
 <div id="temperature-simulations" class="section level3 hasAnchor" number="1.1.3">
 <h3><span class="header-section-number">1.1.3</span> Temperature “simulations”<a href="part1.html#temperature-simulations" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>The temperature simulation model will be similar to the vegetation one - remember this is a dummy example.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="part1.html#cb5-1" aria-hidden="true" tabindex="-1"></a>temp_model <span class="ot">&lt;-</span> <span class="cf">function</span>(r, Time) {</span>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="part1.html#cb5-1" aria-hidden="true" tabindex="-1"></a>temperature_model <span class="ot">&lt;-</span> <span class="cf">function</span>(ras, Time) {</span>
 <span id="cb5-2"><a href="part1.html#cb5-2" aria-hidden="true" tabindex="-1"></a>  temp_outputs <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
 <span id="cb5-3"><a href="part1.html#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>Time) { </span>
-<span id="cb5-4"><a href="part1.html#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># temp_outputs[[t]] &lt;- gaussMap(r, scale = 100, var = 0.1) ## RandomFields no longer available</span></span>
-<span id="cb5-5"><a href="part1.html#cb5-5" aria-hidden="true" tabindex="-1"></a>    temp_outputs[[t]] <span class="ot">&lt;-</span> NLMR<span class="sc">::</span><span class="fu">nlm_mpd</span>(</span>
-<span id="cb5-6"><a href="part1.html#cb5-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">ncol =</span> <span class="fu">ncol</span>(r),</span>
-<span id="cb5-7"><a href="part1.html#cb5-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">nrow =</span> <span class="fu">nrow</span>(r),</span>
-<span id="cb5-8"><a href="part1.html#cb5-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">resolution =</span> <span class="fu">unique</span>(<span class="fu">res</span>(r)),</span>
-<span id="cb5-9"><a href="part1.html#cb5-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">roughness =</span> <span class="fl">0.5</span>, <span class="do">## </span><span class="al">TODO</span><span class="do">: adjust to approximate gaussMap version</span></span>
-<span id="cb5-10"><a href="part1.html#cb5-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">rand_dev =</span> <span class="dv">10</span>,</span>
-<span id="cb5-11"><a href="part1.html#cb5-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">rescale =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb5-12"><a href="part1.html#cb5-12" aria-hidden="true" tabindex="-1"></a>      <span class="at">verbose =</span> <span class="cn">FALSE</span></span>
-<span id="cb5-13"><a href="part1.html#cb5-13" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb5-14"><a href="part1.html#cb5-14" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb5-15"><a href="part1.html#cb5-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(temp_outputs)</span>
-<span id="cb5-16"><a href="part1.html#cb5-16" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<span id="cb5-4"><a href="part1.html#cb5-4" aria-hidden="true" tabindex="-1"></a>    temp_outputs[[t]] <span class="ot">&lt;-</span> NLMR<span class="sc">::</span><span class="fu">nlm_mpd</span>(</span>
+<span id="cb5-5"><a href="part1.html#cb5-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">ncol =</span> <span class="fu">ncol</span>(ras),</span>
+<span id="cb5-6"><a href="part1.html#cb5-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">nrow =</span> <span class="fu">nrow</span>(ras),</span>
+<span id="cb5-7"><a href="part1.html#cb5-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">resolution =</span> <span class="fu">unique</span>(<span class="fu">res</span>(ras)),</span>
+<span id="cb5-8"><a href="part1.html#cb5-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">roughness =</span> <span class="fl">0.5</span>,</span>
+<span id="cb5-9"><a href="part1.html#cb5-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">rand_dev =</span> <span class="dv">10</span>,</span>
+<span id="cb5-10"><a href="part1.html#cb5-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">rescale =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb5-11"><a href="part1.html#cb5-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">verbose =</span> <span class="cn">FALSE</span></span>
+<span id="cb5-12"><a href="part1.html#cb5-12" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-13"><a href="part1.html#cb5-13" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb5-14"><a href="part1.html#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(temp_outputs)</span>
+<span id="cb5-15"><a href="part1.html#cb5-15" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 <p>Run the model and plot results (all temperature plots together)</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="part1.html#cb6-1" aria-hidden="true" tabindex="-1"></a>temperature <span class="ot">&lt;-</span> <span class="fu">temp_model</span>(<span class="at">r =</span> r, <span class="at">Time =</span> Time)</span>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="part1.html#cb6-1" aria-hidden="true" tabindex="-1"></a>temperature <span class="ot">&lt;-</span> <span class="fu">temperature_model</span>(<span class="at">ras =</span> r, <span class="at">Time =</span> Time)</span>
 <span id="cb6-2"><a href="part1.html#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">stack</span>(temperature))</span></code></pre></div>
 <p><img src="Part1_DummyModel_files/figure-html/the_r_way_plot_results_TMP-1.png" width="672" /></p>
 </div>
 <div id="data-analysis" class="section level3 hasAnchor" number="1.1.4">
 <h3><span class="header-section-number">1.1.4</span> Data analysis<a href="part1.html#data-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Now we analyse if species abundance and temperature are correlated.<br />
-First, we create the data analysis function (a simple linear model):</p>
+</p>
+<p>First, we create the data analysis function (a simple linear model):</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="part1.html#cb7-1" aria-hidden="true" tabindex="-1"></a>stats_analysis <span class="ot">&lt;-</span> <span class="cf">function</span>(Data) {</span>
 <span id="cb7-2"><a href="part1.html#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">all</span>(<span class="fu">c</span>(<span class="st">&quot;abund&quot;</span>, <span class="st">&quot;temp&quot;</span>) <span class="sc">%in%</span> <span class="fu">colnames</span>(Data))) {</span>
 <span id="cb7-3"><a href="part1.html#cb7-3" aria-hidden="true" tabindex="-1"></a>    lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(abund <span class="sc">~</span> temp, <span class="at">data =</span> Data)</span>
@@ -346,10 +336,13 @@ First, we create the data analysis function (a simple linear model):</p>
 <span id="cb7-13"><a href="part1.html#cb7-13" aria-hidden="true" tabindex="-1"></a>  }</span>
 <span id="cb7-14"><a href="part1.html#cb7-14" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 <p>Then we create a loop to analyse each plot of our time-series:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="part1.html#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>Time) {</span>
-<span id="cb8-2"><a href="part1.html#cb8-2" aria-hidden="true" tabindex="-1"></a>  outputdata <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">abund =</span> abundance[[t]][], <span class="at">temp =</span> temperature[[t]][])</span>
-<span id="cb8-3"><a href="part1.html#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stats_analysis</span>(<span class="at">Data =</span> outputdata)</span>
-<span id="cb8-4"><a href="part1.html#cb8-4" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="part1.html#cb8-1" aria-hidden="true" tabindex="-1"></a>lmPlots <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb8-2"><a href="part1.html#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>Time) {</span>
+<span id="cb8-3"><a href="part1.html#cb8-3" aria-hidden="true" tabindex="-1"></a>  outputdata <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">abund =</span> abundance[[t]][], <span class="at">temp =</span> temperature[[t]][])</span>
+<span id="cb8-4"><a href="part1.html#cb8-4" aria-hidden="true" tabindex="-1"></a>  lmPlots[[t]] <span class="ot">&lt;-</span> <span class="fu">stats_analysis</span>(<span class="at">Data =</span> outputdata)</span>
+<span id="cb8-5"><a href="part1.html#cb8-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb8-6"><a href="part1.html#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggarrange</span>(<span class="at">plotlist =</span> lmPlots)</span></code></pre></div>
+<p><img src="Part1_DummyModel_files/figure-html/data_analysis-1.png" width="672" /></p>
 </div>
 </div>
 <div id="after-spades" class="section level2 hasAnchor" number="1.2">
@@ -359,7 +352,7 @@ First, we create the data analysis function (a simple linear model):</p>
 <p>Let us now solve the same problem using the <code>SpaDES</code> approach.
 We start by creating an <em>.R</em> script (it can have any name) that sets up and runs the <code>SpaDES</code> model.
 The control script for this example is located on the root of the <em>SpaDES4Dummies</em> GitHub repository under the name <code>Part1_DummyModel.R</code>.
-Note that Markdown (<code>.Rmd</code>) scripts can also be used instead of R scripts.</p>
+Note that Markdown (<code>.Rmd</code>) scripts can also be used instead of `.R` scripts.</p>
 <p>We start by making sure all <code>SpaDES</code> packages and they dependencies are installed and up to date using <code>SpaDES.install::installSpaDES</code>.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="part1.html#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="do">## start again from a clean R session</span></span>
 <span id="cb9-2"><a href="part1.html#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">repos =</span> <span class="fu">c</span>(<span class="at">CRAN =</span> <span class="st">&quot;https://cloud.r-project.org&quot;</span>),</span>
@@ -425,18 +418,18 @@ We will not be using either of them in this example.</p>
 <p>The module template contains all the essential components of a module, with examples, and may seem overwhelming at first.
 We’ll go through it step by step (although not necessarily following the order of the script).
 The module script can be divided into 4 parts:</p>
-<p>[Defining the Module]: this is where the module is <strong>defined</strong>, i.e., the module’s metadata (e.g. module author(s), time units, basic parameters, general inputs and outputs, etc.);</p>
-<p>[Events and event functions]: these are the “actions” (or events) executed in the module (i.e. species reproduction, plotting, saving parameters) - simply put, <strong>WHAT</strong> the module does;</p>
-<p>[Scheduling Events]: this is how <code>SpaDES</code> schedules when each event is going to happen - in which order (e.g. during the simulation, when will <code>SpaDES</code> plot a graph) - simply put, <strong>WHEN</strong> the module does it;</p>
-<p>[Additional module functions]: any additional functions needed (e.g. this is used to keep the coding of your module as clear and straightforward as possible);</p>
+<p><a href="part1.html#defining-the-module"><strong>Defining the module</strong></a>: this is where the module is <strong>defined</strong>, i.e., the module’s metadata (e.g. module author(s), time units, basic parameters, general inputs and outputs, etc.);</p>
+<p><a href="part1.html#events-and-event-functions"><strong>Events and event functions</strong></a>: these are the “actions” (or events) executed in the module (i.e. species reproduction, plotting, saving parameters) - simply put, <strong>WHAT</strong> the module does;</p>
+<p><a href="part1.html#scheduling-events"><strong>Scheduling events</strong></a>: this is how <code>SpaDES</code> schedules when each event is going to happen - in which order (e.g. during the simulation, when will <code>SpaDES</code> plot a graph) - simply put, <strong>WHEN</strong> the module does it;</p>
+<p><a href="part1.html#additional-module-functions"><strong>Additional module functions</strong></a>: any additional functions needed (e.g. this is used to keep the coding of your module as clear and straightforward as possible);</p>
 <p>The first thing to note is that <strong>the user does not need to manually run</strong> any of the code inside a module’s <code>.R</code> script.
 The function <code>simInit()</code> will do so when it sets up the simulation.
 We will see this see this later in detail.</p>
 <div id="defining-the-module" class="section level4 hasAnchor" number="1.2.2.1">
-<h4><span class="header-section-number">1.2.2.1</span> <strong>Defining the Module</strong><a href="part1.html#defining-the-module" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<h4><span class="header-section-number">1.2.2.1</span> <strong>Defining the module</strong><a href="part1.html#defining-the-module" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>The first section of the script is defines the module’s <a href="https://data-informed.com/what-is-metadata-a-simple-guide-to-what-everyone-should-know/">metadata</a>.
 It allows defining the module’s author, keywords, any required packages and module(s) and their versions, but also parameters (and their default values) and input objects that the module requires, and the output objects it creates.</p>
-<p>Although this dummy module example requires no true input data, we will define the template raster R as an “input” in the <code>expectsInput</code> function, and provide a default object in <code>.inputObjects</code> (see below).
+<p>Although this dummy module example requires no true input data, we will define the template raster `r` as an “input” in the <code>expectsInput</code> function, and provide a default object in <code>.inputObjects</code> (see below).
 As for the outputs, it produces a list of abundance rasters (produced during the <code>abundanceSim</code> event).
 So we define it as an output in the<code>createsOutput</code> function.</p>
 <p>Note that we removed several parameters that come with the template created by the <code>newModule</code> function, as they are not needed for this example.</p>
@@ -502,7 +495,7 @@ Each of these events can execute one or more functions.</p>
 Unlike the <code>init</code> event, which must always be present, the function itself does not need to exist (see [Scheduling events]) and can have whatever name we want.</p>
 <p>Usually, this function will does pre-simulation steps that are only need to be executed once.
 In our dummy example, it creates a template raster and a storage list for our species abundance outputs (which will also be rasters).
-Notice that the only argument to <code>abundanceInit</code> is the <code>sim</code> <code>simList</code> object, which is also its only output.</p>
+Notice that the only argument to <code>abundanceInit</code> is <code>sim</code>, a <code>simList</code> object that is also its only output.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="part1.html#cb11-1" aria-hidden="true" tabindex="-1"></a>abundanceInit <span class="ot">&lt;-</span> <span class="cf">function</span>(sim) {</span>
 <span id="cb11-2"><a href="part1.html#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="do">## create storage list of species abundance</span></span>
 <span id="cb11-3"><a href="part1.html#cb11-3" aria-hidden="true" tabindex="-1"></a>  sim<span class="sc">$</span>abundRasters <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
@@ -594,7 +587,7 @@ For instance, we know that plotting should occur after the generation of species
 <p>We suggest having a look at <code>?base::switch</code> too fully understand its behaviour.
 In short, <code>base::switch</code> tells R to execute (or switch) different code depending on the value of <code>EXPR</code> (here <code>eventType</code>).
 Here, this means that the behaviour of the function <code>doEvent.speciesAbundance</code> will change depending on the present <code>eventType</code>.
-So we need to define what behaviour it should have for each the event type defined in the module - namely, which functions will be executed and whether to schedule future events with <code>scheduleEvent</code>.</p>
+So we need to define what behaviour it should have for each event type defined in the module - namely, which functions will be executed and whether to schedule future events with <code>scheduleEvent</code>.</p>
 <div id="init" class="section level5 hasAnchor" number="1.2.2.3.1">
 <h5><span class="header-section-number">1.2.2.3.1</span> <strong>init</strong><a href="part1.html#init" class="anchor-section" aria-label="Anchor link to header"></a></h5>
 <p>The first event is, obviously, <code>init</code> - again <strong>its name cannot be changed</strong>.</p>
@@ -625,9 +618,10 @@ This way, future events will occur depending on the time step and plot interval 
 <h4><span class="header-section-number">1.2.2.4</span> <strong><code>.inputObjects</code> function</strong><a href="part1.html#inputobjects-function" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>The end of the template <code>.R</code> script defines a function called <code>.inputObjects</code>.
 This is where the developer should include code to provide the defaults for any input objects required by the module.
-This is the ideal place to produce the R template raster, instead of in <code>abundanceInit</code>, as it would allow a future user (or module) to provide their own R template (e.g. for another study area).
-At it is, any R supplied by the user or another module will be overridden by the execution of the <code>init</code> event.</p>
-<p>Default inputs should be supplied in a way that allows these defaults to be overridden by the user (by supplying a named list of objects via <code>simInit(objects = ...)</code>) or by any other modules that produce these objects.
+This is the ideal place to produce the template raster, <code>r</code> , instead of doing so in <code>abundanceInit</code>.
+This will allow a future user (or module) to provide their own <code>r</code> object (e.g. for another study area).
+If on the other hand we don’t do this and create <code>r</code> during the <code>init</code> event, any <code>r</code> supplied by the user will be overridden by the execution of <code>init</code>.</p>
+<p>As a rule of thumb, default inputs should be created in a way that allows their values to be overridden by the user (by supplying a named list of objects via <code>simInit(objects = ...)</code>) or by any other modules that produce these objects.
 For this, we rely on the <code>SpaDES.core::suppliedElsewhere</code> function, which detects if a given object has already been supplied by the user or if it will be supplied by another module.</p>
 <p>Note that <code>suppliedElsewhere</code> does not know whether the module that supplies the object will be executed <em>before</em> the present module, as it is blind to module scheduling order.
 When modules are relatively simple and have an approximately linear flow of interdependencies, <code>SpaDES</code> is usually able to tell the order in which modules need to be executed.
@@ -640,7 +634,7 @@ In more complex cases it is a good idea to pass a vector of module names to <cod
 <span id="cb15-5"><a href="part1.html#cb15-5" aria-hidden="true" tabindex="-1"></a>  }</span>
 <span id="cb15-6"><a href="part1.html#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">invisible</span>(sim))</span>
 <span id="cb15-7"><a href="part1.html#cb15-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
-<p>If we chose to supply the default R in <code>.inputObjects</code>, then we should remove its creation from the <code>abundanceInit</code> function and add it to the metadata as an input.
+<p>If we choose to supply the default <code>r</code> in <code>.inputObjects</code>, then we need remove its creation from the <code>abundanceInit</code> function and add <code>r</code> to the metadata as an input.
 We have done this, so that <code>abundanceInit</code> only creates a storage list for the outputs:</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="part1.html#cb16-1" aria-hidden="true" tabindex="-1"></a>abundanceInit <span class="ot">&lt;-</span> <span class="cf">function</span>(sim) {</span>
 <span id="cb16-2"><a href="part1.html#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="do">## create storage list of species abundance</span></span>
@@ -651,7 +645,7 @@ We have done this, so that <code>abundanceInit</code> only creates a storage lis
 <p>It is good practice to provide default input objects to all remaining modules, so that they can work stand-alone.
 We have done this below.</p>
 <p><strong>/!\ ATTENTION /!\</strong></p>
-<p><em>If R becomes an input with defaults it must be <strong>added to the module metadata</strong> inside an <code>expectsInput</code> call.</em></p>
+<p><em>If <code>r</code> becomes an input with defaults it must be <strong>added to the module metadata</strong> inside an <code>expectsInput</code> call.</em></p>
 </div>
 <div id="additional-module-functions" class="section level4 hasAnchor" number="1.2.2.5">
 <h4><span class="header-section-number">1.2.2.5</span> <strong>Additional module functions</strong><a href="part1.html#additional-module-functions" class="anchor-section" aria-label="Anchor link to header"></a></h4>
@@ -671,7 +665,7 @@ Here we provide a description of the function, its parameters, returning value a
 <span id="cb17-9"><a href="part1.html#cb17-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">ncol =</span> <span class="fu">ncol</span>(ras),</span>
 <span id="cb17-10"><a href="part1.html#cb17-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">nrow =</span> <span class="fu">nrow</span>(ras),</span>
 <span id="cb17-11"><a href="part1.html#cb17-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">resolution =</span> <span class="fu">unique</span>(<span class="fu">res</span>(ras)),</span>
-<span id="cb17-12"><a href="part1.html#cb17-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">roughness =</span> <span class="fl">0.5</span>, <span class="do">## </span><span class="al">TODO</span><span class="do">: adjust to approximate gaussMap version</span></span>
+<span id="cb17-12"><a href="part1.html#cb17-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">roughness =</span> <span class="fl">0.5</span>,</span>
 <span id="cb17-13"><a href="part1.html#cb17-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">rand_dev =</span> <span class="dv">100</span>,</span>
 <span id="cb17-14"><a href="part1.html#cb17-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">rescale =</span> <span class="cn">TRUE</span>,</span>
 <span id="cb17-15"><a href="part1.html#cb17-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">verbose =</span> <span class="cn">FALSE</span></span>
@@ -689,9 +683,9 @@ If there are no inter-module dependencies this order is determined by the order 
 This means that a module’s events can be scheduled before and after another module’s events within the same simulation time step.
 However, keep in mind that this can make the simulation flow hard to follow, debug and change when additional modules are added.</p>
 <p>The second module we created generates yearly temperatures.
-Apart from different objects and functions names, this module also has the template raster R as required input object.
-Recall that R is created during the <code>.inputObjects</code> of the <em>speciesAbundance</em> module.
-When the two modules are linked, this object will not be created twice because <code>suppliedElsewhere("r")</code> will tell the <em>temperature</em> module that R will be supplied by another module.
+Apart from different objects and functions names, this module also has the template raster <code>r</code> as required input object.
+Recall that <code>r</code> is created during the <code>.inputObjects</code> of the <em>speciesAbundance</em> module.
+When the two modules are linked, this object will not be created twice because <code>suppliedElsewhere("r")</code> will tell the <em>temperature</em> module that `r` will be supplied by another module.
 This may appear trivial in this example, but it can be extremely useful when inuts are heavy objects that require lengthy computations to be produces.</p>
 <p>This is how we set up the <code>temperature.R</code> script looks like:</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="part1.html#cb18-1" aria-hidden="true" tabindex="-1"></a></span>
@@ -814,9 +808,9 @@ This may appear trivial in this example, but it can be extremely useful when inu
 <span id="cb19-9"><a href="part1.html#cb19-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">ncol =</span> <span class="fu">ncol</span>(ras),</span>
 <span id="cb19-10"><a href="part1.html#cb19-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">nrow =</span> <span class="fu">nrow</span>(ras),</span>
 <span id="cb19-11"><a href="part1.html#cb19-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">resolution =</span> <span class="fu">unique</span>(<span class="fu">res</span>(ras)),</span>
-<span id="cb19-12"><a href="part1.html#cb19-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">roughness =</span> <span class="fl">0.5</span>, <span class="do">## </span><span class="al">TODO</span><span class="do">: adjust to approximate gaussMap version</span></span>
-<span id="cb19-13"><a href="part1.html#cb19-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">rand_dev =</span> <span class="dv">100</span>,</span>
-<span id="cb19-14"><a href="part1.html#cb19-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">rescale =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb19-12"><a href="part1.html#cb19-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">roughness =</span> <span class="fl">0.5</span>,</span>
+<span id="cb19-13"><a href="part1.html#cb19-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">rand_dev =</span> <span class="dv">10</span>,</span>
+<span id="cb19-14"><a href="part1.html#cb19-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">rescale =</span> <span class="cn">FALSE</span>,</span>
 <span id="cb19-15"><a href="part1.html#cb19-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">verbose =</span> <span class="cn">FALSE</span></span>
 <span id="cb19-16"><a href="part1.html#cb19-16" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb19-17"><a href="part1.html#cb19-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(temp_ras)</span>
@@ -1054,7 +1048,7 @@ Here we chose to list <code>.plotInitialTime</code> (a parameter used and define
 <p><strong>Module diagram</strong></p>
 <p><code>moduleDiagram</code> is a useful function that shows module inter-dependencies as a network diagram.
 The direction of the arrows indicates an output to input flow.
-You can see that <em>speciesAbundance</em> and <em>temperature</em> inputs (specifically our R raster) are supplied by an external source (“<em>INPUT</em>”) - the user or <code>.inputObjects</code>.
+You can see that <em>speciesAbundance</em> and <em>temperature</em> inputs (specifically our `r` raster) are supplied by an external source (“<em>INPUT</em>”) - the user or <code>.inputObjects</code>.
 Whereas the inputs to the <em>speciesTempLM</em> module are outputs of the <em>speciesAbundance</em> and <em>temperature</em> modules.</p>
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="part1.html#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">moduleDiagram</span>(mySim)</span></code></pre></div>
 <p><img src="Part1_DummyModel_files/figure-html/modulediagram-1.png" width="960" /></p>
@@ -1062,8 +1056,8 @@ Whereas the inputs to the <em>speciesTempLM</em> module are outputs of the <em>s
 <p><code>objectDiagram</code> provides another way of checking module linkages.
 It explicitly shows module inter-dependencies by depicting the objects that establish links between modules.</p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="part1.html#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">objectDiagram</span>(mySim)</span></code></pre></div>
-<div id="htmlwidget-fddfd674825364eec256" style="width:672px;height:480px;" class="DiagrammeR html-widget"></div>
-<script type="application/json" data-for="htmlwidget-fddfd674825364eec256">{"x":{"diagram":"sequenceDiagram\n_INPUT_ ->> speciesAbundance : r\n_INPUT_ ->> temperature : r\nspeciesAbundance ->> speciesTempLM : abundRasters\ntemperature ->> speciesTempLM : tempRasters\n"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-9ab661c87e329d6bbc23" style="width:672px;height:480px;" class="DiagrammeR html-widget"></div>
+<script type="application/json" data-for="htmlwidget-9ab661c87e329d6bbc23">{"x":{"diagram":"sequenceDiagram\n_INPUT_ ->> speciesAbundance : r\n_INPUT_ ->> temperature : r\nspeciesAbundance ->> speciesTempLM : abundRasters\ntemperature ->> speciesTempLM : tempRasters\n"},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="running-spades" class="section level4 hasAnchor" number="1.2.5.3">
 <h4><span class="header-section-number">1.2.5.3</span> Running <code>SpaDES</code><a href="part1.html#running-spades" class="anchor-section" aria-label="Anchor link to header"></a></h4>
@@ -1089,10 +1083,10 @@ The more complex the project gets, the more advantageous it is to use <code>SpaD
 <h3><span class="header-section-number">1.2.6</span> Additional notes<a href="part1.html#additional-notes" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p><code>SpaDES</code> is an extremely powerful package, whose potential goes well beyond what has been discussed in this dummy example.
 If you want to explore it further, we recommend following Part <a href="part2.html#part2">2</a> for a more realistic (but still simple) <code>SpaDES</code> application.</p>
-<p>Also, do go to the <a href="https://predictiveecology.org/"><code>SpaDES</code> webpage</a> to find further information about the platform, as well as upcoming workshops and publications and to the <a href="https://github.com/PredictiveEcology/">Predictive Ecology Github repository</a> to see all the <code>SpaDES</code> modules and SpaDES-related packages that we maintain.</p>
+<p>Also, do go to the <a href="https://spades.predictiveecology.org/"><code>SpaDES</code> webpage</a> to find further information about the platform, as well as upcoming workshops and publications and to the <a href="https://github.com/PredictiveEcology/">Predictive Ecology Github repository</a> to see all the <code>SpaDES</code> modules and SpaDES-related packages that we maintain at the <a href="https://predictiveecology.org">Predictive Ecology Lab</a>.</p>
 <hr />
 <center>
-<p><strong>Happy SpaDESing!</strong></p>
+<strong>Happy SpaDESing!</strong>
 </center>
 
 </div>

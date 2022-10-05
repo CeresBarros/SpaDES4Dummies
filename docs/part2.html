@@ -23,7 +23,7 @@
 <meta name="author" content="Ceres Barros" />
 
 
-<meta name="date" content="2022-09-26" />
+<meta name="date" content="2022-10-05" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -357,7 +357,7 @@ The <code>data.table</code> contains added information about the year of the sim
 <span id="cb28-17"><a href="part2.html#cb28-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">citation =</span> <span class="fu">list</span>(<span class="st">&quot;citation.bib&quot;</span>),</span>
 <span id="cb28-18"><a href="part2.html#cb28-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">documentation =</span> <span class="fu">list</span>(<span class="st">&quot;README.md&quot;</span>, <span class="st">&quot;speciesAbundanceData.Rmd&quot;</span>), <span class="do">## same file</span></span>
 <span id="cb28-19"><a href="part2.html#cb28-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">reqdPkgs =</span> <span class="fu">list</span>(<span class="st">&quot;PredictiveEcology/SpaDES.core@development (&gt;=1.0.10.9000)&quot;</span>,</span>
-<span id="cb28-20"><a href="part2.html#cb28-20" aria-hidden="true" tabindex="-1"></a>                  <span class="st">&quot;terra&quot;</span>, <span class="st">&quot;ggplot2&quot;</span>, <span class="st">&quot;rasterVis&quot;</span>),</span>
+<span id="cb28-20"><a href="part2.html#cb28-20" aria-hidden="true" tabindex="-1"></a>                  <span class="st">&quot;httr&quot;</span>, <span class="st">&quot;terra&quot;</span>, <span class="st">&quot;ggplot2&quot;</span>, <span class="st">&quot;rasterVis&quot;</span>),</span>
 <span id="cb28-21"><a href="part2.html#cb28-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameters =</span> <span class="fu">bindrows</span>(</span>
 <span id="cb28-22"><a href="part2.html#cb28-22" aria-hidden="true" tabindex="-1"></a>    <span class="co">#defineParameter(&quot;paramName&quot;, &quot;paramClass&quot;, value, min, max, &quot;parameter description&quot;),</span></span>
 <span id="cb28-23"><a href="part2.html#cb28-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">defineParameter</span>(<span class="st">&quot;sppAbundURL&quot;</span>, <span class="st">&quot;character&quot;</span>, </span>
@@ -441,60 +441,64 @@ The <code>data.table</code> contains added information about the year of the sim
 <span id="cb28-101"><a href="part2.html#cb28-101" aria-hidden="true" tabindex="-1"></a>  opts <span class="ot">&lt;-</span> <span class="fu">options</span>(<span class="st">&quot;reproducible.useTerra&quot;</span> <span class="ot">=</span> <span class="cn">FALSE</span>,</span>
 <span id="cb28-102"><a href="part2.html#cb28-102" aria-hidden="true" tabindex="-1"></a>                  <span class="st">&quot;reproducible.useGDAL&quot;</span> <span class="ot">=</span> <span class="cn">FALSE</span>)   </span>
 <span id="cb28-103"><a href="part2.html#cb28-103" aria-hidden="true" tabindex="-1"></a>  <span class="fu">on.exit</span>(<span class="fu">options</span>(opts), <span class="at">add =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb28-104"><a href="part2.html#cb28-104" aria-hidden="true" tabindex="-1"></a>  sppAbundanceRas <span class="ot">&lt;-</span> <span class="fu">prepInputs</span>(<span class="at">targetFile =</span> <span class="st">&quot;NFI_MODIS250m_2001_kNN_Species_Pice_Gla_v1.tif&quot;</span>,</span>
-<span id="cb28-105"><a href="part2.html#cb28-105" aria-hidden="true" tabindex="-1"></a>                                <span class="at">url =</span> <span class="fu">P</span>(sim)<span class="sc">$</span>sppAbundURL,</span>
-<span id="cb28-106"><a href="part2.html#cb28-106" aria-hidden="true" tabindex="-1"></a>                                <span class="co"># fun = &quot;terra::rast&quot;,</span></span>
-<span id="cb28-107"><a href="part2.html#cb28-107" aria-hidden="true" tabindex="-1"></a>                                <span class="co"># projectTo = sim$studyAreaRas,</span></span>
-<span id="cb28-108"><a href="part2.html#cb28-108" aria-hidden="true" tabindex="-1"></a>                                <span class="co"># cropTo = sim$studyAreaRas,</span></span>
-<span id="cb28-109"><a href="part2.html#cb28-109" aria-hidden="true" tabindex="-1"></a>                                <span class="co"># maskTo = sim$studyAreaRas,</span></span>
-<span id="cb28-110"><a href="part2.html#cb28-110" aria-hidden="true" tabindex="-1"></a>                                <span class="at">rasterToMatch =</span> raster<span class="sc">::</span><span class="fu">raster</span>(sim<span class="sc">$</span>studyAreaRas),</span>
-<span id="cb28-111"><a href="part2.html#cb28-111" aria-hidden="true" tabindex="-1"></a>                                <span class="at">maskWithRTM =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb28-112"><a href="part2.html#cb28-112" aria-hidden="true" tabindex="-1"></a>                                <span class="at">overwrite =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb28-113"><a href="part2.html#cb28-113" aria-hidden="true" tabindex="-1"></a>                                <span class="at">cacheRepo =</span> <span class="fu">cachePath</span>(sim))</span>
-<span id="cb28-114"><a href="part2.html#cb28-114" aria-hidden="true" tabindex="-1"></a>  <span class="fu">options</span>(opts)</span>
-<span id="cb28-115"><a href="part2.html#cb28-115" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">is</span>(sppAbundanceRas, <span class="st">&quot;RasterLayer&quot;</span>)) {</span>
-<span id="cb28-116"><a href="part2.html#cb28-116" aria-hidden="true" tabindex="-1"></a>    sppAbundanceRas <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">rast</span>(sppAbundanceRas)</span>
-<span id="cb28-117"><a href="part2.html#cb28-117" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb28-118"><a href="part2.html#cb28-118" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb28-119"><a href="part2.html#cb28-119" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(sppAbundanceRas) <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">&quot;year&quot;</span>, <span class="fu">time</span>(sim), <span class="at">sep =</span> <span class="st">&quot;_&quot;</span>)</span>
-<span id="cb28-120"><a href="part2.html#cb28-120" aria-hidden="true" tabindex="-1"></a>  sppAbundanceDT <span class="ot">&lt;-</span> <span class="fu">as.data.table</span>(<span class="fu">as.data.frame</span>(sppAbundanceRas, <span class="at">xy =</span> <span class="cn">TRUE</span>, <span class="at">cells =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb28-121"><a href="part2.html#cb28-121" aria-hidden="true" tabindex="-1"></a>  sppAbundanceDT[, year <span class="sc">:</span><span class="er">=</span> <span class="fu">as.integer</span>(<span class="fu">sub</span>(<span class="st">&quot;year_&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="fu">names</span>(sppAbundanceRas)))]</span>
-<span id="cb28-122"><a href="part2.html#cb28-122" aria-hidden="true" tabindex="-1"></a>  <span class="fu">setnames</span>(sppAbundanceDT, <span class="st">&quot;year_1&quot;</span>, <span class="st">&quot;sppAbund&quot;</span>)</span>
+<span id="cb28-104"><a href="part2.html#cb28-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-105"><a href="part2.html#cb28-105" aria-hidden="true" tabindex="-1"></a>  httr<span class="sc">::</span><span class="fu">with_config</span>(<span class="at">config =</span> httr<span class="sc">::</span><span class="fu">config</span>(<span class="at">ssl_verifypeer =</span> 0L), {</span>
+<span id="cb28-106"><a href="part2.html#cb28-106" aria-hidden="true" tabindex="-1"></a>    sppAbundanceRas <span class="ot">&lt;-</span> <span class="fu">prepInputs</span>(<span class="at">targetFile =</span> <span class="st">&quot;NFI_MODIS250m_2001_kNN_Species_Pice_Gla_v1.tif&quot;</span>,</span>
+<span id="cb28-107"><a href="part2.html#cb28-107" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">url =</span> <span class="fu">P</span>(sim)<span class="sc">$</span>sppAbundURL,</span>
+<span id="cb28-108"><a href="part2.html#cb28-108" aria-hidden="true" tabindex="-1"></a>                                  <span class="co"># fun = &quot;terra::rast&quot;,</span></span>
+<span id="cb28-109"><a href="part2.html#cb28-109" aria-hidden="true" tabindex="-1"></a>                                  <span class="co"># projectTo = sim$studyAreaRas,</span></span>
+<span id="cb28-110"><a href="part2.html#cb28-110" aria-hidden="true" tabindex="-1"></a>                                  <span class="co"># cropTo = sim$studyAreaRas,</span></span>
+<span id="cb28-111"><a href="part2.html#cb28-111" aria-hidden="true" tabindex="-1"></a>                                  <span class="co"># maskTo = sim$studyAreaRas,</span></span>
+<span id="cb28-112"><a href="part2.html#cb28-112" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">rasterToMatch =</span> raster<span class="sc">::</span><span class="fu">raster</span>(sim<span class="sc">$</span>studyAreaRas),</span>
+<span id="cb28-113"><a href="part2.html#cb28-113" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">maskWithRTM =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb28-114"><a href="part2.html#cb28-114" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">overwrite =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb28-115"><a href="part2.html#cb28-115" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">cacheRepo =</span> <span class="fu">cachePath</span>(sim))</span>
+<span id="cb28-116"><a href="part2.html#cb28-116" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb28-117"><a href="part2.html#cb28-117" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-118"><a href="part2.html#cb28-118" aria-hidden="true" tabindex="-1"></a>  <span class="fu">options</span>(opts)</span>
+<span id="cb28-119"><a href="part2.html#cb28-119" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-120"><a href="part2.html#cb28-120" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">is</span>(sppAbundanceRas, <span class="st">&quot;RasterLayer&quot;</span>)) {</span>
+<span id="cb28-121"><a href="part2.html#cb28-121" aria-hidden="true" tabindex="-1"></a>    sppAbundanceRas <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">rast</span>(sppAbundanceRas)</span>
+<span id="cb28-122"><a href="part2.html#cb28-122" aria-hidden="true" tabindex="-1"></a>  }</span>
 <span id="cb28-123"><a href="part2.html#cb28-123" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb28-124"><a href="part2.html#cb28-124" aria-hidden="true" tabindex="-1"></a>  <span class="do">## export to sim</span></span>
-<span id="cb28-125"><a href="part2.html#cb28-125" aria-hidden="true" tabindex="-1"></a>  sim<span class="sc">$</span>sppAbundanceRas <span class="ot">&lt;-</span> sppAbundanceRas</span>
-<span id="cb28-126"><a href="part2.html#cb28-126" aria-hidden="true" tabindex="-1"></a>  sim<span class="sc">$</span>sppAbundanceDT <span class="ot">&lt;-</span> sppAbundanceDT</span>
-<span id="cb28-127"><a href="part2.html#cb28-127" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb28-128"><a href="part2.html#cb28-128" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">invisible</span>(sim))</span>
-<span id="cb28-129"><a href="part2.html#cb28-129" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb28-130"><a href="part2.html#cb28-130" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-131"><a href="part2.html#cb28-131" aria-hidden="true" tabindex="-1"></a><span class="do">## Plotting event function </span></span>
-<span id="cb28-132"><a href="part2.html#cb28-132" aria-hidden="true" tabindex="-1"></a>abundancePlot <span class="ot">&lt;-</span> <span class="cf">function</span>(sim) {</span>
-<span id="cb28-133"><a href="part2.html#cb28-133" aria-hidden="true" tabindex="-1"></a>  <span class="do">## plot species abundance</span></span>
-<span id="cb28-134"><a href="part2.html#cb28-134" aria-hidden="true" tabindex="-1"></a>  <span class="fu">Plots</span>(sim<span class="sc">$</span>sppAbundanceRas, <span class="at">fn =</span> plotSpatRaster, <span class="at">types =</span> <span class="fu">P</span>(sim)<span class="sc">$</span>.plots,</span>
-<span id="cb28-135"><a href="part2.html#cb28-135" aria-hidden="true" tabindex="-1"></a>        <span class="at">usePlot =</span> <span class="cn">TRUE</span>, <span class="at">filename =</span> <span class="fu">file.path</span>(<span class="fu">outputPath</span>(sim), <span class="st">&quot;figures&quot;</span>, <span class="st">&quot;speciesAbundance&quot;</span>), </span>
-<span id="cb28-136"><a href="part2.html#cb28-136" aria-hidden="true" tabindex="-1"></a>        <span class="at">plotTitle =</span> <span class="st">&quot;Species abundance data&quot;</span>, <span class="at">xlab =</span> <span class="st">&quot;Longitude&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;Latitude&quot;</span>)</span>
-<span id="cb28-137"><a href="part2.html#cb28-137" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb28-138"><a href="part2.html#cb28-138" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">invisible</span>(sim))</span>
-<span id="cb28-139"><a href="part2.html#cb28-139" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb28-140"><a href="part2.html#cb28-140" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-141"><a href="part2.html#cb28-141" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-142"><a href="part2.html#cb28-142" aria-hidden="true" tabindex="-1"></a>.inputObjects <span class="ot">&lt;-</span> <span class="cf">function</span>(sim) {</span>
-<span id="cb28-143"><a href="part2.html#cb28-143" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb28-144"><a href="part2.html#cb28-144" aria-hidden="true" tabindex="-1"></a>  <span class="co">#cacheTags &lt;- c(currentModule(sim), &quot;function:.inputObjects&quot;) ## uncomment this if Cache is being used</span></span>
-<span id="cb28-145"><a href="part2.html#cb28-145" aria-hidden="true" tabindex="-1"></a>  dPath <span class="ot">&lt;-</span> <span class="fu">asPath</span>(<span class="fu">getOption</span>(<span class="st">&quot;reproducible.destinationPath&quot;</span>, <span class="fu">dataPath</span>(sim)), <span class="dv">1</span>)</span>
-<span id="cb28-146"><a href="part2.html#cb28-146" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="fu">currentModule</span>(sim), <span class="st">&quot;: using dataPath &#39;&quot;</span>, dPath, <span class="st">&quot;&#39;.&quot;</span>)</span>
-<span id="cb28-147"><a href="part2.html#cb28-147" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb28-148"><a href="part2.html#cb28-148" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ! ----- EDIT BELOW ----- ! #</span></span>
-<span id="cb28-149"><a href="part2.html#cb28-149" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb28-150"><a href="part2.html#cb28-150" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">suppliedElsewhere</span>(sim<span class="sc">$</span>studyAreaRas)) {</span>
-<span id="cb28-151"><a href="part2.html#cb28-151" aria-hidden="true" tabindex="-1"></a>    <span class="do">## code check: did the user supply a study area?</span></span>
-<span id="cb28-152"><a href="part2.html#cb28-152" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">&quot;Please supply a &#39;studyAreaRas&#39; SpatRaster&quot;</span>)</span>
-<span id="cb28-153"><a href="part2.html#cb28-153" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb28-154"><a href="part2.html#cb28-154" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb28-155"><a href="part2.html#cb28-155" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ! ----- STOP EDITING ----- ! #</span></span>
-<span id="cb28-156"><a href="part2.html#cb28-156" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">invisible</span>(sim))</span>
-<span id="cb28-157"><a href="part2.html#cb28-157" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<span id="cb28-124"><a href="part2.html#cb28-124" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(sppAbundanceRas) <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">&quot;year&quot;</span>, <span class="fu">time</span>(sim), <span class="at">sep =</span> <span class="st">&quot;_&quot;</span>)</span>
+<span id="cb28-125"><a href="part2.html#cb28-125" aria-hidden="true" tabindex="-1"></a>  sppAbundanceDT <span class="ot">&lt;-</span> <span class="fu">as.data.table</span>(<span class="fu">as.data.frame</span>(sppAbundanceRas, <span class="at">xy =</span> <span class="cn">TRUE</span>, <span class="at">cells =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb28-126"><a href="part2.html#cb28-126" aria-hidden="true" tabindex="-1"></a>  sppAbundanceDT[, year <span class="sc">:</span><span class="er">=</span> <span class="fu">as.integer</span>(<span class="fu">sub</span>(<span class="st">&quot;year_&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="fu">names</span>(sppAbundanceRas)))]</span>
+<span id="cb28-127"><a href="part2.html#cb28-127" aria-hidden="true" tabindex="-1"></a>  <span class="fu">setnames</span>(sppAbundanceDT, <span class="st">&quot;year_1&quot;</span>, <span class="st">&quot;sppAbund&quot;</span>)</span>
+<span id="cb28-128"><a href="part2.html#cb28-128" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-129"><a href="part2.html#cb28-129" aria-hidden="true" tabindex="-1"></a>  <span class="do">## export to sim</span></span>
+<span id="cb28-130"><a href="part2.html#cb28-130" aria-hidden="true" tabindex="-1"></a>  sim<span class="sc">$</span>sppAbundanceRas <span class="ot">&lt;-</span> sppAbundanceRas</span>
+<span id="cb28-131"><a href="part2.html#cb28-131" aria-hidden="true" tabindex="-1"></a>  sim<span class="sc">$</span>sppAbundanceDT <span class="ot">&lt;-</span> sppAbundanceDT</span>
+<span id="cb28-132"><a href="part2.html#cb28-132" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-133"><a href="part2.html#cb28-133" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">invisible</span>(sim))</span>
+<span id="cb28-134"><a href="part2.html#cb28-134" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb28-135"><a href="part2.html#cb28-135" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-136"><a href="part2.html#cb28-136" aria-hidden="true" tabindex="-1"></a><span class="do">## Plotting event function </span></span>
+<span id="cb28-137"><a href="part2.html#cb28-137" aria-hidden="true" tabindex="-1"></a>abundancePlot <span class="ot">&lt;-</span> <span class="cf">function</span>(sim) {</span>
+<span id="cb28-138"><a href="part2.html#cb28-138" aria-hidden="true" tabindex="-1"></a>  <span class="do">## plot species abundance</span></span>
+<span id="cb28-139"><a href="part2.html#cb28-139" aria-hidden="true" tabindex="-1"></a>  <span class="fu">Plots</span>(sim<span class="sc">$</span>sppAbundanceRas, <span class="at">fn =</span> plotSpatRaster, <span class="at">types =</span> <span class="fu">P</span>(sim)<span class="sc">$</span>.plots,</span>
+<span id="cb28-140"><a href="part2.html#cb28-140" aria-hidden="true" tabindex="-1"></a>        <span class="at">usePlot =</span> <span class="cn">TRUE</span>, <span class="at">filename =</span> <span class="fu">file.path</span>(<span class="fu">outputPath</span>(sim), <span class="st">&quot;figures&quot;</span>, <span class="st">&quot;speciesAbundance&quot;</span>), </span>
+<span id="cb28-141"><a href="part2.html#cb28-141" aria-hidden="true" tabindex="-1"></a>        <span class="at">plotTitle =</span> <span class="st">&quot;Species abundance data&quot;</span>, <span class="at">xlab =</span> <span class="st">&quot;Longitude&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;Latitude&quot;</span>)</span>
+<span id="cb28-142"><a href="part2.html#cb28-142" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-143"><a href="part2.html#cb28-143" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">invisible</span>(sim))</span>
+<span id="cb28-144"><a href="part2.html#cb28-144" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb28-145"><a href="part2.html#cb28-145" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-146"><a href="part2.html#cb28-146" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-147"><a href="part2.html#cb28-147" aria-hidden="true" tabindex="-1"></a>.inputObjects <span class="ot">&lt;-</span> <span class="cf">function</span>(sim) {</span>
+<span id="cb28-148"><a href="part2.html#cb28-148" aria-hidden="true" tabindex="-1"></a>  <span class="co">#cacheTags &lt;- c(currentModule(sim), &quot;function:.inputObjects&quot;) ## uncomment this if Cache is being used</span></span>
+<span id="cb28-149"><a href="part2.html#cb28-149" aria-hidden="true" tabindex="-1"></a>  dPath <span class="ot">&lt;-</span> <span class="fu">asPath</span>(<span class="fu">getOption</span>(<span class="st">&quot;reproducible.destinationPath&quot;</span>, <span class="fu">dataPath</span>(sim)), <span class="dv">1</span>)</span>
+<span id="cb28-150"><a href="part2.html#cb28-150" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="fu">currentModule</span>(sim), <span class="st">&quot;: using dataPath &#39;&quot;</span>, dPath, <span class="st">&quot;&#39;.&quot;</span>)</span>
+<span id="cb28-151"><a href="part2.html#cb28-151" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-152"><a href="part2.html#cb28-152" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ! ----- EDIT BELOW ----- ! #</span></span>
+<span id="cb28-153"><a href="part2.html#cb28-153" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-154"><a href="part2.html#cb28-154" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">suppliedElsewhere</span>(sim<span class="sc">$</span>studyAreaRas)) {</span>
+<span id="cb28-155"><a href="part2.html#cb28-155" aria-hidden="true" tabindex="-1"></a>    <span class="do">## code check: did the user supply a study area?</span></span>
+<span id="cb28-156"><a href="part2.html#cb28-156" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">&quot;Please supply a &#39;studyAreaRas&#39; SpatRaster&quot;</span>)</span>
+<span id="cb28-157"><a href="part2.html#cb28-157" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb28-158"><a href="part2.html#cb28-158" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-159"><a href="part2.html#cb28-159" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ! ----- STOP EDITING ----- ! #</span></span>
+<span id="cb28-160"><a href="part2.html#cb28-160" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">invisible</span>(sim))</span>
+<span id="cb28-161"><a href="part2.html#cb28-161" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 </div>
 <div id="climatedata-module" class="section level4 hasAnchor" number="2.2.1.2">
 <h4><span class="header-section-number">2.2.1.2</span> <em>climateData</em> module:<a href="part2.html#climatedata-module" class="anchor-section" aria-label="Anchor link to header"></a></h4>
