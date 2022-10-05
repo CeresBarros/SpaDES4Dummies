@@ -229,13 +229,13 @@ The module template contains all the essential components of a module, with exam
 We'll go through it step by step (although not necessarily following the order of the script).
 The module script can be divided into 4 parts:
 
-[Defining the Module]: this is where the module is **defined**, i.e., the module's metadata (e.g. module author(s), time units, basic parameters, general inputs and outputs, etc.);
+[**Defining the Module**]: this is where the module is **defined**, i.e., the module's metadata (e.g. module author(s), time units, basic parameters, general inputs and outputs, etc.);
 
-[Events and event functions]: these are the "actions" (or events) executed in the module (i.e. species reproduction, plotting, saving parameters) - simply put, **WHAT** the module does;
+[**Events and event functions**]: these are the "actions" (or events) executed in the module (i.e. species reproduction, plotting, saving parameters) - simply put, **WHAT** the module does;
 
-[Scheduling events]: this is how `SpaDES` schedules when each event is going to happen - in which order (e.g. during the simulation, when will `SpaDES` plot a graph) - simply put, **WHEN** the module does it;
+[**Scheduling events**]: this is how `SpaDES` schedules when each event is going to happen - in which order (e.g. during the simulation, when will `SpaDES` plot a graph) - simply put, **WHEN** the module does it;
 
-[Additional module functions]: any additional functions needed (e.g. this is used to keep the coding of your module as clear and straightforward as possible);
+[**Additional module functions**]: any additional functions needed (e.g. this is used to keep the coding of your module as clear and straightforward as possible);
 
 The first thing to note is that **the user does not need to manually run** any of the code inside a module's `.R` script.
 The function `simInit()` will do so when it sets up the simulation.
