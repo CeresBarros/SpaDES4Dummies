@@ -1030,4 +1030,8 @@ Also, do go to the [`SpaDES` webpage](https://spades.predictiveecology.org/) to 
 
 ------------------------------------------------------------------------
 
-<center>**Happy SpaDESing!**</center>
+<center>
+
+**Happy SpaDESing!**
+
+</center>

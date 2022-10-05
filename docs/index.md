@@ -26,6 +26,8 @@ lof: yes
 
 # Preface {-}
 
+[![DOI](https://zenodo.org/badge/112410440.svg)](https://zenodo.org/badge/latestdoi/112410440)
+
 This guide will take you through how to make and link your own modules using `SpaDES` in two examples. Both examples draw on basic uses of statistical models in ecology, notably the relationships between environmental variables and species abundance and presence. 
 
 Part \@ref(part1) is very minimal, and uses only dummy data. It is meant to introduce you to the different components of a `SpaDES` module.
