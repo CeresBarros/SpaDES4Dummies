@@ -689,8 +689,4 @@ Also, do go to the [`SpaDES` webpage](https://predictiveecology.org/) to find fu
 
 ------------------------------------------------------------------------
 
-<center>
-
-**Happy SpaDESing!**
-
-</center>
+<center>**Happy SpaDESing!**</center>
