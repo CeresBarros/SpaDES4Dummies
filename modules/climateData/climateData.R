@@ -9,7 +9,7 @@ defineModule(sim, list(
   description = paste("Data module to prepare climate data for species distribution modelling.", 
                       "Defaults to using bioclimatic variables from Worldclim."),
   keywords = c("minimal SpaDES example", "species distribution model"),
-  authors = person("Me", email = "me@example.com", role = c("aut", "cre")),
+  authors = structure(list(list(given = c("Ceres"), family = "Barros", role = c("aut", "cre"), email = "ceres.barros@ubc.ca", comment = NULL)), class = "person"),
   childModules = character(0),
   version = list(climateData = "0.0.0.9000"),
   timeframe = as.POSIXlt(c(NA, NA)),
@@ -123,6 +123,9 @@ climateInit <- function(sim) {
                               MoreArgs = list(
                                 fun = "terra::rast",
                                 overwrite = TRUE,
+                                projectTo = sim$studyAreaRas,
+                                cropTo = sim$studyAreaRas,
+                                maskTo = sim$studyAreaRas,
                                 rasterToMatch = sim$studyAreaRas,
                                 cacheRepo = cachePath(sim)),
                               cacheRepo = cachePath(sim))
@@ -148,17 +151,24 @@ climateInit <- function(sim) {
   })
   
   ## download data - prepInputs does all the heavy-lifting of dowloading and pre-processing the layer and caches.
+  ## workaround Mar 30th 2022 cache issue with terra.
   projClimateRas <- Cache(Map, 
                           f = prepInputs,
                           url = sim$projClimateURLs$URL,
                           targetFile = sim$projClimateURLs$targetFile,
                           archive = archiveFiles,
                           MoreArgs = list(
-                            fun = "terra::rast",
                             overwrite = TRUE,
+                            fun = "raster::stack",
+                            projectTo = sim$studyAreaRas,
+                            cropTo = sim$studyAreaRas,
+                            maskTo = sim$studyAreaRas,
                             rasterToMatch = sim$studyAreaRas,
                             cacheRepo = cachePath(sim)),
                           cacheRepo = cachePath(sim))
+  if (any(sapply(projClimateRas, function(x) is(x, "RasterLayer") | is(x, "RasterStack")))){
+    projClimateRas <- lapply(projClimateRas, terra::rast)
+  }
   
   ## these rasters are different. The tif file contains all the variables in different layers
   ## so, for each variable, we need to keep only the layer of interest
@@ -225,8 +235,8 @@ climatePlot <- function(sim) {
           usePlot = FALSE,
           filename = file.path(outputPath(sim), "figures", file_name),
           xlab = "Longitude", ylab = "Latitude")
-    }, allRasters = allRasters)
-
+  }, allRasters = allRasters)
+  
   return(invisible(sim))
 }
 
@@ -248,28 +258,33 @@ climatePlot <- function(sim) {
   }
   
   if (!suppliedElsewhere(sim$baselineClimateURLs)) {
-    sim$baselineClimateURLs <- data.table(vars = c("BIO1", "BIO4", "BIO12", "BIO15"),
-                                          URL = c("https://biogeo.ucdavis.edu/data/worldclim/v2.1/base/wc2.1_2.5m_bio.zip",
-                                                  "https://biogeo.ucdavis.edu/data/worldclim/v2.1/base/wc2.1_2.5m_bio.zip",
-                                                  "https://biogeo.ucdavis.edu/data/worldclim/v2.1/base/wc2.1_2.5m_bio.zip",
-                                                  "https://biogeo.ucdavis.edu/data/worldclim/v2.1/base/wc2.1_2.5m_bio.zip"),
-                                          targetFile = c("wc2.1_2.5m_bio_1.tif", "wc2.1_2.5m_bio_4.tif", "wc2.1_2.5m_bio_12.tif", "wc2.1_2.5m_bio_15.tif"),
-                                          year = rep(1L, 4))
+    sim$baselineClimateURLs <- data.table(
+      vars = c("BIO1", "BIO4", "BIO12", "BIO15"),
+      URL = c("https://biogeo.ucdavis.edu/data/worldclim/v2.1/base/wc2.1_2.5m_bio.zip",
+              "https://biogeo.ucdavis.edu/data/worldclim/v2.1/base/wc2.1_2.5m_bio.zip",
+              "https://biogeo.ucdavis.edu/data/worldclim/v2.1/base/wc2.1_2.5m_bio.zip",
+              "https://biogeo.ucdavis.edu/data/worldclim/v2.1/base/wc2.1_2.5m_bio.zip"),
+      targetFile = c("wc2.1_2.5m_bio_1.tif", "wc2.1_2.5m_bio_4.tif", 
+                     "wc2.1_2.5m_bio_12.tif", "wc2.1_2.5m_bio_15.tif"),
+      year = rep(1L, 4)
+    )
   }
   
   if (!suppliedElsewhere(sim$projClimateURLs)) {
-    sim$projClimateURLs <- data.table(vars = rep(c("BIO1", "BIO4", "BIO12", "BIO15"), times = 4),
-                                      URL = rep(c("https://geodata.ucdavis.edu/cmip6/2.5m/CanESM5/ssp585/wc2.1_2.5m_bioc_CanESM5_ssp585_2021-2040.tif",
-                                                  "https://geodata.ucdavis.edu/cmip6/2.5m/CanESM5/ssp585/wc2.1_2.5m_bioc_CanESM5_ssp585_2041-2060.tif",
-                                                  "https://geodata.ucdavis.edu/cmip6/2.5m/CanESM5/ssp585/wc2.1_2.5m_bioc_CanESM5_ssp585_2061-2080.tif",
-                                                  "https://geodata.ucdavis.edu/cmip6/2.5m/CanESM5/ssp585/wc2.1_2.5m_bioc_CanESM5_ssp585_2081-2100.tif"),
-                                                each = 4),
-                                      targetFile = rep(c("wc2.1_2.5m_bioc_CanESM5_ssp585_2021-2040.tif",
-                                                         "wc2.1_2.5m_bioc_CanESM5_ssp585_2041-2060.tif",
-                                                         "wc2.1_2.5m_bioc_CanESM5_ssp585_2061-2080.tif",
-                                                         "wc2.1_2.5m_bioc_CanESM5_ssp585_2081-2100.tif"),
-                                                       each = 4),
-                                      year = rep(2L:5L, each = 4))
+    sim$projClimateURLs <- data.table(
+      vars = rep(c("BIO1", "BIO4", "BIO12", "BIO15"), times = 4),
+      URL = rep(c("https://geodata.ucdavis.edu/cmip6/2.5m/CanESM5/ssp585/wc2.1_2.5m_bioc_CanESM5_ssp585_2021-2040.tif",
+                  "https://geodata.ucdavis.edu/cmip6/2.5m/CanESM5/ssp585/wc2.1_2.5m_bioc_CanESM5_ssp585_2041-2060.tif",
+                  "https://geodata.ucdavis.edu/cmip6/2.5m/CanESM5/ssp585/wc2.1_2.5m_bioc_CanESM5_ssp585_2061-2080.tif",
+                  "https://geodata.ucdavis.edu/cmip6/2.5m/CanESM5/ssp585/wc2.1_2.5m_bioc_CanESM5_ssp585_2081-2100.tif"),
+                each = 4),
+      targetFile = rep(c("wc2.1_2.5m_bioc_CanESM5_ssp585_2021-2040.tif",
+                         "wc2.1_2.5m_bioc_CanESM5_ssp585_2041-2060.tif",
+                         "wc2.1_2.5m_bioc_CanESM5_ssp585_2061-2080.tif",
+                         "wc2.1_2.5m_bioc_CanESM5_ssp585_2081-2100.tif"),
+                       each = 4),
+      year = rep(2L:5L, each = 4)
+    )
   } 
   
   # ! ----- STOP EDITING ----- ! #

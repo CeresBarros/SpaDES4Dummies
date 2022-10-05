@@ -1,19 +1,19 @@
-bookdown::bs4_book:
-  css: style.css
-  theme:
-    primary: "#01665e"
-    fg: "#2b2121"
-    bg: "#ffffff"
-  footnotes_inline: false
-  repo:
-    base: https://github.com/CeresBarros/SpaDES4Dummies
-    branch: master
+# bookdown::bs4_book:
+#   css: css/style.css
+#   theme:
+#     primary: "#01665e"
+#     fg: "#2b2121"
+#     bg: "#ffffff"
+#   footnotes_inline: false
+#   repo:
+#     base: https://github.com/CeresBarros/SpaDES4Dummies
+#     branch: master
 
 bookdown::gitbook:
   description: "A `SpaDES` crash-course"
   css: style.css
   number_sections: true
-  split-bib: true
+  split-bib: false
   config:
     toc:
       collapse: section
@@ -36,21 +36,25 @@ bookdown::gitbook:
     whatsapp: false
   github-repo: https://github.com/CeresBarros/SpaDES4Dummies
 
-bookdown::epub_book: default
-
 bookdown::pdf_book:
   includes:
     in_header: latex/preamble.tex
-  keep_tex: no
-  # dev: "cairo_pdf"
+    # before_body: latex/before_body.tex
+    after_body: latex/after_body.tex
+  fig_crop: false
   latex_engine: xelatex
+  dev: "cairo_pdf"
   citation_package: biblatex
+  template: null
   reference-section-title: ""
-  # template: null
-  pandoc_args: ["--listings", "--top-level-division=chapter"] 
+  # pandoc_args: [--top-level-division=chapter, --wrap=none]
+  pandoc_args: [--top-level-division=chapter, --csl=citations/ecology-letters.csl]
   toc_depth: 3
-  toc_unnumbered: no
-  toc_appendix: yes
-  highlight: zenburn
-  
+  toc_unnumbered: false
+  toc_appendix: true
+  highlight_bw: false
+  quote_footer: ["\\VA{", "}{}"]
 
+## epub is not a fan of cross-references between chapters.
+# bookdown::epub_book:  
+#   stylesheet: css/style.css

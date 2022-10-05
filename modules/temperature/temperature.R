@@ -13,7 +13,7 @@ defineModule(sim, list(
   citation = list("citation.bib"),
   documentation = list("README.txt", "temperature.Rmd"),
   reqdPkgs = list("PredictiveEcology/SpaDES.core@development (>=1.0.10.9000)",
-                  "raster"),
+                  "raster", "achubaty/NLMR"),
    parameters = bindrows(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
     defineParameter("simulationTimeStep", "numeric", 1, NA, NA, 
@@ -41,7 +41,7 @@ doEvent.temperature = function(sim, eventTime, eventType, debug = FALSE) {
     eventType,
     init = {
       ## do stuff for this event
-      sim <- temperatureInit(sim)
+      sim <- Init(sim)
       
       ## schedule future event(s)
       sim <- scheduleEvent(sim, eventTime = start(sim), moduleName = "temperature", eventType = "SimulTemp")
@@ -50,7 +50,7 @@ doEvent.temperature = function(sim, eventTime, eventType, debug = FALSE) {
     },
     SimulTemp = {
       ## do stuff for this event
-      sim <- temperatureSim(sim)
+      sim <- update(sim)
       
       ## schedule future event(s)
       sim <- scheduleEvent(sim, eventTime = time(sim) + P(sim)$simulationTimeStep, moduleName = "temperature", 
@@ -58,7 +58,7 @@ doEvent.temperature = function(sim, eventTime, eventType, debug = FALSE) {
     },
     tempPlot = {
       ## do stuff for this event
-      sim <- temperaturePlot(sim)
+      sim <- plotting(sim)
 
       ## schedule future event(s)
       sim <- scheduleEvent(sim, eventTime = time(sim) + P(sim)$.plotInterval, moduleName = "temperature", 
@@ -71,7 +71,7 @@ doEvent.temperature = function(sim, eventTime, eventType, debug = FALSE) {
 }
 
 ## This is the 'init' event:
-temperatureInit <- function(sim) {
+Init <- function(sim) {
   ## create storage list of species temperature
   sim$tempRasters <- list()
   
@@ -79,7 +79,7 @@ temperatureInit <- function(sim) {
 }
 
 ## This is the temperature simulation event function
-temperatureSim <- function(sim) {
+update <- function(sim) {
   ## Generate temperature - our "updated data"
   sim$tempRasters[[as.character(time(sim))]] <- temperature_model(ras = sim$r)
   
@@ -87,7 +87,7 @@ temperatureSim <- function(sim) {
 }
 
 ## This is the plotting event funciton
-temperaturePlot <- function(sim) {
+plotting <- function(sim) {
   ## plot temperature
   plotTitle <- paste("Temperature\nat time",
                       names(sim$tempRasters)[length(sim$tempRasters)])

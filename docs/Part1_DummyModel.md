@@ -18,11 +18,11 @@ The example below is so minimal that it is unlikely to show the full benefits of
 However, it introduces the different parts of a module and how to link modules.
 
 Part \@ref(part2) goes a step further and uses real datasets to project species presences across a landscape in Canada.
-In this example, we introduce `SpaDES` features that we most commonly use in our work (e.g., caching and spatial data processing) and provide some coding best practices that we use ourselves (e.g., code assertions).
+In Part \@ref(part2), we introduce `SpaDES` features that we most commonly use in our work (e.g., caching and spatial data processing) and provide some coding best practices that we use ourselves (e.g., code assertions).
 
 ### Setup
 
-Load the necessary packages
+Load the necessary packages (make sure they are installed first, of course)
 
 
 ```r
@@ -31,6 +31,9 @@ library(raster)
 library(quickPlot)
 library(ggplot2)
 library(SpaDES.tools)
+library(ggpubr)
+
+remotes::install_github("achubaty/NLMR")  ## you will need this ;)
 ```
 
 And now create a raster template:
@@ -49,7 +52,15 @@ Our VERY simple "simulation" model (in form of a function) generates rasters tha
 abundance_model <- function(ras, Time) {
   abund_outputs <- list()
   for (t in 1:Time) { 
-    abund_outputs[[t]] <- gaussMap(ras, scale = 100, var = 0.03) 
+    abund_outputs[[t]] <- NLMR::nlm_mpd(
+      ncol = ncol(ras),
+      nrow = nrow(ras),
+      resolution = unique(res(ras)),
+      roughness = 0.5, 
+      rand_dev = 100,
+      rescale = TRUE,
+      verbose = FALSE
+    )
   }
   return(abund_outputs)
 }
@@ -60,12 +71,12 @@ Set the length of the simulation (or simply the number of model iterations), run
 
 ```r
 Time <- 10
-abundance <- abundance_model(r = r, Time = Time)
+abundance <- abundance_model(ras = r, Time = Time)
 dev()
 plot(stack(abundance))
 ```
 
-![](Part1_DummyModel_files/figure-latex/the_r_way_simulation_length-1.pdf)<!-- --> 
+<img src="Part1_DummyModel_files/figure-html/the_r_way_simulation_length-1.png" width="672" />
 
 ### Temperature "simulations"
 
@@ -73,10 +84,18 @@ The temperature simulation model will be similar to the vegetation one - remembe
 
 
 ```r
-temp_model <- function(r, Time) {
+temperature_model <- function(ras, Time) {
   temp_outputs <- list()
   for (t in 1:Time) { 
-    temp_outputs[[t]] <- gaussMap(r, scale = 100, var = 0.1) 
+    temp_outputs[[t]] <- NLMR::nlm_mpd(
+      ncol = ncol(ras),
+      nrow = nrow(ras),
+      resolution = unique(res(ras)),
+      roughness = 0.5,
+      rand_dev = 10,
+      rescale = FALSE,
+      verbose = FALSE
+    )
   }
   return(temp_outputs)
 }
@@ -86,15 +105,16 @@ Run the model and plot results (all temperature plots together)
 
 
 ```r
-temperature <- temp_model(r = r, Time = Time)
+temperature <- temperature_model(ras = r, Time = Time)
 plot(stack(temperature))
 ```
 
-![](Part1_DummyModel_files/figure-latex/the_r_way_plot_results_TMP-1.pdf)<!-- --> 
+<img src="Part1_DummyModel_files/figure-html/the_r_way_plot_results_TMP-1.png" width="672" />
 
 ### Data analysis
 
 Now we analyse if species abundance and temperature are correlated.\
+
 First, we create the data analysis function (a simple linear model):
 
 
@@ -119,44 +139,75 @@ Then we create a loop to analyse each plot of our time-series:
 
 
 ```r
+lmPlots <- list()
 for (t in 1:Time) {
   outputdata <- data.frame(abund = abundance[[t]][], temp = temperature[[t]][])
-  stats_analysis(Data = outputdata)
+  lmPlots[[t]] <- stats_analysis(Data = outputdata)
 }
+ggarrange(plotlist = lmPlots)
 ```
+
+<img src="Part1_DummyModel_files/figure-html/data_analysis-1.png" width="672" />
 
 ## AFTER `SpaDES`...
 
-### The controller script
+### The control script
 
 Let us now solve the same problem using the `SpaDES` approach.
 We start by creating an *.R* script (it can have any name) that sets up and runs the `SpaDES` model.
-The controller script for this example is located on the root of the *SpaDES4Dummies* GitHub repository under the name `Example1_DummyModel.R`.
-Note that Markdown (`.Rmd`) scripts can also be used instead of R scripts.
+The control script for this example is located on the root of the *SpaDES4Dummies* GitHub repository under the name `Part1_DummyModel.R`.
+Note that Markdown (`.Rmd`) scripts can also be used instead of \`.R\` scripts.
 
 We start by making sure all `SpaDES` packages and they dependencies are installed and up to date using `SpaDES.install::installSpaDES`.
 
 
 ```r
 ## start again from a clean R session
-if (!require("Require")) install.packages("Require")
-Require::Require("PredictiveEcology/SpaDES.install@development")
-SpaDES.install::installSpaDES(ask = TRUE)
+options(repos = c(CRAN = "https://cloud.r-project.org"),
+        spades.moduleCodeChecks = FALSE)
 
-library(SpaDES)  ## should automatically download all packages in the SpaDES family and their dependencies
+if (paste(R.Version()[c("major", "minor")], collapse = ".") < "4.2.1") {
+  warning(paste("dismo::maxent may create a fatal error",
+                "when using R version < v4.2.1 and from RStudio.\n", 
+                "Please upgrade R, or run this script outside of RStudio.\n",
+                "See https://github.com/rspatial/dismo/issues/13"))
+}
 
 ## decide where you're working
-mainDir <- "."
+mainPath <- "~/SpaDES4Dummies_Part1"
+pkgPath <- file.path(mainPath, "packages", version$platform,
+                     paste0(version$major, ".", strsplit(version$minor, "[.]")[[1]][1]))
+dir.create(pkgPath, recursive = TRUE)
+.libPaths(pkgPath, include.site = FALSE) ## install packages in project library (proj-lib)
 
-setPaths(cachePath = file.path(mainDir, "cache"),
-         inputPath = file.path(mainDir, "inputs"),
-         modulePath = file.path(mainDir, "modules"),
-         outputPath = file.path(mainDir, "outputs"))
+if (!"remotes" %in% installed.packages(lib.loc = pkgPath))
+  install.packages("remotes")
+
+if (!"Require" %in% installed.packages(lib.loc = pkgPath) || 
+    packageVersion("Require", lib.loc = pkgPath) < "0.1.2") {
+  remotes::install_github("PredictiveEcology/Require@86254b17ad2392de5c9e4dae6dd06a194b69a169",
+                          upgrade = FALSE, force = TRUE)
+}
+
+## use binary linux packages if on Ubuntu
+Require::setLinuxBinaryRepo()
+
+Require::Require(c("SpaDES"), require = FALSE, upgrade = FALSE, standAlone = TRUE) ## automatically downloads all packages in the SpaDES family and their dependencies
+
+library(SpaDES)
+
+## decide where you're working
+mainPath <- "."
+
+setPaths(cachePath = file.path(mainPath, "cache"),
+         inputPath = file.path(mainPath, "inputs"),
+         modulePath = file.path(mainPath, "modules"),
+         outputPath = file.path(mainPath, "outputs"))
 
 getPaths() ## check that this is what you wanted
 
 ## Let's create a self-contained module that will simulate the species' abundance for any given period of time and frequency.
-if (!dir.exists(file.path(getPaths()$modulePath, "speciesAbundance"))) {
+if (!Path.exists(file.path(getPaths()$modulePath, "speciesAbundance"))) {
   newModule(name = "speciesAbundance", path = getPaths()$modulePath)
 }
 ```
@@ -165,13 +216,15 @@ if (!dir.exists(file.path(getPaths()$modulePath, "speciesAbundance"))) {
 
 We then create modules using `newModule`.
 `newModule` creates a module folder (*speciesAbundance*) inside `/modules` that contains both the module `.R` script template, as well as the documentation template (the `.Rmd` file).
-Although we will not be discussing the `.Rmd` file, please bear in mind that this is a **fundamental** part of creating a reproducible and transparent module - check out the [Guide to Reproducible Code in Ecology and Evolution](http://www.britishecologicalsociety.org/wp-content/uploads/2017/12/guide-to-reproducible-code.pdf) from the British Ecological Society).
+Although we will not be discussing the `.Rmd` file, please bear in mind that this is a **fundamental** part of creating a reproducible and transparent module - check out the [Guide to Reproducible Code in Ecology and Evolution](https://www.britishecologicalsociety.org/wp-content/uploads/2017/12/guide-to-reproducible-code.pdf) from the British Ecological Society).
 The documentation should contain a the description of the module, its input, parameters and outputs, and potentially a reproducible examples of how the module is executed.
 
 `newModule` also created the folder `/data` where data necessary to the module can be put in, and the folder `/tests` that may contain testing scripts.
 We will not be using either of them in this example.
 
-***/!\\ ATTENTION /!\\**`newModule` should only be run once, otherwise it will replace all edits and contents of the module folder with the templates - this is why it is wrapped in an `if` statement above.*
+**/!\\ ATTENTION /!\\**
+
+*`newModule` should only be run once, otherwise it will replace all edits and contents of the module folder with the templates - this is why it is wrapped in an `if` statement above.*
 
 Now go ahead, open the `speciesAbundance.R` script and have a look at it.
 
@@ -183,24 +236,24 @@ The module template contains all the essential components of a module, with exam
 We'll go through it step by step (although not necessarily following the order of the script).
 The module script can be divided into 4 parts:
 
-[Defining the Module]: this is where the module is **defined**, i.e., the module's metadata (e.g. module author(s), time units, basic parameters, general inputs and outputs, etc.);
+[**Defining the module**]: this is where the module is **defined**, i.e., the module's metadata (e.g. module author(s), time units, basic parameters, general inputs and outputs, etc.);
 
-[Events and event functions]: these are the "actions" (or events) executed in the module (i.e. species reproduction, plotting, saving parameters) - simply put, **WHAT** the module does;
+[**Events and event functions**]: these are the "actions" (or events) executed in the module (i.e. species reproduction, plotting, saving parameters) - simply put, **WHAT** the module does;
 
-[Scheduling Events]: this is how `SpaDES` schedules when each event is going to happen - in which order (e.g. during the simulation, when will `SpaDES` plot a graph) - simply put, **WHEN** the module does it;
+[**Scheduling events**]: this is how `SpaDES` schedules when each event is going to happen - in which order (e.g. during the simulation, when will `SpaDES` plot a graph) - simply put, **WHEN** the module does it;
 
-[Additional module functions]: any additional functions needed (e.g. this is used to keep the coding of your module as clear and straightforward as possible);
+[**Additional module functions**]: any additional functions needed (e.g. this is used to keep the coding of your module as clear and straightforward as possible);
 
 The first thing to note is that **the user does not need to manually run** any of the code inside a module's `.R` script.
 The function `simInit()` will do so when it sets up the simulation.
 We will see this see this later in detail.
 
-#### **Defining the Module**
+#### **Defining the module**
 
-The first section of the script is defines the module's [metadata](http://data-informed.com/what-is-metadata-a-simple-guide-to-what-everyone-should-know/).
+The first section of the script is defines the module's [metadata](https://data-informed.com/what-is-metadata-a-simple-guide-to-what-everyone-should-know/).
 It allows defining the module's author, keywords, any required packages and module(s) and their versions, but also parameters (and their default values) and input objects that the module requires, and the output objects it creates.
 
-Although this dummy module example requires no true input data, we will define the template raster R as an "input" in the `expectsInput` function, and provide a default object in `.inputObjects` (see below).
+Although this dummy module example requires no true input data, we will define the template raster \`r\` as an "input" in the `expectsInput` function, and provide a default object in `.inputObjects` (see below).
 As for the outputs, it produces a list of abundance rasters (produced during the `abundanceSim` event).
 So we define it as an output in the`createsOutput` function.
 
@@ -210,14 +263,10 @@ To distinguish what input and output objects are in the context of a module, a g
 Another way of explaining it for objects is illustrated in Fig.
 \@ref(fig:figObj):
 
-\begin{figure}
-
-{\centering \includegraphics[width=0.8\linewidth]{obj} 
-
-}
-
-\caption{**Inputs and outputs in `SpaDES`:** Object A comes from outside of the module (e.g. from an internet URL, from data you have, or from `.inputObjects`), while Module Z produces object C. Both objects serve as an **inputs** for Module Y, which in return produce as **outputs** objects B and D, respectivelly from objects A and C. As Module Z uses a simple function *internally* to create object C, it doesn't have any inputs, such as our dummy example.}(\#fig:figObj)
-\end{figure}
+<div class="figure" style="text-align: center">
+<img src="obj.png" alt="Inputs and outputs in SpaDES: Object A comes from outside of the module (e.g. from an internet URL, from data you have, or from `.inputObjects`), while Module Z produces object C. Both objects serve as an inputs for Module Y, which in return produce as outputs objects B and D, respectivelly from objects A and C. As Module Z uses a simple function *internally* to create object C, it doesn't have any inputs, such as our dummy example." width="80%" />
+<p class="caption">(\#fig:figObj)Inputs and outputs in SpaDES: Object A comes from outside of the module (e.g. from an internet URL, from data you have, or from `.inputObjects`), while Module Z produces object C. Both objects serve as an inputs for Module Y, which in return produce as outputs objects B and D, respectivelly from objects A and C. As Module Z uses a simple function *internally* to create object C, it doesn't have any inputs, such as our dummy example.</p>
+</div>
 
 The exception to this rule are the default input objects created by the `.inputObjects` function (see [.inputObjects function]) during the `simInit` call.
 
@@ -264,7 +313,9 @@ The `SpaDES` package version suggested by the template reflects the version on y
 
 The rest of the script defines the events and their sequences for this module - remember `SpaDES` = Spatial Discrete Event Simulator - and the events themselves.
 
-***/!\\ ATTENTION /!\\**`defineModule()` is not intended to be run directly by the user -- it is run internally during a `simInit()` call (see [Simulation setup in a "global" script]). In other words, you don't run any part of a module's code directly in your session; you run `simInit()` with that module listed in the modules argument.*
+**/!\\ ATTENTION /!\\**
+
+*`defineModule()` is not intended to be run directly by the user -- it is run internally during a `simInit()` call (see [Simulation setup in a "global" script]). In other words, you don't run any part of a module's code directly in your session; you run `simInit()` with that module listed in the modules argument.*
 
 #### **Events and event functions**
 
@@ -273,7 +324,9 @@ Each of these events can execute one or more functions.
 
 *Event functions* (actual R functions) mustn't be confused with *event names*, which are the names of the events appearing in the `doEvent.<module name>`.
 
-***/!\\*** **ATTENTION */!\\*** *Event functions take only one argument, `sim` (the `SpaDES.core::simList` object that stores all objects, modules, functions, etc., of a simulation; see `?simList`) and event functions always (and only) return `sim` (using `return(invisible(sim))`).*
+**/!\\ ATTENTION /!\\**
+
+*Event functions take only one argument, `sim` (the `SpaDES.core::simList` object that stores all objects, modules, functions, etc., of a simulation; see `?simList`) and event functions always (and only) return `sim` (using `return(invisible(sim))`).*
 
 ##### *Initialisation event function*
 
@@ -282,7 +335,7 @@ Unlike the `init` event, which must always be present, the function itself does 
 
 Usually, this function will does pre-simulation steps that are only need to be executed once.
 In our dummy example, it creates a template raster and a storage list for our species abundance outputs (which will also be rasters).
-Notice that the only argument to `abundanceInit` is the `sim` `simList` object, which is also its only output.
+Notice that the only argument to `abundanceInit` is `sim`, a `simList` object that is also its only output.
 
 
 ```r
@@ -394,7 +447,7 @@ doEvent.speciesAbundance = function(sim, eventTime, eventType, debug = FALSE) {
 We suggest having a look at `?base::switch` too fully understand its behaviour.
 In short, `base::switch` tells R to execute (or switch) different code depending on the value of `EXPR` (here `eventType`).
 Here, this means that the behaviour of the function `doEvent.speciesAbundance` will change depending on the present `eventType`.
-So we need to define what behaviour it should have for each the event type defined in the module - namely, which functions will be executed and whether to schedule future events with `scheduleEvent`.
+So we need to define what behaviour it should have for each event type defined in the module - namely, which functions will be executed and whether to schedule future events with `scheduleEvent`.
 
 ##### **init**
 
@@ -426,10 +479,11 @@ This way, future events will occur depending on the time step and plot interval 
 
 The end of the template `.R` script defines a function called `.inputObjects`.
 This is where the developer should include code to provide the defaults for any input objects required by the module.
-This is the ideal place to produce the R template raster, instead of in `abundanceInit`, as it would allow a future user (or module) to provide their own R template (e.g. for another study area).
-At it is, any R supplied by the user or another module will be overridden by the execution of the `init` event.
+This is the ideal place to produce the template raster, `r` , instead of doing so in `abundanceInit`.
+This will allow a future user (or module) to provide their own `r` object (e.g. for another study area).
+If on the other hand we don't do this and create `r` during the `init` event, any `r` supplied by the user will be overridden by the execution of `init`.
 
-Default inputs should be supplied in a way that allows these defaults to be overridden by the user (by supplying a named list of objects via `simInit(objects = ...)`) or by any other modules that produce these objects.
+As a rule of thumb, default inputs should be created in a way that allows their values to be overridden by the user (by supplying a named list of objects via `simInit(objects = ...)`) or by any other modules that produce these objects.
 For this, we rely on the `SpaDES.core::suppliedElsewhere` function, which detects if a given object has already been supplied by the user or if it will be supplied by another module.
 
 Note that `suppliedElsewhere` does not know whether the module that supplies the object will be executed *before* the present module, as it is blind to module scheduling order.
@@ -449,7 +503,7 @@ Here's an example of how to do this (the commented instructions have been delete
 }
 ```
 
-If we chose to supply the default R in `.inputObjects`, then we should remove its creation from the `abundanceInit` function and add it to the metadata as an input.
+If we choose to supply the default `r` in `.inputObjects`, then we need remove its creation from the `abundanceInit` function and add `r` to the metadata as an input.
 We have done this, so that `abundanceInit` only creates a storage list for the outputs:
 
 
@@ -465,7 +519,9 @@ abundanceInit <- function(sim) {
 It is good practice to provide default input objects to all remaining modules, so that they can work stand-alone.
 We have done this below.
 
-***/!\\ ATTENTION /!\\** If R becomes an input with defaults it must be **added to the module metadata** inside an `expectsInput` call.*
+**/!\\ ATTENTION /!\\**
+
+*If `r` becomes an input with defaults it must be **added to the module metadata** inside an `expectsInput` call.*
 
 #### **Additional module functions**
 
@@ -482,9 +538,18 @@ Here we provide a description of the function, its parameters, returning value a
 #' 
 #' @param ras a raster layer used as template.
 #' @return a fake abundance raster generated as a Gaussian map with scale = 100 and variance = 0.01
-#' @import SpaDES.tools gaussMap 
+#' @import NLMR nlm_mpd
 abundance_model <- function(ras) {
-  abund_ras <- gaussMap(ras, scale = 100, var = 0.01) 
+  # abund_ras <- gaussMap(ras, scale = 100, var = 0.01) ## RandomFields no longer available
+  abund_ras <- NLMR::nlm_mpd(
+    ncol = ncol(ras),
+    nrow = nrow(ras),
+    resolution = unique(res(ras)),
+    roughness = 0.5,
+    rand_dev = 100,
+    rescale = TRUE,
+    verbose = FALSE
+  )
   return(abund_ras)
 }
 ```
@@ -494,16 +559,16 @@ abundance_model <- function(ras) {
 ### Creating and adding additional modules: the *temperature* module
 
 The order in which modules are first executed (i.e. their `init` events) can be automatically determined by inter-module dependencies (i.e. module inputs that are the outputs of other modules).
-If there are no inter-module dependencies this order is determined by the order in which the modules are listed in the `Example1_DummyModel.R` script, or via the `simInit(loadOrder = ...)` argument.
+If there are no inter-module dependencies this order is determined by the order in which the modules are listed in the `Part1_DummyModel.R` script, or via the `simInit(loadOrder = ...)` argument.
 
 After the `init` event, the module execution order follows the order of events.
 This means that a module's events can be scheduled before and after another module's events within the same simulation time step.
 However, keep in mind that this can make the simulation flow hard to follow, debug and change when additional modules are added.
 
 The second module we created generates yearly temperatures.
-Apart from different objects and functions names, this module also has the template raster R as required input object.
-Recall that R is created during the `.inputObjects` of the *speciesAbundance* module.
-When the two modules are linked, this object will not be created twice because `suppliedElsewhere("r")` will tell the *temperature* module that R will be supplied by another module.
+Apart from different objects and functions names, this module also has the template raster `r` as required input object.
+Recall that `r` is created during the `.inputObjects` of the *speciesAbundance* module.
+When the two modules are linked, this object will not be created twice because `suppliedElsewhere("r")` will tell the *temperature* module that \`r\` will be supplied by another module.
 This may appear trivial in this example, but it can be extremely useful when inuts are heavy objects that require lengthy computations to be produces.
 
 This is how we set up the `temperature.R` script looks like:
@@ -525,7 +590,7 @@ defineModule(sim, list(
   citation = list("citation.bib"),
   documentation = list("README.txt", "temperature.Rmd"),
   reqdPkgs = list("PredictiveEcology/SpaDES.core@development (>=1.0.10.9000)",
-                  "raster"),
+                  "raster", "achubaty/NLMR"),
    parameters = bindrows(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
     defineParameter("simulationTimeStep", "numeric", 1, NA, NA, 
@@ -553,7 +618,7 @@ doEvent.temperature = function(sim, eventTime, eventType, debug = FALSE) {
     eventType,
     init = {
       ## do stuff for this event
-      sim <- temperatureInit(sim)
+      sim <- Init(sim)
       
       ## schedule future event(s)
       sim <- scheduleEvent(sim, eventTime = start(sim), moduleName = "temperature", eventType = "SimulTemp")
@@ -562,7 +627,7 @@ doEvent.temperature = function(sim, eventTime, eventType, debug = FALSE) {
     },
     SimulTemp = {
       ## do stuff for this event
-      sim <- temperatureSim(sim)
+      sim <- update(sim)
       
       ## schedule future event(s)
       sim <- scheduleEvent(sim, eventTime = time(sim) + P(sim)$simulationTimeStep, moduleName = "temperature", 
@@ -570,7 +635,7 @@ doEvent.temperature = function(sim, eventTime, eventType, debug = FALSE) {
     },
     tempPlot = {
       ## do stuff for this event
-      sim <- temperaturePlot(sim)
+      sim <- plotting(sim)
 
       ## schedule future event(s)
       sim <- scheduleEvent(sim, eventTime = time(sim) + P(sim)$.plotInterval, moduleName = "temperature", 
@@ -583,7 +648,7 @@ doEvent.temperature = function(sim, eventTime, eventType, debug = FALSE) {
 }
 
 ## This is the 'init' event:
-temperatureInit <- function(sim) {
+Init <- function(sim) {
   ## create storage list of species temperature
   sim$tempRasters <- list()
   
@@ -591,7 +656,7 @@ temperatureInit <- function(sim) {
 }
 
 ## This is the temperature simulation event function
-temperatureSim <- function(sim) {
+update <- function(sim) {
   ## Generate temperature - our "updated data"
   sim$tempRasters[[as.character(time(sim))]] <- temperature_model(ras = sim$r)
   
@@ -599,7 +664,7 @@ temperatureSim <- function(sim) {
 }
 
 ## This is the plotting event funciton
-temperaturePlot <- function(sim) {
+plotting <- function(sim) {
   ## plot temperature
   plotTitle <- paste("Temperature\nat time",
                       names(sim$tempRasters)[length(sim$tempRasters)])
@@ -628,10 +693,18 @@ Again, we added an accessory `temperature_model` function in a separate script `
 #' 
 #' @param ras a raster layer used as template.
 #' @return a fake temperature raster generated as a Gaussian map with scale = 100 and variance = 0.01
-#' @import SpaDES.tools gaussMap 
-
+#' @import NLMR nlm_mpd
 temperature_model <- function(ras) {
-  temp_ras <- gaussMap(ras, scale = 100, var = 0.01) 
+  # temp_ras <- gaussMap(ras, scale = 100, var = 0.01) ## RandomFields no longer available
+  temp_ras <- NLMR::nlm_mpd(
+    ncol = ncol(ras),
+    nrow = nrow(ras),
+    resolution = unique(res(ras)),
+    roughness = 0.5,
+    rand_dev = 10,
+    rescale = FALSE,
+    verbose = FALSE
+  )
   return(temp_ras)
 }
 ```
@@ -844,7 +917,7 @@ linearModel <- function(Data){
 
 #### Simulation setup in a "global" script
 
-We can now go back to our `Example1_DummyModel.R` script and set the simulation up.
+We can now go back to our `Part1_DummyModel.R` script and set the simulation up.
 
 The function `simInit` needs a few arguments listing simulation folder directories, parameters, simulation times, modules and, optionally, input objects supplied by the user.
 `simInit` will prepare a simulation object that can later be run by the `spades` function:
@@ -857,7 +930,7 @@ The function `simInit` needs a few arguments listing simulation folder directori
     Note that because the module metadata will (or should) contain default parameter values, here we pass only parameters which we want to change with respect to their defaults.
     For instance, `.plotInterval` is used and defined in the *speciesAbundance* and *temperature* modules, but not passed to the `simInit` function because we want to use the default value.
     As a developer providing a reproducible example, we may also chose to list important and useful parameters, even if the value is the same as the default.
-    Here we chose to list `.plotInitialTime` (a parameter used and defined in the *speciesAbundance* and *temperature* modules), but provide the default value (we experimenting with it by changing its value in the `Example1_DummyModel.R`).
+    Here we chose to list `.plotInitialTime` (a parameter used and defined in the *speciesAbundance* and *temperature* modules), but provide the default value (we experimenting with it by changing its value in the `Part1_DummyModel.R`).
 
 -   `paths` contains the folder directory paths that we set earlier.
 
@@ -899,7 +972,7 @@ Before starting the simulations we should check if the modules were linked corre
 
 `moduleDiagram` is a useful function that shows module inter-dependencies as a network diagram.
 The direction of the arrows indicates an output to input flow.
-You can see that *speciesAbundance* and *temperature* inputs (specifically our R raster) are supplied by an external source ("*INPUT*") - the user or `.inputObjects`.
+You can see that *speciesAbundance* and *temperature* inputs (specifically our \`r\` raster) are supplied by an external source ("*INPUT*") - the user or `.inputObjects`.
 Whereas the inputs to the *speciesTempLM* module are outputs of the *speciesAbundance* and *temperature* modules.
 
 
@@ -907,7 +980,7 @@ Whereas the inputs to the *speciesTempLM* module are outputs of the *speciesAbun
 moduleDiagram(mySim)
 ```
 
-![](Part1_DummyModel_files/figure-latex/modulediagram-1.pdf)<!-- --> 
+<img src="Part1_DummyModel_files/figure-html/modulediagram-1.png" width="960" />
 
 **Object diagram**
 
@@ -919,7 +992,10 @@ It explicitly shows module inter-dependencies by depicting the objects that esta
 objectDiagram(mySim)
 ```
 
-![](Part1_DummyModel_files/figure-latex/eventdiagram-1.pdf)<!-- --> 
+```{=html}
+<div id="htmlwidget-9ab661c87e329d6bbc23" style="width:672px;height:480px;" class="DiagrammeR html-widget"></div>
+<script type="application/json" data-for="htmlwidget-9ab661c87e329d6bbc23">{"x":{"diagram":"sequenceDiagram\n_INPUT_ ->> speciesAbundance : r\n_INPUT_ ->> temperature : r\nspeciesAbundance ->> speciesTempLM : abundRasters\ntemperature ->> speciesTempLM : tempRasters\n"},"evals":[],"jsHooks":[]}</script>
+```
 
 #### Running `SpaDES`
 
@@ -935,14 +1011,10 @@ clearPlot()
 mySim2 <- spades(mySim, debug = TRUE)
 ```
 
-\begin{figure}
-
-{\centering \includegraphics[width=0.8\linewidth]{simul_plot} 
-
-}
-
-\caption{**Simulation plots**: Final plot of the simulation}(\#fig:figSimulationFig)
-\end{figure}
+<div class="figure" style="text-align: center">
+<img src="simul_plot.png" alt="Simulation plots: Final plot of the simulation" width="80%" />
+<p class="caption">(\#fig:figSimulationFig)Simulation plots: Final plot of the simulation</p>
+</div>
 
 We suggest experimenting with changing parameter values and trying to create and add other modules to further explore all the `SpaDES` flexibility.
 The more complex the project gets, the more advantageous it is to use `SpaDES` to turn modules *on* or *off*, swapping modules to run, e.g., different statistical analyses, or to include different data.
@@ -954,12 +1026,8 @@ The more complex the project gets, the more advantageous it is to use `SpaDES` t
 `SpaDES` is an extremely powerful package, whose potential goes well beyond what has been discussed in this dummy example.
 If you want to explore it further, we recommend following Part \@ref(part2) for a more realistic (but still simple) `SpaDES` application.
 
-Also, do go to the [`SpaDES` webpage](http://predictiveecology.org/) to find further information about the platform, as well as upcoming workshops and publications and to the [Predictive Ecology Github repository](http://https://github.com/PredictiveEcology/) to see all the `SpaDES` modules and SpaDES-related packages that we maintain.
+Also, do go to the [`SpaDES` webpage](https://spades.predictiveecology.org/) to find further information about the platform, as well as upcoming workshops and publications and to the [Predictive Ecology Github repository](https://github.com/PredictiveEcology/) to see all the `SpaDES` modules and SpaDES-related packages that we maintain at the [Predictive Ecology Lab](https://predictiveecology.org).
 
 ------------------------------------------------------------------------
 
-<center>
-
-**Happy SpaDESing!**
-
-</center>
+<center>**Happy SpaDESing!**</center>

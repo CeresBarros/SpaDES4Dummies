@@ -11,8 +11,8 @@ defineModule(sim, list(
   timeunit = "year",
   citation = list("citation.bib"),
   documentation = deparse(list("README.txt", "speciesAbundance.Rmd")),
-  reqdPkgs = list("PredictiveEcology/SpaDES.core@development (>=1.0.10.9000)",
-                  "raster", "quickPlot"),
+  reqdPkgs = list("PredictiveEcology/SpaDES.core@development (>= 1.0.10.9000)",
+                  "achubaty/NLMR", "raster", "quickPlot"),
    parameters = bindrows(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
     defineParameter("simulationTimeStep", "numeric", 1, NA, NA, 
@@ -106,7 +106,7 @@ abundancePlot <- function(sim) {
 
 
 .inputObjects <- function(sim) {
-  if(!suppliedElsewhere("r")) {
+  if (!suppliedElsewhere("r")) {
     ## make template raster if not supplied elsewhere.
     sim$r <- raster(nrows = 100, ncols = 100, xmn = -50, xmx = 50, ymn = -50, ymx = 50)
   }

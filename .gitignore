@@ -8,6 +8,8 @@
 *.tif
 *.R.save
 *.swp
+SpaDES4Dummies.*
+!SpaDES4Dummies.Rproj
 
 nul
 
@@ -18,9 +20,13 @@ packages/*
 !packages/pkgSnapshot.txt
 citations/*
 
+inputs/*
+outputs/*
 !modules/*/data/CHECKSUMS.txt
 !inputs/CHECKSUMS.txt
 !outputs/figures/
+!outputs/generalFigures/
+!outputs/*/figures/
 
 # produced vignettes
 vignettes/*.html

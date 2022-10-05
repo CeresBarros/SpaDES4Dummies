@@ -9,4 +9,5 @@ delete_merged_file: true
 rmd_files:
   - index.Rmd
   - Part1_DummyModel.Rmd
-  - Part2_SDMMaxent.Rmd
+  - Part2_SDMs.Rmd
+  - References.Rmd

@@ -9,7 +9,7 @@ defineModule(sim, list(
   description = paste("Data module to prepare tree species cover data for species distribution modelling.", 
                       "Defaults to using Canadian National Forest Inventory data."),
   keywords = c("minimal SpaDES example", "species distribution model"),
-  authors = person("Me", email = "me@example.com", role = c("aut", "cre")),
+  authors = structure(list(list(given = c("Ceres"), family = "Barros", role = c("aut", "cre"), email = "ceres.barros@ubc.ca", comment = NULL)), class = "person"),
   childModules = character(0),
   version = list(speciesAbundanceData = "0.0.0.9000"),
   timeframe = as.POSIXlt(c(NA, NA)),
@@ -17,13 +17,14 @@ defineModule(sim, list(
   citation = list("citation.bib"),
   documentation = list("README.md", "speciesAbundanceData.Rmd"), ## same file
   reqdPkgs = list("PredictiveEcology/SpaDES.core@development (>=1.0.10.9000)",
-                  "terra", "ggplot2", "rasterVis"),
+                  "httr", "terra", "ggplot2", "rasterVis"),
   parameters = bindrows(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
     defineParameter("sppAbundURL", "character", 
                     paste0("https://ftp.maps.canada.ca/pub/nrcan_rncan/Forests_Foret/",
                            "canada-forests-attributes_attributs-forests-canada/",
-                           "2001-attributes_attributs-2001/NFI_MODIS250m_2001_kNN_Species_Pice_Gla_v1.tif"), NA, NA,
+                           "2001-attributes_attributs-2001/",
+                           "NFI_MODIS250m_2001_kNN_Species_Pice_Gla_v1.tif"), NA, NA,
                     paste("URL where the first RasterLayer of species abundance resides.",
                           "This will be the abundance data used to fit the species ditribution model.",
                           "Defaults to *Picea glauca* percent cover across Canada, in 2001", 
@@ -96,17 +97,31 @@ doEvent.speciesAbundanceData = function(sim, eventTime, eventType, debug = FALSE
 ## Initialisation Event function
 abundanceInit <- function(sim) {
   ## download data - prepInputs does all the heavy-lifting of dowloading and pre-processing the layer and caches.
-  sppAbundanceRas <- prepInputs(targetFile = "NFI_MODIS250m_2001_kNN_Species_Pice_Gla_v1.tif",
-                                url = P(sim)$sppAbundURL,
-                                fun = "terra::rast",
-                                overwrite = TRUE,
-                                cacheRepo = cachePath(sim))
-  sppAbundanceRas <- project(sppAbundanceRas, sim$studyAreaRas)
-  sppAbundanceRas <- crop(sppAbundanceRas, sim$studyAreaRas)
-  sppAbundanceRas <- mask(sppAbundanceRas, sim$studyAreaRas)
+  ## there seems to be an issue masking this particular raster with `terra` and `GDAL`, so we'll not use them here.
+  opts <- options("reproducible.useTerra" = FALSE,
+                  "reproducible.useGDAL" = FALSE)   
+  on.exit(options(opts), add = TRUE)
+
+  httr::with_config(config = httr::config(ssl_verifypeer = 0L), {
+    sppAbundanceRas <- prepInputs(targetFile = "NFI_MODIS250m_2001_kNN_Species_Pice_Gla_v1.tif",
+                                  url = P(sim)$sppAbundURL,
+                                  # fun = "terra::rast",
+                                  # projectTo = sim$studyAreaRas,
+                                  # cropTo = sim$studyAreaRas,
+                                  # maskTo = sim$studyAreaRas,
+                                  rasterToMatch = raster::raster(sim$studyAreaRas),
+                                  maskWithRTM = TRUE,
+                                  overwrite = TRUE,
+                                  cacheRepo = cachePath(sim))
+  })
+  
+  options(opts)
+  
+  if (is(sppAbundanceRas, "RasterLayer")) {
+    sppAbundanceRas <- terra::rast(sppAbundanceRas)
+  }
   
   names(sppAbundanceRas) <- paste("year", time(sim), sep = "_")
-  
   sppAbundanceDT <- as.data.table(as.data.frame(sppAbundanceRas, xy = TRUE, cells = TRUE))
   sppAbundanceDT[, year := as.integer(sub("year_", "", names(sppAbundanceRas)))]
   setnames(sppAbundanceDT, "year_1", "sppAbund")
@@ -130,7 +145,6 @@ abundancePlot <- function(sim) {
 
 
 .inputObjects <- function(sim) {
-  
   #cacheTags <- c(currentModule(sim), "function:.inputObjects") ## uncomment this if Cache is being used
   dPath <- asPath(getOption("reproducible.destinationPath", dataPath(sim)), 1)
   message(currentModule(sim), ": using dataPath '", dPath, "'.")
@@ -145,4 +159,3 @@ abundancePlot <- function(sim) {
   # ! ----- STOP EDITING ----- ! #
   return(invisible(sim))
 }
-
