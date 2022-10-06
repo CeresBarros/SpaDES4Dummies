@@ -48,7 +48,7 @@ bookdown::pdf_book:
   template: null
   reference-section-title: ""
   # pandoc_args: [--top-level-division=chapter, --wrap=none]
-  pandoc_args: [--listings, --top-level-division=chapter, --csl=citations/ecology-letters.csl]
+  pandoc_args: [--top-level-division=chapter, --csl=citations/ecology-letters.csl]
   toc_depth: 3
   toc_unnumbered: false
   toc_appendix: true
