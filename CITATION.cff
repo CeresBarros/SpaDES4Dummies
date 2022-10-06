@@ -1,0 +1,16 @@
+cff-version: 1.1.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: Barros
+    given-names: Ceres
+    orcid: https://orcid.org/0000-0003-4036-977X
+  - family-names: Chubaty
+    given-names: Alex M.
+    orcid: https://orcid.org/0000-0001-7146-8135
+  - family-names: Micheletti
+    given-names: Tati
+    orcid: https://orcid.org/0000-0003-4838-8342
+
+title: SpaDES4Dummies
+version: v1.2.0
+date-released: 2022-10-05
