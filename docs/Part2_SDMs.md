@@ -1081,10 +1081,14 @@ mySimGLM <- simInit(times = simTimes, params = simParamsGLM,
                     paths = simPaths)
 ```
 
-<div class="figure" style="text-align: center">
-<img src="Part2_SDMs_files/figure-html/studyAreaCanada-1.png" alt="Study area within Canada." width="672" />
-<p class="caption">(\#fig:studyAreaCanada)Study area within Canada.</p>
-</div>
+\begin{figure}
+
+{\centering \includegraphics{Part2_SDMs_files/figure-latex/studyAreaCanada-1} 
+
+}
+
+\caption{Study area within Canada.}(\#fig:studyAreaCanada)
+\end{figure}
 
 Before running the simulation we look at the module linkage diagrams produced by `moduleDiagram` (Fig. \@ref(fig:moduleDiagram)) and `objectDiagram` (Fig. \@ref(fig:objectDiagram)) to assess whether modules are linked as expected.
 
@@ -1094,20 +1098,23 @@ moduleDiagram(mySimMaxEnt)
 objectDiagram(mySimMaxEnt)
 ```
 
-<div class="figure" style="text-align: center">
-<img src="Part2_SDMs_files/figure-html/moduleDiagram-1.png" alt="Module network diagram." width="672" />
-<p class="caption">(\#fig:moduleDiagram)Module network diagram.</p>
-</div>
+\begin{figure}
 
-<div class="figure" style="text-align: center">
+{\centering \includegraphics{Part2_SDMs_files/figure-latex/moduleDiagram-1} 
 
-```{=html}
-<div id="htmlwidget-5fcd6112aa366f77a383" style="width:672px;height:480px;" class="DiagrammeR html-widget"></div>
-<script type="application/json" data-for="htmlwidget-5fcd6112aa366f77a383">{"x":{"diagram":"sequenceDiagram\n_INPUT_ ->> climateData : baselineClimateURLs\n_INPUT_ ->> climateData : projClimateURLs\n_INPUT_ ->> climateData : studyAreaRas\n_INPUT_ ->> projectSpeciesDist : studyAreaRas\n_INPUT_ ->> speciesAbundanceData : studyAreaRas\nclimateData ->> projectSpeciesDist : climateDT\nspeciesAbundanceData ->> projectSpeciesDist : sppAbundanceDT\n"},"evals":[],"jsHooks":[]}</script>
-```
+}
 
-<p class="caption">(\#fig:objectDiagram)Module diagram showing module inter-dependencies with object names.</p>
-</div>
+\caption{Module network diagram.}(\#fig:moduleDiagram)
+\end{figure}
+
+\begin{figure}
+
+{\centering \includegraphics{Part2_SDMs_files/figure-latex/objectDiagram-1} 
+
+}
+
+\caption{Module diagram showing module inter-dependencies with object names.}(\#fig:objectDiagram)
+\end{figure}
 
 ### Simulation runs
 
@@ -1143,27 +1150,43 @@ Try to execute the `spades` call twice to see how much faster it runs after many
 
 By default the data modules (*speciesAbundanceData* and *climateData*) save figures of the input species and climate layers (Figs. \@ref(fig:figSimulationSppAbund) and \@ref(fig:figSimulationClimate), respectively).
 
-<div class="figure" style="text-align: center">
-<img src="outputs/GLM_rep1/figures/speciesAbundance.png" alt="Prediction plots. Input (ref:Pice-gla) percent cover across the landscape. Note that values are converted to (ref:PA)." width="50%" />
-<p class="caption">(\#fig:figSimulationSppAbund)Prediction plots. Input (ref:Pice-gla) percent cover across the landscape. Note that values are converted to (ref:PA).</p>
-</div>
+\begin{figure}
 
-<div class="figure" style="text-align: center">
-<img src="outputs/GLM_rep1/figures/climateRas_BIO1.png" alt="Prediction plots. Bioclimatic variables under baseline (year 1) and future conditions." width="50%" /><img src="outputs/GLM_rep1/figures/climateRas_BIO12.png" alt="Prediction plots. Bioclimatic variables under baseline (year 1) and future conditions." width="50%" /><img src="outputs/GLM_rep1/figures/climateRas_BIO15.png" alt="Prediction plots. Bioclimatic variables under baseline (year 1) and future conditions." width="50%" /><img src="outputs/GLM_rep1/figures/climateRas_BIO4.png" alt="Prediction plots. Bioclimatic variables under baseline (year 1) and future conditions." width="50%" />
-<p class="caption">(\#fig:figSimulationClimate)Prediction plots. Bioclimatic variables under baseline (year 1) and future conditions.</p>
-</div>
+{\centering \includegraphics[width=0.5\linewidth]{outputs/GLM_rep1/figures/speciesAbundance} 
+
+}
+
+\caption{Prediction plots. Input (ref:Pice-gla) percent cover across the landscape. Note that values are converted to (ref:PA).}(\#fig:figSimulationSppAbund)
+\end{figure}
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.5\linewidth]{outputs/GLM_rep1/figures/climateRas_BIO1} \includegraphics[width=0.5\linewidth]{outputs/GLM_rep1/figures/climateRas_BIO12} \includegraphics[width=0.5\linewidth]{outputs/GLM_rep1/figures/climateRas_BIO15} \includegraphics[width=0.5\linewidth]{outputs/GLM_rep1/figures/climateRas_BIO4} 
+
+}
+
+\caption{Prediction plots. Bioclimatic variables under baseline (year 1) and future conditions.}(\#fig:figSimulationClimate)
+\end{figure}
 
 The prediction module also outputs the projections for each climate period automatically (Figs. \@ref(fig:simulationProj) and \@ref(fig:simulationProj2)).
 
-<div class="figure" style="text-align: center">
-<img src="outputs/MaxEnt_rep1/figures/projRawVals_MaxEnt_Year1.png" alt="Prediction plots: Raw predicted values of species probability of occurence under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt." width="20%" /><img src="outputs/MaxEnt_rep1/figures/projRawVals_MaxEnt_Year2.png" alt="Prediction plots: Raw predicted values of species probability of occurence under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt." width="20%" /><img src="outputs/MaxEnt_rep1/figures/projRawVals_MaxEnt_Year3.png" alt="Prediction plots: Raw predicted values of species probability of occurence under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt." width="20%" /><img src="outputs/MaxEnt_rep1/figures/projRawVals_MaxEnt_Year4.png" alt="Prediction plots: Raw predicted values of species probability of occurence under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt." width="20%" /><img src="outputs/MaxEnt_rep1/figures/projRawVals_MaxEnt_Year5.png" alt="Prediction plots: Raw predicted values of species probability of occurence under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt." width="20%" />
-<p class="caption">(\#fig:simulationProj)Prediction plots: Raw predicted values of species probability of occurence under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt.</p>
-</div>
+\begin{figure}
 
-<div class="figure" style="text-align: center">
-<img src="outputs/MaxEnt_rep1/figures/projPA_MaxEnt_Year1.png" alt="Prediction plots: Predictions of (ref:Pice-gla) (ref:PA) under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt." width="20%" /><img src="outputs/MaxEnt_rep1/figures/projPA_MaxEnt_Year2.png" alt="Prediction plots: Predictions of (ref:Pice-gla) (ref:PA) under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt." width="20%" /><img src="outputs/MaxEnt_rep1/figures/projPA_MaxEnt_Year3.png" alt="Prediction plots: Predictions of (ref:Pice-gla) (ref:PA) under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt." width="20%" /><img src="outputs/MaxEnt_rep1/figures/projPA_MaxEnt_Year4.png" alt="Prediction plots: Predictions of (ref:Pice-gla) (ref:PA) under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt." width="20%" /><img src="outputs/MaxEnt_rep1/figures/projPA_MaxEnt_Year5.png" alt="Prediction plots: Predictions of (ref:Pice-gla) (ref:PA) under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt." width="20%" />
-<p class="caption">(\#fig:simulationProj2)Prediction plots: Predictions of (ref:Pice-gla) (ref:PA) under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt.</p>
-</div>
+{\centering \includegraphics[width=0.2\linewidth]{outputs/MaxEnt_rep1/figures/projRawVals_MaxEnt_Year1} \includegraphics[width=0.2\linewidth]{outputs/MaxEnt_rep1/figures/projRawVals_MaxEnt_Year2} \includegraphics[width=0.2\linewidth]{outputs/MaxEnt_rep1/figures/projRawVals_MaxEnt_Year3} \includegraphics[width=0.2\linewidth]{outputs/MaxEnt_rep1/figures/projRawVals_MaxEnt_Year4} \includegraphics[width=0.2\linewidth]{outputs/MaxEnt_rep1/figures/projRawVals_MaxEnt_Year5} 
+
+}
+
+\caption{Prediction plots: Raw predicted values of species probability of occurence under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt.}(\#fig:simulationProj)
+\end{figure}
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.2\linewidth]{outputs/MaxEnt_rep1/figures/projPA_MaxEnt_Year1} \includegraphics[width=0.2\linewidth]{outputs/MaxEnt_rep1/figures/projPA_MaxEnt_Year2} \includegraphics[width=0.2\linewidth]{outputs/MaxEnt_rep1/figures/projPA_MaxEnt_Year3} \includegraphics[width=0.2\linewidth]{outputs/MaxEnt_rep1/figures/projPA_MaxEnt_Year4} \includegraphics[width=0.2\linewidth]{outputs/MaxEnt_rep1/figures/projPA_MaxEnt_Year5} 
+
+}
+
+\caption{Prediction plots: Predictions of (ref:Pice-gla) (ref:PA) under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt.}(\#fig:simulationProj2)
+\end{figure}
 
 The projected layers can also be accessed and plotted via the `simList` object, as can the model validation results.
 
@@ -1309,10 +1332,14 @@ ggsave(file.path(figDir, "MaxEntPredictions.png"), width = 13.5, height = 5.5, u
 ```
 
 
-<div class="figure" style="text-align: center">
-<img src="outputs/generalFigures/MaxEntPredictions.png" alt="Adding a new scenario: Predictions of (ref:Pice-gla) probabilities of presences and (ref:PA) under (left to right) baseline climate conditions, 2041-2060, and 2081-2100 climate projections under two emission scenarios (SSP 136 and SSP 585, the default) -- showing MaxEnt forecasts only." width="80%" />
-<p class="caption">(\#fig:newScenariosFig)Adding a new scenario: Predictions of (ref:Pice-gla) probabilities of presences and (ref:PA) under (left to right) baseline climate conditions, 2041-2060, and 2081-2100 climate projections under two emission scenarios (SSP 136 and SSP 585, the default) -- showing MaxEnt forecasts only.</p>
-</div>
+\begin{figure}
+
+{\centering \includegraphics[width=0.8\linewidth]{outputs/generalFigures/MaxEntPredictions} 
+
+}
+
+\caption{Adding a new scenario: Predictions of (ref:Pice-gla) probabilities of presences and (ref:PA) under (left to right) baseline climate conditions, 2041-2060, and 2081-2100 climate projections under two emission scenarios (SSP 136 and SSP 585, the default) -- showing MaxEnt forecasts only.}(\#fig:newScenariosFig)
+\end{figure}
 
 ------------------------------------------------------------------------
 

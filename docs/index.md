@@ -1,12 +1,9 @@
 ---
-title: "SpaDES 4 Dummies"
+title: "SpaDES 4 Dummies guide"
 author: "Ceres Barros"
 date: "2022-10-05"
 description: "A `SpaDES` crash-course"
-documentclass: krantz
 site: bookdown::bookdown_site
-github-repo: CeresBarros/SpaDES4Dummies
-url: 'https://ceresbarros.github.io/SpaDES4Dummies/'
 knit: "bookdown::render_book"
 bibliography:
   - citations/references.bib
@@ -14,6 +11,9 @@ bibliography:
 csl: citations/ecology-letters.csl
 biblatexoptions: [citestyle=authoryear]
 link-citations: true
+documentclass: book
+github-repo: CeresBarros/SpaDES4Dummies
+url: 'https\://ceresbarros.github.io/SpaDES4Dummies/'
 always_allow_html: true
 colorlinks: yes
 graphics: yes
@@ -24,9 +24,12 @@ lof: yes
 
 
 
+
+
 # Preface {-}
 
-[![DOI](https://zenodo.org/badge/112410440.svg)](https://zenodo.org/badge/latestdoi/112410440)
+[![zenodoBadge](E:\GitHub\SpaDES4Dummies\figures\zenodoBadge.png)](https://zenodo.org/badge/latestdoi/112410440)
+
 
 This guide will take you through how to make and link your own modules using `SpaDES` in two examples. Both examples draw on basic uses of statistical models in ecology, notably the relationships between environmental variables and species abundance and presence. 
 
