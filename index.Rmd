@@ -11,7 +11,7 @@ bibliography:
 csl: citations/ecology-letters.csl
 biblatexoptions: [citestyle=authoryear]
 link-citations: true
-documentclass: book
+documentclass: latex/krantz
 github-repo: CeresBarros/SpaDES4Dummies
 url: 'https\://ceresbarros.github.io/SpaDES4Dummies/'
 always_allow_html: true
