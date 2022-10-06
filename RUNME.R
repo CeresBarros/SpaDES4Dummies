@@ -7,11 +7,13 @@ options(repos = c(CRAN = "https://cloud.r-project.org"))
 
 ## note that "rmarkdown", "bookdown", "htmlwidgets" need to be installed in the default
 ## libraries, because each .Rmd starts from a clean R session
-needPkgs <- c("rmarkdown", "bookdown", "htmlwidgets")
+needPkgs <- c("rmarkdown", "bookdown", "htmlwidgets", "tinytex")
 needPkgs <- needPkgs[!needPkgs %in% installed.packages()] 
 for (pkg in needPkgs) {
   install.packages(pkg, dependencies = TRUE)
 }
+
+tinytex::install_tinytex()
 
 pkgPath <- normalizePath(file.path("packages", version$platform,
                                    paste0(version$major, ".", strsplit(version$minor, "[.]")[[1]][1])),
