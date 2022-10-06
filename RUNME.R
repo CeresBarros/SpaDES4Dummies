@@ -46,4 +46,4 @@ Require::Require(c(unname(unlist(outs)),
                  upgrade = FALSE,   ## don't upgrade dependencies
                  standAlone = TRUE) 
 
-bookdown::render_book()
+bookdown::render_book(output_format = "all", envir = new.env())
