@@ -1,5 +1,10 @@
 *.csv
 *.log
+*.bcf
+*.lot
+*.lof
+*.out
+*.tex
 .Rapp.history
 .RData
 .Rhistory
@@ -8,7 +13,6 @@
 *.tif
 *.R.save
 *.swp
-SpaDES4Dummies.*
 !SpaDES4Dummies.Rproj
 
 nul
