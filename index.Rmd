@@ -60,9 +60,29 @@ options(bookdown.post.latex = function(x) {
 })
 ```
 
+``` {r zenodoBadgePrep, echo = FALSE, eval = TRUE, cache = FALSE}
+## try to automatically get the commit URL and the path to the badge image
+dir.create("figures", showWarnings = FALSE)
+if (!file.exists("figures/zenodoBadge.svg")) {
+  download.file(url = "https://zenodo.org/badge/112410440.svg",
+                destfile = "figures/zenodoBadge.svg",
+                mode = 'wb')
+}
+badgeURL <- "https://zenodo.org/badge/latestdoi/112410440"
+badgePath <- normalizePath("figures/zenodoBadge.svg")
+
+rsvgImage <- rsvg::rsvg(badgePath)
+png::writePNG(rsvgImage, "figures/zenodoBadge.png", dpi = 144)
+badgePath <- normalizePath("figures/zenodoBadge.png")
+```
+
 # Preface {-}
 
-[![DOI](https://zenodo.org/badge/112410440.svg)](https://zenodo.org/badge/latestdoi/112410440)
+``` {r zenodoBadge, echo = FALSE, eval = TRUE, cache = FALSE, results = "asis"}
+## make string of markdown code to be executed as-is
+cat(paste0("[![zenodoBadge](", badgePath, ")](", badgeURL, ")"))
+```
+
 
 This guide will take you through how to make and link your own modules using `SpaDES` in two examples. Both examples draw on basic uses of statistical models in ecology, notably the relationships between environmental variables and species abundance and presence. 
 
