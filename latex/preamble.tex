@@ -35,8 +35,12 @@
   \endorigfigure
 }
 
-% line break
+% line breaks
 \usepackage{listings} %% DO NOT add --listings to pandoc args in output.yml - it overrides syntax highlighting to B&W
 \lstset{
   breaklines=true
 }
+
+% line wrapping
+\usepackage{fvextra}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,breakanywhere,breakautoindent=true,breaksymbol=, commandchars=\\\{\}}
