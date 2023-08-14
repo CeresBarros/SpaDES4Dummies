@@ -257,7 +257,7 @@ Another way of explaining it for objects is illustrated in Fig.
 \@ref(fig:figObj):
 
 ```{r figObj, fig.align = 'center', warning = FALSE, message = FALSE, echo = FALSE, fig.cap = "Inputs and outputs in SpaDES: Object A comes from outside of the module (e.g. from an internet URL, from data you have, or from `.inputObjects`), while Module Z produces object C. Both objects serve as an inputs for Module Y, which in return produce as outputs objects B and D, respectivelly from objects A and C. As Module Z uses a simple function *internally* to create object C, it doesn't have any inputs, such as our dummy example.", out.width="80%"}
-knitr::include_graphics(normalizePath("obj.png", winslash = "/"))
+knitr::include_graphics(normalizePath("figures/obj.png", winslash = "/"))
 ```
 
 The exception to this rule are the default input objects created by the `.inputObjects` function (see [.inputObjects function]) during the `simInit` call.
@@ -672,7 +672,7 @@ mySim2 <- spades(mySim, debug = TRUE)
 ```
 
 ```{r figSimulationFig, fig.align = 'center', warning = FALSE, message = FALSE, echo = FALSE, fig.cap = "Simulation plots: Final plot of the simulation", out.width="80%"}
-knitr::include_graphics(normalizePath("simul_plot.png", winslash = "/"))
+knitr::include_graphics(normalizePath("figures/simul_plot.png", winslash = "/"))
 ```
 
 We suggest experimenting with changing parameter values and trying to create and add other modules to further explore all the `SpaDES` flexibility.
