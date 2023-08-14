@@ -380,7 +380,7 @@ moduleDiagram(mySimMaxEnt)
 ```
 
 ```{r objectDiagram, echo = FALSE, fig.align = 'center', fig.cap = "Module diagram showing module inter-dependencies with object names."}
-objectDiagram(mySimMaxEnt)
+knitr::include_graphics(normalizePath("figures/Part2_objectDiagram.png", winslash = "/"))
 ```
 
 ### Simulation runs

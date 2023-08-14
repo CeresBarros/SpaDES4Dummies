@@ -654,8 +654,12 @@ moduleDiagram(mySim)
 `objectDiagram` provides another way of checking module linkages.
 It explicitly shows module inter-dependencies by depicting the objects that establish links between modules.
 
-```{r eventdiagram}
+```{r objectDiagramCode, eval=FALSE}
 objectDiagram(mySim)
+```
+
+```{r objectDiagram, echo = FALSE, fig.align = 'center', fig.cap = "Module diagram showing module inter-dependencies with object names."}
+knitr::include_graphics(normalizePath("figures/Part1_objectDiagram.png", winslash = "/"))
 ```
 
 #### Running `SpaDES`
