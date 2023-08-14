@@ -45,7 +45,7 @@ It then defines the necessary folder directories for the simulation and creates 
 ```{r globalscriptPart2, eval = FALSE}
 options(repos = c(CRAN = "https://cloud.r-project.org"))
 
-if (paste(R.Version()[c("major", "minor")], collapse = ".") < "4.2.1") {
+if (getRversion() < "4.2.1") {
   warning(paste("dismo::maxent may create a fatal error",
                 "when using R version < v4.2.1 and from RStudio.\n", 
                 "Please upgrade R, or run this script outside of RStudio.\n",
@@ -53,26 +53,33 @@ if (paste(R.Version()[c("major", "minor")], collapse = ".") < "4.2.1") {
 }
 
 ## decide where you're working
-mainPath <- "~/SpaDES4Dummies_Part2"
+mainPath <- file.path("~/SpaDES4Dummies_Part2")
 pkgPath <- file.path(mainPath, "packages", version$platform,
                      paste0(version$major, ".", strsplit(version$minor, "[.]")[[1]][1]))
 dir.create(pkgPath, recursive = TRUE)
-.libPaths(pkgPath, include.site = FALSE) ## install and use packages from project library only 
+.libPaths(pkgPath, include.site = FALSE) ## install packages in project library (proj-lib)
 
 if (!"remotes" %in% installed.packages(lib.loc = pkgPath))
   install.packages("remotes")
 
-if (!"Require" %in% installed.packages(lib.loc = pkgPath) || 
-    packageVersion("Require", lib.loc = pkgPath) < "0.1.2") {
-  remotes::install_github("PredictiveEcology/Require@86254b17ad2392de5c9e4dae6dd06a194b69a169",
-                          upgrade = FALSE, force = TRUE)
+if (!"Require" %in% installed.packages(lib.loc = pkgPath) ||
+    packageVersion("Require", lib.loc = pkgPath) < "0.3.1") {
+  remotes::install_github("PredictiveEcology/Require@55ec169e654214d86be62a0e13e9a2157f1aa966",
+                          upgrade = FALSE)
 }
 
 ## use binary linux packages if on Ubuntu
 Require::setLinuxBinaryRepo()
 
-Require::Require(c("PredictiveEcology/SpaDES.project@transition", "SpaDES.core"),
-                 upgrade = FALSE, standAlone = TRUE)
+## Notes: 
+## 1) if you are working from RStudio and have an older version of base packages like `Rcpp`, `rlang` 
+## (and others) installed, you may  need to run the following lines (and code above) directly from R
+## in order to update these base packages
+## 2) Please ensure the appropriate Rtools version is installed (see)
+
+Require::Require(c("PredictiveEcology/SpaDES.project@transition (HEAD)", 
+                   "PredictiveEcology/SpaDES.core@master (HEAD)"),
+                 require = FALSE, upgrade = FALSE, standAlone = TRUE)
 
 SpaDES.core::setPaths(cachePath = file.path(mainPath, "cache"),
                       inputPath = file.path(mainPath, "inputs"),

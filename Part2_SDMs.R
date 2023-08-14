@@ -15,7 +15,7 @@ if (getRversion() < "4.2.1") {
 }
 
 ## decide where you're working
-mainPath <- file.path(tempdir(), "SpaDES4Dummies_Part2")
+mainPath <- file.path("~/SpaDES4Dummies_Part2")
 pkgPath <- file.path(mainPath, "packages", version$platform,
                      paste0(version$major, ".", strsplit(version$minor, "[.]")[[1]][1]))
 dir.create(pkgPath, recursive = TRUE)
@@ -24,16 +24,23 @@ dir.create(pkgPath, recursive = TRUE)
 if (!"remotes" %in% installed.packages(lib.loc = pkgPath))
   install.packages("remotes")
 
-if (!"Require" %in% installed.packages(lib.loc = pkgPath) || 
-    packageVersion("Require", lib.loc = pkgPath) < "0.1.2") {
-  remotes::install_github("PredictiveEcology/Require@86254b17ad2392de5c9e4dae6dd06a194b69a169",
-                          upgrade = FALSE, force = TRUE)
+if (!"Require" %in% installed.packages(lib.loc = pkgPath) ||
+    packageVersion("Require", lib.loc = pkgPath) < "0.3.1") {
+  remotes::install_github("PredictiveEcology/Require@55ec169e654214d86be62a0e13e9a2157f1aa966",
+                          upgrade = FALSE)
 }
 
 ## use binary linux packages if on Ubuntu
 Require::setLinuxBinaryRepo()
 
-Require::Require(c("PredictiveEcology/SpaDES.project@transition", "SpaDES.core"),
+## Notes: 
+## 1) if you are working from RStudio and have an older version of base packages like `Rcpp`, `rlang` 
+## (and others) installed, you may  need to run the following lines (and code above) directly from R
+## in order to update these base packages
+## 2) Please ensure the appropriate Rtools version is installed (see)
+
+Require::Require(c("PredictiveEcology/SpaDES.project@transition (HEAD)", 
+                   "PredictiveEcology/SpaDES.core@master (HEAD)"),
                  require = FALSE, upgrade = FALSE, standAlone = TRUE)
 
 SpaDES.core::setPaths(cachePath = file.path(mainPath, "cache"),
@@ -61,8 +68,11 @@ if (!dir.exists(file.path(simPaths$modulePath, "projectSpeciesDist"))) {
 ## this is a particularly useful line when sharing your packages with someone else.
 outs <- SpaDES.project::packagesInModules(modulePath = simPaths$modulePath)  ## gets list of module dependencies
 Require::Require(c(unname(unlist(outs)),
-                   "ggpubr", "PredictiveEcology/SpaDES.experiment@development",
-                   "SpaDES.tools", "DiagrammeR"), 
+                   ## and a few extra packages:
+                   "ggpubr", 
+                   "PredictiveEcology/SpaDES.experiment@development",
+                   "SpaDES.tools", 
+                   "DiagrammeR"), 
                  require = FALSE,   ## don't load packages
                  upgrade = FALSE,   ## don't upgrade dependencies
                  standAlone = TRUE) ## install all dependencies in proj-lib (ignore user/system lib)
