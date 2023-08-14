@@ -13,7 +13,10 @@ SpaDES4Dummies.*
 
 nul
 
-_bookdown_files
+## render files
+*_files
+*_cache
+
 rsconnect
 
 packages/*
