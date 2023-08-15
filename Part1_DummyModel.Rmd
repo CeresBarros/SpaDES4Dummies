@@ -182,7 +182,7 @@ setPaths(cachePath = file.path(mainPath, "cache"),
 getPaths() ## check that this is what you wanted
 
 ## Let's create a self-contained module that will simulate the species' abundance for any given period of time and frequency.
-if (!Path.exists(file.path(getPaths()$modulePath, "speciesAbundance"))) {
+if (!dir.exists(file.path(getPaths()$modulePath, "speciesAbundance"))) {
   newModule(name = "speciesAbundance", path = getPaths()$modulePath)
 }
 ```
