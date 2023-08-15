@@ -382,7 +382,7 @@ moduleDiagram(mySimMaxEnt)
 objectDiagram(mySimMaxEnt)
 ```
 
-```{r moduleDiagram, echo = FALSE, fig.align = 'center', fig.cap = "Module network diagram."}
+```{r moduleDiagram, echo = FALSE, fig.align = 'center', fig.cap = "Module network diagram.", message=FALSE, warning=FALSE}
 clearPlot()
 moduleDiagram(mySimMaxEnt)
 ```
