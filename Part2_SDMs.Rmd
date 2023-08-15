@@ -236,11 +236,13 @@ Below you will see that we attempt to warn the user about problems loading `rJav
 ```{r simulationPkgs, eval = FALSE}
 outs <- SpaDES.project::packagesInModules(modulePath = simPaths$modulePath)  ## gets list of module dependencies
 Require::Require(c(unname(unlist(outs)),
-                   "ggpubr", "PredictiveEcology/SpaDES.experiment@development",
-                   "SpaDES.tools", "DiagrammeR"), 
+                   "ggpubr", 
+                   "PredictiveEcology/SpaDES.experiment@development (HEAD)",
+                   "PredictiveEcology/SpaDES.tools@master (HEAD)"), 
                  require = FALSE,   ## don't load packages
                  upgrade = FALSE,   ## don't upgrade dependencies
-                 standAlone = TRUE) ## install all dependencies in proj-lib (ignore user/system lib)
+                 dependencies = TRUE,  ## get all dependencies
+                 standAlone = TRUE, purge = TRUE) ## install all dependencies in proj-lib (ignore user/system lib)
 
 ## dismo needs a few tweaks to run MaxEnt
 out <- reproducible::preProcess(targetFile = "maxent.jar",
@@ -304,6 +306,8 @@ We also define a few useful global options:
 -   `reproducible.useCache` and `reproducible.useTerra`, which will activate caching and the use of the `terra` package across all `Cache` and `prepInputs` function calls.
 
 ```{r simulationSetup, warning = FALSE, message = FALSE}
+Require::Require(c("SpaDES.core", "SpaDES.experiment"), install = FALSE) ## now load packages
+
 ## a few important options:
 options(reproducible.useCache = TRUE,
         reproducible.cachePath = simPaths$cachePath,
