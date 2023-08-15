@@ -345,7 +345,7 @@ simParamsGLM$projectSpeciesDist$statModel <- "GLM"
 
 ## make a random study area.
 ##  Here use seed to make sure the same study area is always generated
-studyArea <- terra::vect(SpaDES.tools::randomStudyArea(size = 1e10, seed = 123))
+studyArea <- SpaDES.tools::randomStudyArea(size = 1e10, seed = 123)
 studyAreaRas <- terra::rasterize(studyArea, 
                                  terra::rast(extent = terra::ext(studyArea), 
                                              crs = terra::crs(studyArea, proj = TRUE), 
@@ -366,7 +366,7 @@ mySimGLM <- simInit(times = simTimes, params = simParamsGLM,
 
 ```{r studyAreaCanada, echo = FALSE, fig.align = 'center', fig.cap = "Study area within Canada."}
 ## note that we need to make studyArea again because knitr cache and terra obj (which have pointers) do not work well togeher.
-studyArea <- terra::vect(SpaDES.tools::randomStudyArea(size = 1e10, seed = 123))
+studyArea <- SpaDES.tools::randomStudyArea(size = 1e10, seed = 123)
 
 can1 <- geodata::gadm(country = "CAN", level = 1, path = simPaths$inputPath) 
 can1 <- terra::project(can1, terra::crs(studyArea, proj = TRUE))
