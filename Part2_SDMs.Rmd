@@ -39,7 +39,7 @@ The simulation module is *projectSpeciesDist*.
 We start by creating an `.R` script to set up and control the simulation.
 In this example this script is called `Part2_SDMs.R`.
 
-The script begins with a few lines of code that ensure a few packages are installed and loaded (see [Reproducible package installation]). 
+The script begins with a few lines of code that ensure a few packages are installed and loaded (see [Reproducible package installation]).
 It then defines the necessary folder directories for the simulation and creates the modules in the `modules/` folder.
 
 ```{r globalscriptPart2, eval = FALSE}
@@ -144,7 +144,7 @@ We export species % cover in two formats (a raster and a table) for demonstratio
 This module downloads and processes freely available spatial layers of four bioclimatic variables used to fit the SDM of (ref:Pice-gla) in the study area.
 
 The module uses a different way to download data.
-It relies on two input `data.tables` that contain the URLs for each climate covariate, one for baseline conditions, the other for projected climate conditions, both containing information about when each layer should be used during the simulation (the "year "column).
+It relies on two input `data.tables` that contain the URLs for each climate covariate, one for baseline conditions, the other for projected climate conditions, both containing information about when each layer should be used during the simulation (the "year"column).
 
 We have only supplied one set of data sources for default baseline climate conditions (`baselineClimateURLs`) and for climate projections (`projClimateURLs`), all of which are downloaded from WorldClim at 2.5 minutes resolution.
 The baseline climate data correspond to the 1970-2000 period @FickHijmans2017, which aligns well with the species % cover data year (2001).
@@ -213,8 +213,10 @@ We draw your attention to:
 
 -   How the fitted model object (`sdmOut`) and it's evaluation (`evalOut`) are both module outputs.
     This way these objects can not only be used by other events, but also inspected by the user after the simulation is finished (see [Transparent models]).
-    
-You will notice that this module performs model fitting (i.e., calibration), predictions and model validation. These three components could be broken into three separate modules. As an exercise, we recommend trying to do so on your own.
+
+You will notice that this module performs model fitting (i.e., calibration), predictions and model validation.
+These three components could be broken into three separate modules.
+As an exercise, we recommend trying to do so on your own.
 
 ------------------------------------------------------------------------
 
@@ -227,7 +229,8 @@ We fist ensure that all module dependencies (and their dependencies and so on) a
 
 Only then do we load packages necessary to run the simulation.
 
-Note that the `dismo` package (a dependency of the `projectSpeciesDist` module) needs `rJava` to run `maxent`. In turn, `rJava` needs a working Java installation (Jave can be downloaded [here](See https://www.java.com/en/download/manual.jsp)). 
+Note that the `dismo` package (a dependency of the `projectSpeciesDist` module) needs `rJava` to run `maxent`.
+In turn, `rJava` needs a working Java installation (Jave can be downloaded [here](See%20https://www.java.com/en/download/manual.jsp)).
 Below you will see that we attempt to warn the user about problems loading `rJava`, which are likely related to Java not being found on the system.
 
 ```{r simulationPkgs, eval = FALSE}
@@ -266,7 +269,7 @@ library(ggpubr)
 
 *Windows can present problems when many packages are installed and further package installations fail. If you see errors like this after restarting R:*
 
-```
+```         
 Installing: glue Detaching is fraught with many potential problems; you may 
 have to restart your session if things aren't working some packages don't seem
 to unload their dlls correctly.
@@ -496,11 +499,11 @@ qs::qsave(myExperiment2, file.path(simPaths$outputPath, paste0("myExperiment2", 
 
 #### Proposed exercises
 
-1. try changing the climate layers (e.g., use different climate scenarios or General Circulation models) and rerunning predictions;
+1.  try changing the climate layers (e.g., use different climate scenarios or General Circulation models) and rerunning predictions;
 
-2. try adding other statistical algorithms;
+2.  try adding other statistical algorithms;
 
-3. try breaking up the prediction module into three modules: a calibration module, a prediction module and a validation module.
+3.  try breaking up the prediction module into three modules: a calibration module, a prediction module and a validation module.
 
 Have fun!
 
@@ -577,7 +580,6 @@ figDir <- checkPath(file.path(simPaths$outputPath, "generalFigures"), create = T
 ggsave(file.path(figDir, "MaxEntPredictions.png"), width = 13.5, height = 5.5, units = "in", dpi = 300)
 ```
 
-
 ```{r newScenariosFig, echo = FALSE, warning = FALSE, message = FALSE, fig.align = 'center', out.width = "80%", fig.show='hold', fig.cap="Adding a new scenario: Predictions of (ref:Pice-gla) probabilities of presences and (ref:PA) under (left to right) baseline climate conditions, 2041-2060, and 2081-2100 climate projections under two emission scenarios (SSP 136 and SSP 585, the default) -- showing MaxEnt forecasts only."}
 knitr::include_graphics(normalizePath("outputs/generalFigures/MaxEntPredictions.png", winslash = "/"))
 ```
@@ -589,7 +591,7 @@ knitr::include_graphics(normalizePath("outputs/generalFigures/MaxEntPredictions.
 In this example, we relied on caching to avoid having to repeat computationally intensive operations.
 Running the `simInit` and `spades` calls a second time (even after restarting R session) was faster and `SpaDES` informed us of instances where cached objects were being retrieved:
 
-```
+```         
 (...) 
 Mar05 19:56:53 clmtDt 1 climateData init 1\
 Mar05 19:56:53 clmtDt ...(Object to retrieve (a7816e2d0deb3b29.rds)) Mar05 19:56:53 clmtDt loaded cached result from previous Map call
@@ -626,17 +628,18 @@ We call this "implicit" caching, because the developer does not need to add any 
 `SpaDES` automatically reads the value of the `.useCache` parameter and activates caching in the module accordingly.
 
 This parameter can be used to cache (or not) all or some module events (in their entirety).
-In our example, we cached have not cached events but passing `.useCache = ".inputObjects"` or `.useCache = "init"` would cache these events. 
+In our example, we cached have not cached events but passing `.useCache = ".inputObjects"` or `.useCache = "init"` would cache these events.
 
 Loading cached events produced a slightly different message from loading of other cached operations (see above):
 
-```
+```         
 Mar05 19:58:34 spcsbn 1 speciesAbundanceData init 1\
 Mar05 19:58:34 spcsbn ...(Object to retrieve (bffbc48cc055c846.rds)) 
 Mar05 19:58:35 spcsbn loaded cached copy of init event in speciesAbundanceData module.
 ```
 
-We have noted that `terra` objects have issues with caching due to the fact that they rely on pointers. This is a behaviour that we started observing in September 2022 and may be resolved by `terra` developers in the future. 
+We have noted that `terra` objects have issues with caching due to the fact that they rely on pointers.
+This is a behaviour that we started observing in September 2022 and may be resolved by `terra` developers in the future.
 
 ### Controlling caching without changing module code
 
@@ -751,9 +754,4 @@ We wish to acknowledge the World Climate Research Programme, which coordinated a
 
 ------------------------------------------------------------------------
 
-<center>
-
-**Happy SpaDESing!**
-
-</center>
-
+<center>**Happy SpaDESing!**</center>
