@@ -174,9 +174,6 @@ Require::Require(c("SpaDES"), require = FALSE, upgrade = FALSE, dependencies = T
 
 library(SpaDES)
 
-## decide where you're working
-mainPath <- "."
-
 setPaths(cachePath = file.path(mainPath, "cache"),
          inputPath = file.path(mainPath, "inputs"),
          modulePath = file.path(mainPath, "modules"),
