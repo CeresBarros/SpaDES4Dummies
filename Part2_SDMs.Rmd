@@ -249,7 +249,8 @@ out <- reproducible::preProcess(targetFile = "maxent.jar",
                                 url = "https://github.com/mrmaxent/Maxent/blob/master/ArchivedReleases/3.4.4/maxent.jar?raw=true",
                                 destinationPath = simPaths$inputPath,
                                 fun = NA)
-file.move(out$targetFilePath, file.path(system.file("java", package="dismo"), "maxent.jar"))
+file.copy(out$targetFilePath, file.path(system.file("java", package="dismo"), "maxent.jar"),
+          overwrite = TRUE)
 
 out <- require(rJava)
 if (!out) {
