@@ -151,13 +151,6 @@ We start by making sure all `SpaDES` packages and they dependencies are installe
 options(repos = c(CRAN = "https://cloud.r-project.org"),
         spades.moduleCodeChecks = FALSE)
 
-if (paste(R.Version()[c("major", "minor")], collapse = ".") < "4.2.1") {
-  warning(paste("dismo::maxent may create a fatal error",
-                "when using R version < v4.2.1 and from RStudio.\n", 
-                "Please upgrade R, or run this script outside of RStudio.\n",
-                "See https://github.com/rspatial/dismo/issues/13"))
-}
-
 ## decide where you're working
 mainPath <- "~/SpaDES4Dummies_Part1"
 pkgPath <- file.path(mainPath, "packages", version$platform,
@@ -168,16 +161,16 @@ dir.create(pkgPath, recursive = TRUE)
 if (!"remotes" %in% installed.packages(lib.loc = pkgPath))
   install.packages("remotes")
 
-if (!"Require" %in% installed.packages(lib.loc = pkgPath) || 
-    packageVersion("Require", lib.loc = pkgPath) < "0.1.2") {
-  remotes::install_github("PredictiveEcology/Require@86254b17ad2392de5c9e4dae6dd06a194b69a169",
-                          upgrade = FALSE, force = TRUE)
+if (!"Require" %in% installed.packages(lib.loc = pkgPath) ||
+    packageVersion("Require", lib.loc = pkgPath) < "0.3.1") {
+  remotes::install_github("PredictiveEcology/Require@55ec169e654214d86be62a0e13e9a2157f1aa966",
+                          upgrade = FALSE)
 }
 
 ## use binary linux packages if on Ubuntu
 Require::setLinuxBinaryRepo()
 
-Require::Require(c("SpaDES"), require = FALSE, upgrade = FALSE, standAlone = TRUE) ## automatically downloads all packages in the SpaDES family and their dependencies
+Require::Require(c("SpaDES"), require = FALSE, upgrade = FALSE, dependencies = TRUE, standAlone = TRUE) ## automatically downloads all packages in the SpaDES family and their dependencies
 
 library(SpaDES)
 
