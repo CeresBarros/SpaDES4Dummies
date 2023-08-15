@@ -22,7 +22,7 @@ In Part \@ref(part2), we introduce `SpaDES` features that we most commonly use i
 
 ### Setup
 
-Load the necessary packages (make sure they are installed first, of course)
+This is what you'd normally do... Install all the packages in some way that you probably didn't record in your scripts and then start your script with loading the packages:
 
 ```{r loadPkgs, message = FALSE, warning = FALSE, results = 'hide'}
 ## please start from a clean R session
@@ -144,7 +144,7 @@ We start by creating an *.R* script (it can have any name) that sets up and runs
 The control script for this example is located on the root of the *SpaDES4Dummies* GitHub repository under the name `Part1_DummyModel.R`.
 Note that Markdown (`.Rmd`) scripts can also be used instead of \`.R\` scripts.
 
-We start by making sure all `SpaDES` packages and they dependencies are installed and up to date using `SpaDES.install::installSpaDES`.
+We start by making sure all `SpaDES` packages and they dependencies are installed (and that the installation is *scripted*)  using the `Require` package.
 
 ```{r globalscriptPart1, eval = FALSE}
 ## start again from a clean R session
