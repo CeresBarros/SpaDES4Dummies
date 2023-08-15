@@ -629,9 +629,9 @@ Before starting the simulations we should check if the modules were linked corre
 
 **Module diagram**
 
-`moduleDiagram` is a useful function that shows module inter-dependencies as a network diagram.
+`moduleDiagram` (Fig. \@ref(fig:moduleDiagram)) is a useful function that shows module inter-dependencies as a network diagram.
 The direction of the arrows indicates an output to input flow.
-You can see that *speciesAbundance* and *temperature* inputs (specifically our \`r\` raster) are supplied by an external source ("*INPUT*") - the user or `.inputObjects`.
+You can see that *speciesAbundance* and *temperature* inputs (specifically our \`r\` raster) are supplied by an external source (*_INPUT_*) - the user or `.inputObjects`.
 Whereas the inputs to the *speciesTempLM* module are outputs of the *speciesAbundance* and *temperature* modules.
 
 ```{r modulediagram, echo = -1, fig.height=10,fig.width=10}
@@ -641,7 +641,7 @@ moduleDiagram(mySim)
 
 **Object diagram**
 
-`objectDiagram` provides another way of checking module linkages.
+`objectDiagram` (Fig. \@ref(fig:objectDiagram)) provides another way of checking module linkages.
 It explicitly shows module inter-dependencies by depicting the objects that establish links between modules.
 
 ```{r objectDiagramCode, eval=FALSE}
