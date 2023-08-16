@@ -185,6 +185,9 @@ fitSDMEvent <- function(sim) {
   mod$trainData <- dataForFitting[group]
   mod$testData <-  dataForFitting[-group]
   
+  if (!any(mod$trainData$presAbs == 0)) {
+    stop("Training dataset contains no absences.")
+  }
   
   predVars <- P(sim)$predVars
   if (P(sim)$statModel == "MaxEnt") {
