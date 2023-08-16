@@ -48,3 +48,15 @@ Require::Require(c(unname(unlist(outs)),
                  standAlone = TRUE) 
 
 bookdown::render_book(output_format = "all", envir = new.env())
+
+
+## make test scripts for GHA
+rScripts <- c("Part1_DummyModel.R", "Part2_SDMs.R")
+for (f in rScripts) {
+  scriptLines <- readLines(f)
+  mainPathLine <- grep("mainPath <-", scriptLines)
+  scriptLines[mainPathLine] <- "mainPath <- '.'"
+  ff <- sub("\\.R", "_test\\.R", f)
+  writeLines(scriptLines, ff)
+}
+
