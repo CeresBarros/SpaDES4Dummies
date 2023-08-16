@@ -42,7 +42,7 @@ In this example this script is called `Part2_SDMs.R`.
 The script begins with a few lines of code that ensure a few packages are installed and loaded (see [Reproducible package installation]).
 It then defines the necessary folder directories for the simulation and creates the modules in the `modules/` folder.
 
-```{r globalscriptPart2, eval = FALSE}
+```{r globalscriptPart2}
 options(repos = c("https://predictiveecology.r-universe.dev/", 
                   CRAN = "https://cloud.r-project.org"))
 
@@ -110,35 +110,6 @@ if (!dir.exists(file.path(simPaths$modulePath, "climateData"))) {
 if (!dir.exists(file.path(simPaths$modulePath, "projectSpeciesDist"))) {
   newModule(name = "projectSpeciesDist", path = simPaths$modulePath)
 }
-```
-
-```{r globalscriptHiddenPart2, include = FALSE}
-options(repos = c("https://predictiveecology.r-universe.dev/", 
-                  CRAN = "https://cloud.r-project.org"))
-
-pkgPath <- file.path("packages", version$platform,
-                     paste0(version$major, ".", strsplit(version$minor, "[.]")[[1]][1]))
-dir.create(pkgPath, recursive = TRUE)
-.libPaths(pkgPath, include.site = FALSE) ## install packages in project library (proj-lib)
-
-if (!"remotes" %in% installed.packages(lib.loc = pkgPath))
-  install.packages("remotes")
-
-if (!"Require" %in% installed.packages(lib.loc = pkgPath) ||
-    packageVersion("Require", lib.loc = pkgPath) < "0.3.1") {
-  remotes::install_github("PredictiveEcology/Require@55ec169e654214d86be62a0e13e9a2157f1aa966",
-                          upgrade = FALSE)
-}
-
-## use binary linux packages if on Ubuntu
-Require::setLinuxBinaryRepo()
-
-SpaDES.core::setPaths(cachePath = file.path("cache"),
-                      inputPath = file.path("inputs"),
-                      modulePath = file.path("modules"),
-                      outputPath = file.path("outputs"))
-
-simPaths <- SpaDES.core::getPaths() ## check that this is what you wanted
 ```
 
 Notice how we protect the `newModule` call with an `if` statement that first detects whether the module directory exists already.

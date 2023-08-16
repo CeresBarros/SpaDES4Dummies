@@ -187,16 +187,6 @@ if (!dir.exists(file.path(getPaths()$modulePath, "speciesAbundance"))) {
 }
 ```
 
-```{r globalscriptHiddenPart1, eval = FALSE}
-rm(list = ls())
-library(SpaDES)  ## should automatically download all packages in the SpaDES family and their dependencies
-options("spades.useRequire" = FALSE)
-setPaths(cachePath = "cache",
-         inputPath = "inputs",
-         modulePath = "modules",
-         outputPath = "outputs")
-```
-
 We then create modules using `newModule`.
 `newModule` creates a module folder (*speciesAbundance*) inside `/modules` that contains both the module `.R` script template, as well as the documentation template (the `.Rmd` file).
 Although we will not be discussing the `.Rmd` file, please bear in mind that this is a **fundamental** part of creating a reproducible and transparent module - check out the [Guide to Reproducible Code in Ecology and Evolution](https://www.britishecologicalsociety.org/wp-content/uploads/2017/12/guide-to-reproducible-code.pdf) from the British Ecological Society).
