@@ -21,6 +21,10 @@ defineModule(sim, list(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
     defineParameter("predVars", "character", c("BIO1", "BIO4", "BIO12", "BIO15"), NA, NA,
                     "Predictors used in statistical model."),
+    defineParameter("presThresh", "numeric", 10, 0, NA,
+                    paste("Minimum threshold for the species to be considered present, when",
+                          " `sppAbundanceDT` contains non binary species data (e.g. %, proportions,",
+                          "or abundance data). By default 10% cover.")),
     defineParameter("statModel", "character", "MaxEnt", NA, NA,
                     paste("What statitical algorith to use. Currently only 'MaxEnt' and 'GLM' are",
                           "supported. 'MaxEnt will fit a MaxEnt model using dismo::maxent; 'GLM'",
@@ -43,9 +47,10 @@ defineModule(sim, list(
                  desc = paste("A data.table with as many columns as the climate covariates", 
                               "used in the species distribution model and 'year' column describing",
                               "the simulation year to which the data corresponds.")),
-    expectsInput("sppAbundanceDT", "data.table", 
-                 desc = paste("A species abundance data. Converted to presence/absence data, if not binary")),
-    expectsInput("studyAreaRas", objectClass = "RasterLayer", 
+    expectsInput("sppAbundanceDT", "data.table",
+                 desc = paste("A species abundance data. Converted to presence/absence data, if not binary.",
+                              "By default a table with % species cover.")),
+    expectsInput("studyAreaRas", objectClass = "RasterLayer",
                  desc = "A binary raster of the study area")
   ),
   outputObjects = bindrows(
@@ -150,15 +155,16 @@ SDMInit <- function(sim) {
     sppAbundanceDT[sppAbund < 0, sppAbund := 0]
   }
   
-  if (max(range(sppAbundanceDT$sppAbund)) > 1) {
-    message("Species data is > 1. Converting to presence/absence")
-    sppAbundanceDT[sppAbund > 0, sppAbund := 1]
+  if (!all(unique(sppAbundanceDT$sppAbund) %in% c(0, 1))) {
+    message("Species data is not binary.")
+    message("Converting values >= P(sim)$presThresh to presences, and < P(sim)$presThresh to absences")
+    sppAbundanceDT[sppAbund >= P(sim)$presThresh, presAbs := 1]
+    sppAbundanceDT[sppAbund < P(sim)$presThresh, presAbs := 0]
   }
   
   ## join the two datasets - note that there are no input species abundances beyond year 1
-  sim$sdmData <- merge(sim$climateDT, sppAbundanceDT[, .(cell, sppAbund, year)], 
+  sim$sdmData <- merge(sim$climateDT, sppAbundanceDT[, .(cell, sppAbund, presAbs, year)],
                        by = c("cell", "year"), all = TRUE)
-  setnames(sim$sdmData, "sppAbund", "presAbs")
   
   # ! ----- STOP EDITING ----- ! #
   return(invisible(sim))
