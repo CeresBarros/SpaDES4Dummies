@@ -46,6 +46,20 @@ Require::Require(c(unname(unlist(outs)), "SpaDES",
                  upgrade = FALSE,   ## don't upgrade dependencies
                  standAlone = TRUE) 
 
+if (FALSE) { ## not needed anymore but may come in handy
+  ## before rendering, delete zips, re-zip and push
+  zipFiles <- list.files("modules", pattern = ".zip$", recursive = TRUE, full.names = TRUE)
+  file.remove(zipFiles)
+  
+  modules <- basename(list.dirs("modules", recursive = FALSE))
+  for (m in modules) {
+    zipModule(m, path = "modules")
+  }
+  
+  git2r::add(path = "*.zip")
+  out <- tryCatch(git2r::commit(message = "update module zips"), error = function(e) e)
+  if (!inherits(out, "error")) system("git push")
+} 
 bookdown::render_book(output_format = "all", envir = new.env())
 
 
