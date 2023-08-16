@@ -136,7 +136,7 @@ simParamsGLM$projectSpeciesDist$statModel <- "GLM"
 
 ## make a random study area.
 ##  Here use seed to make sure the same study area is always generated
-studyArea <- terra::vect(randomStudyArea(size = 1e10, seed = 123))
+studyArea <- randomStudyArea(size = 1e10, seed = 123)
 studyAreaRas <- terra::rasterize(studyArea, 
                                  terra::rast(extent = terra::ext(studyArea), 
                                              crs = terra::crs(studyArea, proj = TRUE), 
