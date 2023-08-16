@@ -11,7 +11,7 @@ defineModule(sim, list(
   keywords = c("minimal SpaDES example", "species distribution model"),
   authors = structure(list(list(given = c("Ceres"), family = "Barros", role = c("aut", "cre"), email = "ceres.barros@ubc.ca", comment = NULL)), class = "person"),
   childModules = character(0),
-  version = list(climateData = "0.0.0.9000"),
+  version = list(climateData = "1.0.0"),
   timeframe = as.POSIXlt(c(NA, NA)),
   timeunit = "year",
   citation = list("citation.bib"),
