@@ -79,27 +79,36 @@ Require::setLinuxBinaryRepo()
 ## 2) Please ensure the appropriate Rtools version is installed (see)
 
 Require::Require(c("PredictiveEcology/SpaDES.project@transition (HEAD)", 
-                   "PredictiveEcology/SpaDES.core@master (HEAD)"),
-                 require = FALSE, upgrade = FALSE, standAlone = TRUE)
+                   "PredictiveEcology/SpaDES.core@master (HEAD)",
+                   ## these will be needed later on:
+                   "ggpubr",
+                   "SpaDES.tools",
+                   "PredictiveEcology/SpaDES.experiment@75d917b70b892802fed0bbdb2a5e9f3c6772f0ba"),
+                 require = FALSE,  ## don't load packages yet 
+                 upgrade = FALSE, standAlone = TRUE)
 
-SpaDES.core::setPaths(cachePath = file.path(mainPath, "cache"),
-                      inputPath = file.path(mainPath, "inputs"),
-                      modulePath = file.path(mainPath, "modules"),
-                      outputPath = file.path(mainPath, "outputs"))
+## there seems to be a problem with `ragg` and a forced install solves it
+install.packages("ragg")
 
-simPaths <- SpaDES.core::getPaths() ## check that this is what you wanted
+Require::Require("SpaDES.core", install = FALSE)  ## load only
+setPaths(cachePath = file.path(mainPath, "cache"),
+         inputPath = file.path(mainPath, "inputs"),
+         modulePath = file.path(mainPath, "modules"),
+         outputPath = file.path(mainPath, "outputs"))
+
+simPaths <- getPaths() ## check that this is what you wanted
 
 ## Let's create a self-contained module that will simulate the species' abundance for any given period of time and frequency.
-if (!dir.exists(file.path(simPaths$modulePath, "speciesAbundanceData"))){
-  SpaDES.core::newModule(name = "speciesAbundanceData", path = simPaths$modulePath)
+if (!dir.exists(file.path(simPaths$modulePath, "speciesAbundanceData"))) {
+  newModule(name = "speciesAbundanceData", path = simPaths$modulePath)
 }
 
-if (!dir.exists(file.path(simPaths$modulePath, "climateData"))){
-  SpaDES.core::newModule(name = "climateData", path = simPaths$modulePath)
+if (!dir.exists(file.path(simPaths$modulePath, "climateData"))) {
+  newModule(name = "climateData", path = simPaths$modulePath)
 }
 
-if (!dir.exists(file.path(simPaths$modulePath, "projectSpeciesDist"))){
-  SpaDES.core::newModule(name = "projectSpeciesDist", path = simPaths$modulePath)
+if (!dir.exists(file.path(simPaths$modulePath, "projectSpeciesDist"))) {
+  newModule(name = "projectSpeciesDist", path = simPaths$modulePath)
 }
 ```
 
@@ -257,16 +266,13 @@ Below you will see that we attempt to warn the user about problems loading `rJav
 ```{r simulationPkgs}
 outs <- SpaDES.project::packagesInModules(modulePath = simPaths$modulePath)  ## gets list of module dependencies
 Require::Require(c(unname(unlist(outs)),
-                   "ggpubr",
-                   "ropensci/NLMR",
-                   "SpaDES.tools",
-                   "CeresBarros/SpaDES.experiment@7dc18ce311b5545b7c2784d61d0d45cb44312bd2"), 
+                   "DiagrammeR"), 
                  require = FALSE,   ## don't load packages
                  upgrade = FALSE,   ## don't upgrade dependencies
                  standAlone = TRUE, 
                  purge = TRUE) ## install all dependencies in proj-lib (ignore user/system lib)
 
-## now load packages
+## now load packages - SpaDES.core may have been loaded already, which is fine
 Require::Require(c("reproducible", "SpaDES.core", "SpaDES.experiment"), 
                  install = FALSE) 
 
@@ -326,8 +332,6 @@ We also define a few useful global options:
 -   `reproducible.useCache` and `reproducible.useTerra`, which will activate caching and the use of the `terra` package across all `Cache` and `prepInputs` function calls.
 
 ```{r simulationSetup, warning = FALSE, message = FALSE}
-Require::Require(c("SpaDES.core", "SpaDES.experiment"), install = FALSE) ## now load packages
-
 ## a few important options:
 options(reproducible.useCache = TRUE,
         reproducible.cachePath = simPaths$cachePath,
