@@ -59,7 +59,7 @@ doEvent.temperature = function(sim, eventTime, eventType, debug = FALSE) {
     tempPlot = {
       ## do stuff for this event
       sim <- plotting(sim)
-
+      
       ## schedule future event(s)
       sim <- scheduleEvent(sim, eventTime = time(sim) + P(sim)$.plotInterval, moduleName = "temperature", 
                            eventType = "tempPlot", eventPriority = .normal() + 0.5)
@@ -90,7 +90,7 @@ update <- function(sim) {
 plotting <- function(sim) {
   ## plot temperature
   plotTitle <- paste("Temperature\nat time",
-                      names(sim$tempRasters)[length(sim$tempRasters)])
+                     names(sim$tempRasters)[length(sim$tempRasters)])
   tempPlot <- sim$tempRasters[[length(sim$tempRasters)]] 
   Plot(tempPlot, 
        title = plotTitle, 

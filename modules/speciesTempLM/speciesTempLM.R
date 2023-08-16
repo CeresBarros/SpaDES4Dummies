@@ -90,7 +90,7 @@ statsAnalysis <- function(sim) {
   tempData <- data.table(getValues(stack(sim$tempRasters)))
   tempData[, pixID := 1:nrow(tempData)]
   tempData <- melt.data.table(tempData, id.var = "pixID",
-                               variable.name = "year", value.name = "temp")
+                              variable.name = "year", value.name = "temp")
   tempData[, year := as.numeric(sub("X", "", year))] 
   
   ## merge per year  

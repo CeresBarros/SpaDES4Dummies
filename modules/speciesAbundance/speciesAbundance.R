@@ -95,7 +95,7 @@ abundanceSim <- function(sim) {
 abundancePlot <- function(sim) {
   ## plot abundances
   plotTitle <- paste("Species abundance\nat time",
-                      names(sim$abundRasters)[length(sim$abundRasters)])
+                     names(sim$abundRasters)[length(sim$abundRasters)])
   abundPlot <- sim$abundRasters[[length(sim$abundRasters)]] 
   Plot(abundPlot, 
        title = plotTitle, 

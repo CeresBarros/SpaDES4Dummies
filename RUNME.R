@@ -60,6 +60,7 @@ if (FALSE) { ## not needed anymore but may come in handy
   out <- tryCatch(git2r::commit(message = "update module zips"), error = function(e) e)
   if (!inherits(out, "error")) system("git push")
 } 
+
 bookdown::render_book(output_format = "all", envir = new.env())
 
 
