@@ -34,7 +34,8 @@ if (!"Require" %in% installed.packages(lib.loc = pkgPath) ||
 ## use binary linux packages if on Ubuntu
 Require::setLinuxBinaryRepo()
 
-Require::Require(c("PredictiveEcology/SpaDES.project@4203ba60feee8fb69024adeb81e2cc84c6526f3f", "SpaDES"), 
+Require::Require(c("PredictiveEcology/SpaDES.project@a9fe467953ee4c3ca704a9781ab22e105ce342ba", 
+                   "SpaDES"), 
                  require = FALSE, upgrade = FALSE, standAlone = TRUE)
 
 outs <- SpaDES.project::packagesInModules(modulePath = file.path("modules"))  ## gets list of module dependencies
