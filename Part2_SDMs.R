@@ -2,10 +2,8 @@
 ## SPADES4DUMMIES PART 2
 ## ---------------------------------------------------
 
-## /!\   If running this script from RStudio, please make sure you are using R v4.2.1   /!\ 
-## dismo::maxent throws a fatal error with 4.2.0 when called from RStudio
-
-options(repos = c(CRAN = "https://cloud.r-project.org"))
+options(repos = c("https://predictiveecology.r-universe.dev/", 
+                  CRAN = "https://cloud.r-project.org"))
 
 if (getRversion() < "4.2.1") {
   warning(paste("dismo::maxent may create a fatal error",
@@ -40,27 +38,36 @@ Require::setLinuxBinaryRepo()
 ## 2) Please ensure the appropriate Rtools version is installed (see)
 
 Require::Require(c("PredictiveEcology/SpaDES.project@transition (HEAD)", 
-                   "PredictiveEcology/SpaDES.core@master (HEAD)"),
-                 require = FALSE, upgrade = FALSE, standAlone = TRUE)
+                   "PredictiveEcology/SpaDES.core@master (HEAD)",
+                   ## these will be needed later on:
+                   "ggpubr",
+                   "SpaDES.tools",
+                   "PredictiveEcology/SpaDES.experiment@75d917b70b892802fed0bbdb2a5e9f3c6772f0ba"),
+                 require = FALSE,  ## don't load packages yet 
+                 upgrade = FALSE, standAlone = TRUE)
 
-SpaDES.core::setPaths(cachePath = file.path(mainPath, "cache"),
-                      inputPath = file.path(mainPath, "inputs"),
-                      modulePath = file.path(mainPath, "modules"),
-                      outputPath = file.path(mainPath, "outputs"))
+## there seems to be a problem with `ragg` and a forced install solves it
+install.packages("ragg")
 
-simPaths <- SpaDES.core::getPaths() 
+Require::Require("SpaDES.core", install = FALSE)  ## load only
+setPaths(cachePath = file.path(mainPath, "cache"),
+         inputPath = file.path(mainPath, "inputs"),
+         modulePath = file.path(mainPath, "modules"),
+         outputPath = file.path(mainPath, "outputs"))
 
-## Let's create our modules. Please refer to the guide for code you could add to each module.
+simPaths <- getPaths() ## check that this is what you wanted
+
+## Let's create a self-contained module that will simulate the species' abundance for any given period of time and frequency.
 if (!dir.exists(file.path(simPaths$modulePath, "speciesAbundanceData"))) {
-  SpaDES.core::newModule(name = "speciesAbundanceData", path = simPaths$modulePath)
+  newModule(name = "speciesAbundanceData", path = simPaths$modulePath)
 }
 
 if (!dir.exists(file.path(simPaths$modulePath, "climateData"))) {
-  SpaDES.core::newModule(name = "climateData", path = simPaths$modulePath)
+  newModule(name = "climateData", path = simPaths$modulePath)
 }
 
 if (!dir.exists(file.path(simPaths$modulePath, "projectSpeciesDist"))) {
-  SpaDES.core::newModule(name = "projectSpeciesDist", path = simPaths$modulePath)
+  newModule(name = "projectSpeciesDist", path = simPaths$modulePath)
 }
 
 ## now, let's pretend you've created your modules and each sources a series of other packages
@@ -68,37 +75,29 @@ if (!dir.exists(file.path(simPaths$modulePath, "projectSpeciesDist"))) {
 ## this is a particularly useful line when sharing your packages with someone else.
 outs <- SpaDES.project::packagesInModules(modulePath = simPaths$modulePath)  ## gets list of module dependencies
 Require::Require(c(unname(unlist(outs)),
-                   ## and a few extra packages:
-                   "ggpubr", 
-                   "PredictiveEcology/SpaDES.experiment@development",
-                   "SpaDES.tools", 
                    "DiagrammeR"), 
                  require = FALSE,   ## don't load packages
                  upgrade = FALSE,   ## don't upgrade dependencies
-                 standAlone = TRUE) ## install all dependencies in proj-lib (ignore user/system lib)
+                 standAlone = TRUE, 
+                 purge = TRUE) ## install all dependencies in proj-lib (ignore user/system lib)
+
+## now load packages - SpaDES.core may have been loaded already, which is fine
+Require::Require(c("reproducible", "SpaDES.core", "SpaDES.experiment"), 
+                 install = FALSE) 
 
 ## dismo needs a few tweaks to run MaxEnt
-out <- reproducible::preProcess(targetFile = "maxent.jar",
-                                url = "https://github.com/mrmaxent/Maxent/blob/master/ArchivedReleases/3.4.4/maxent.jar?raw=true",
-                                destinationPath = simPaths$inputPath,
-                                fun = NA)
-file.copy(from = out$targetFilePath, 
-          to = file.path(system.file("java", package = "dismo"), "maxent.jar"))
+out <- preProcess(targetFile = "maxent.jar",
+                  url = "https://github.com/mrmaxent/Maxent/blob/master/ArchivedReleases/3.4.4/maxent.jar?raw=true",
+                  destinationPath = simPaths$inputPath,
+                  fun = NA)
+file.copy(out$targetFilePath, file.path(system.file("java", package="dismo"), "maxent.jar"),
+          overwrite = TRUE)
 
 out <- require(rJava)
 if (!out) {
   stop(paste("Your Java installation may have problems, please check.\n", 
-       "See https://www.java.com/en/download/manual.jsp for Java installation.\n",
-       "Alternatively, 'rJava' could be having issues assessing your system Java installation."))
+             "See https://www.java.com/en/download/manual.jsp for Java installation"))
 }
-
-## It may be a good idea to restart R after the installation is complete.
-
-## load necessary packages now
-library(SpaDES.core)
-library(SpaDES.tools)
-library(ggpubr)
-
 ## a few important options:
 options(reproducible.useCache = TRUE,
         reproducible.cachePath = simPaths$cachePath,
@@ -130,13 +129,12 @@ simParamsMaxEnt <- list(
     ".useCache" = FALSE
   )
 )
-
 simParamsGLM <- simParamsMaxEnt
 simParamsGLM$projectSpeciesDist$statModel <- "GLM"
 
 ## make a random study area.
 ##  Here use seed to make sure the same study area is always generated
-studyArea <- randomStudyArea(size = 1e10, seed = 123)
+studyArea <- SpaDES.tools::randomStudyArea(size = 1e10, seed = 123)
 studyAreaRas <- terra::rasterize(studyArea, 
                                  terra::rast(extent = terra::ext(studyArea), 
                                              crs = terra::crs(studyArea, proj = TRUE), 
@@ -186,7 +184,7 @@ myExperiment$GLM_rep1$evalOut
 
 ## Run with another climate scenario - the most contrasting scenario to SSP 585
 ## get the original table from one of the simulations and replace the climate scenario
-projClimateURLs <- myExperiment$MaxEnt_rep1$projClimateURLs
+projClimateURLs <- copy(mySimMaxEnt$projClimateURLs)
 projClimateURLs[, `:=`(URL = gsub("ssp585", "ssp126", URL),
                        targetFile = gsub("ssp585", "ssp126", targetFile))]
 

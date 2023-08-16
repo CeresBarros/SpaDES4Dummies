@@ -1,11 +1,9 @@
-options(repos = c(CRAN = "https://cloud.r-project.org"))
+## ---------------------------------------------------
+## SPADES4DUMMIES PART 1
+## ---------------------------------------------------
 
-if (paste(R.Version()[c("major", "minor")], collapse = ".") < "4.2.1") {
-  warning(paste("dismo::maxent may create a fatal error",
-                "when using R version < v4.2.1 and from RStudio.\n", 
-                "Please upgrade R, or run this script outside of RStudio.\n",
-                "See https://github.com/rspatial/dismo/issues/13"))
-}
+options(repos = c("https://predictiveecology.r-universe.dev/", 
+                  CRAN = "https://cloud.r-project.org"))
 
 ## decide where you're working
 mainPath <- "~/SpaDES4Dummies_Part1"
@@ -26,25 +24,29 @@ if (!"Require" %in% installed.packages(lib.loc = pkgPath) ||
 ## use binary linux packages if on Ubuntu
 Require::setLinuxBinaryRepo()
 
-Require::Require(c("SpaDES"), upgrade = FALSE, standAlone = TRUE)
+Require::Require(c("SpaDES"), require = FALSE, upgrade = FALSE, dependencies = TRUE, standAlone = TRUE) ## automatically downloads all packages in the SpaDES family and their dependencies
+
+library(SpaDES)
 
 setPaths(cachePath = file.path(mainPath, "cache"),
-                      inputPath = file.path(mainPath, "inputs"),
-                      modulePath = file.path(mainPath, "modules"),
-                      outputPath = file.path(mainPath, "outputs"))
-getPaths() ## check that this is what you wanted
+         inputPath = file.path(mainPath, "inputs"),
+         modulePath = file.path(mainPath, "modules"),
+         outputPath = file.path(mainPath, "outputs"))
+
+## make a list of directory paths and check paths are ok
+simPaths <- getPaths()
 
 ## Let's create a self-contained module that will simulate the species' abundance for any given period of time and frequency.
-if (!dir.exists(file.path(getPaths()$modulePath, "speciesAbundance"))) {
-  newModule(name = "speciesAbundance", path = getPaths()$modulePath)
+if (!dir.exists(file.path(simPaths$modulePath, "speciesAbundance"))) {
+  newModule(name = "speciesAbundance", path = simPaths$modulePath)
 }
 
-if (!dir.exists(file.path(getPaths()$modulePath, "temperature"))) {
-  newModule(name = "temperature", path = getPaths()$modulePath)
+if (!dir.exists(file.path(simPaths$modulePath, "temperature"))) {
+  newModule(name = "temperature", path = simPaths$modulePath)
 }
 
-if (!dir.exists(file.path(getPaths()$modulePath, "speciesTempLM"))) {
-  newModule(name = "speciesTempLM", path = getPaths()$modulePath)
+if (!dir.exists(file.path(simPaths$modulePath, "speciesTempLM"))) {
+  newModule(name = "speciesTempLM", path = simPaths$modulePath)
 }
 
 ## list the modules to use
@@ -59,9 +61,6 @@ simParams <- list(
                      .plotInitialTime = 1),
   speciesTempLM = list(statsTimestep = 5)
 )
-
-## make a list of directory paths
-simPaths <- getPaths()
 
 ## Simulation setup
 mySim <- simInit(times = simTimes, params = simParams, 
