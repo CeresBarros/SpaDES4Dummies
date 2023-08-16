@@ -43,7 +43,8 @@ The script begins with a few lines of code that ensure a few packages are instal
 It then defines the necessary folder directories for the simulation and creates the modules in the `modules/` folder.
 
 ```{r globalscriptPart2, eval = FALSE}
-options(repos = c(CRAN = "https://cloud.r-project.org"))
+options(repos = c("https://predictiveecology.r-universe.dev/", 
+                  CRAN = "https://cloud.r-project.org"))
 
 if (getRversion() < "4.2.1") {
   warning(paste("dismo::maxent may create a fatal error",
@@ -103,6 +104,26 @@ if (!dir.exists(file.path(simPaths$modulePath, "projectSpeciesDist"))){
 ```
 
 ```{r globalscriptHiddenPart2, include = FALSE}
+options(repos = c("https://predictiveecology.r-universe.dev/", 
+                  CRAN = "https://cloud.r-project.org"))
+
+pkgPath <- file.path("packages", version$platform,
+                     paste0(version$major, ".", strsplit(version$minor, "[.]")[[1]][1]))
+dir.create(pkgPath, recursive = TRUE)
+.libPaths(pkgPath, include.site = FALSE) ## install packages in project library (proj-lib)
+
+if (!"remotes" %in% installed.packages(lib.loc = pkgPath))
+  install.packages("remotes")
+
+if (!"Require" %in% installed.packages(lib.loc = pkgPath) ||
+    packageVersion("Require", lib.loc = pkgPath) < "0.3.1") {
+  remotes::install_github("PredictiveEcology/Require@55ec169e654214d86be62a0e13e9a2157f1aa966",
+                          upgrade = FALSE)
+}
+
+## use binary linux packages if on Ubuntu
+Require::setLinuxBinaryRepo()
+
 SpaDES.core::setPaths(cachePath = file.path("cache"),
                       inputPath = file.path("inputs"),
                       modulePath = file.path("modules"),
@@ -233,22 +254,27 @@ Note that the `dismo` package (a dependency of the `projectSpeciesDist` module) 
 In turn, `rJava` needs a working Java installation (Jave can be downloaded [here](See%20https://www.java.com/en/download/manual.jsp)).
 Below you will see that we attempt to warn the user about problems loading `rJava`, which are likely related to Java not being found on the system.
 
-```{r simulationPkgs, eval = FALSE}
+```{r simulationPkgs}
 outs <- SpaDES.project::packagesInModules(modulePath = simPaths$modulePath)  ## gets list of module dependencies
 Require::Require(c(unname(unlist(outs)),
-                   "ggpubr", 
-                   "PredictiveEcology/SpaDES.experiment@development (HEAD)",
-                   "PredictiveEcology/SpaDES.tools@master (HEAD)"), 
+                   "ggpubr",
+                   "ropensci/NLMR",
+                   "SpaDES.tools",
+                   "CeresBarros/SpaDES.experiment@7dc18ce311b5545b7c2784d61d0d45cb44312bd2"), 
                  require = FALSE,   ## don't load packages
                  upgrade = FALSE,   ## don't upgrade dependencies
-                 dependencies = TRUE,  ## get all dependencies
-                 standAlone = TRUE, purge = TRUE) ## install all dependencies in proj-lib (ignore user/system lib)
+                 standAlone = TRUE, 
+                 purge = TRUE) ## install all dependencies in proj-lib (ignore user/system lib)
+
+## now load packages
+Require::Require(c("reproducible", "SpaDES.core", "SpaDES.experiment"), 
+                 install = FALSE) 
 
 ## dismo needs a few tweaks to run MaxEnt
-out <- reproducible::preProcess(targetFile = "maxent.jar",
-                                url = "https://github.com/mrmaxent/Maxent/blob/master/ArchivedReleases/3.4.4/maxent.jar?raw=true",
-                                destinationPath = simPaths$inputPath,
-                                fun = NA)
+out <- preProcess(targetFile = "maxent.jar",
+                  url = "https://github.com/mrmaxent/Maxent/blob/master/ArchivedReleases/3.4.4/maxent.jar?raw=true",
+                  destinationPath = simPaths$inputPath,
+                  fun = NA)
 file.copy(out$targetFilePath, file.path(system.file("java", package="dismo"), "maxent.jar"),
           overwrite = TRUE)
 

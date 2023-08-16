@@ -146,7 +146,7 @@ Note that Markdown (`.Rmd`) scripts can also be used instead of \`.R\` scripts.
 
 We start by making sure all `SpaDES` packages and they dependencies are installed (and that the installation is *scripted*)  using the `Require` package.
 
-```{r globalscriptPart1, eval = FALSE}
+```{r globalscriptPart1}
 ## start again from a clean R session
 options(repos = c(CRAN = "https://cloud.r-project.org"),
         spades.moduleCodeChecks = FALSE)
@@ -187,7 +187,7 @@ if (!dir.exists(file.path(getPaths()$modulePath, "speciesAbundance"))) {
 }
 ```
 
-```{r globalscriptHiddenPart1, include = FALSE}
+```{r globalscriptHiddenPart1, eval = FALSE}
 rm(list = ls())
 library(SpaDES)  ## should automatically download all packages in the SpaDES family and their dependencies
 options("spades.useRequire" = FALSE)
@@ -266,7 +266,7 @@ defineModule(sim, list(
   timeunit = "year",
   citation = list("citation.bib"),
   documentation = deparse(list("README.txt", "speciesAbundance.Rmd")),
-  reqdPkgs = list("PredictiveEcology/SpaDES.core@development (>=1.0.10.9000)",
+  reqdPkgs = list("SpaDES.core (>=2.0.2)",
                   "raster", "quickPlot"),
   parameters = bindrows(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
