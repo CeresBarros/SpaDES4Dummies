@@ -16,7 +16,7 @@ defineModule(sim, list(
   timeunit = "year",
   citation = list("citation.bib"),
   documentation = list("README.md", "climateData.Rmd"), ## same file
-  reqdPkgs = list("PredictiveEcology/SpaDES.core@development (>=1.0.10.9000)",
+  reqdPkgs = list("SpaDES.core (>=2.0.2)",
                   "ggplot2", "rasterVis", "terra", "data.table"),
   parameters = bindrows(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
