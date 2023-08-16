@@ -15,8 +15,9 @@ defineModule(sim, list(
   timeunit = "year",
   citation = list("citation.bib"),
   documentation = list("README.md", "projectSpeciesDist.Rmd"), ## same file
-  reqdPkgs = list("SpaDES.core (>=2.0.2)", "ggplot2",
-                  "data.table", "dismo", "rJava", "rasterVis"),
+  reqdPkgs = list("SpaDES.core (>=2.0.2)",
+                  "caret", "data.table", "dismo",
+                  "ggplot2", "rJava", "rasterVis"),
   parameters = bindrows(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
     defineParameter("predVars", "character", c("BIO1", "BIO4", "BIO12", "BIO15"), NA, NA,
@@ -179,10 +180,11 @@ fitSDMEvent <- function(sim) {
     stop(paste("No data for year", time(sim), "provided to fit the model"))
   }
   
-  group <- kfold(dataForFitting, 5)
+  group <- createDataPartition(dataForFitting$presAbs, p = 0.8, list = FALSE)
   ## save the the split datasets as internal objects to this module
-  mod$trainData <- dataForFitting[group != 1, ]
-  mod$testData <-  dataForFitting[group == 1, ]
+  mod$trainData <- dataForFitting[group]
+  mod$testData <-  dataForFitting[-group]
+  
   
   predVars <- P(sim)$predVars
   if (P(sim)$statModel == "MaxEnt") {
