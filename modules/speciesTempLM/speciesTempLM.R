@@ -7,7 +7,7 @@ defineModule(sim, list(
   keywords = c("linear model"),
   authors = person("Me", email = "me@example.com", role = c("aut", "cre")),
   childModules = character(0),
-  version = list(speciesAbundanceData = "1.0.0"),
+  version = list(speciesTempLM = "1.0.0"),
   timeframe = as.POSIXlt(c(NA, NA)),
   timeunit = "year",
   citation = list("citation.bib"),
