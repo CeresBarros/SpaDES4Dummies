@@ -2,6 +2,8 @@
 
 Authors: Ceres Barros, Tati Micheletti
 
+
+
 Let's imagine we want to explore how the relationship between a species' abundance and temperature changes over time.
 Both the abundance data and the temperature data are being constantly updated by a simulation model, and we want to analyse the relationship between the two iteratively, without needing to manually run a script to account for the newly generated data inputs.
 
@@ -22,18 +24,18 @@ In Part \@ref(part2), we introduce `SpaDES` features that we most commonly use i
 
 ### Setup
 
-Load the necessary packages (make sure they are installed first, of course)
+This is what you'd normally do... Install all the packages in some way that you probably didn't record in your scripts and then start your script with loading the packages:
 
 
 ```r
 ## please start from a clean R session
+remotes::install_github("ropensci/NLMR")  ## you will need this ;)
+
 library(raster)
 library(quickPlot)
 library(ggplot2)
 library(SpaDES.tools)
 library(ggpubr)
-
-remotes::install_github("achubaty/NLMR")  ## you will need this ;)
 ```
 
 And now create a raster template:
@@ -144,6 +146,12 @@ for (t in 1:Time) {
   outputdata <- data.frame(abund = abundance[[t]][], temp = temperature[[t]][])
   lmPlots[[t]] <- stats_analysis(Data = outputdata)
 }
+## Warning: Using `size` aesthetic for lines was deprecated in ggplot2
+## 3.4.0.
+## i Please use `linewidth` instead.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_lifecycle_warnings()` to see where
+## this warning was generated.
 ggarrange(plotlist = lmPlots)
 ```
 
@@ -158,20 +166,13 @@ We start by creating an *.R* script (it can have any name) that sets up and runs
 The control script for this example is located on the root of the *SpaDES4Dummies* GitHub repository under the name `Part1_DummyModel.R`.
 Note that Markdown (`.Rmd`) scripts can also be used instead of \`.R\` scripts.
 
-We start by making sure all `SpaDES` packages and they dependencies are installed and up to date using `SpaDES.install::installSpaDES`.
+We start by making sure all `SpaDES` packages and they dependencies are installed (and that the installation is *scripted*)  using the `Require` package.
 
 
 ```r
 ## start again from a clean R session
-options(repos = c(CRAN = "https://cloud.r-project.org"),
-        spades.moduleCodeChecks = FALSE)
-
-if (paste(R.Version()[c("major", "minor")], collapse = ".") < "4.2.1") {
-  warning(paste("dismo::maxent may create a fatal error",
-                "when using R version < v4.2.1 and from RStudio.\n", 
-                "Please upgrade R, or run this script outside of RStudio.\n",
-                "See https://github.com/rspatial/dismo/issues/13"))
-}
+options(repos = c("https://predictiveecology.r-universe.dev/", 
+                  CRAN = "https://cloud.r-project.org"))
 
 ## decide where you're working
 mainPath <- "~/SpaDES4Dummies_Part1"
@@ -183,21 +184,18 @@ dir.create(pkgPath, recursive = TRUE)
 if (!"remotes" %in% installed.packages(lib.loc = pkgPath))
   install.packages("remotes")
 
-if (!"Require" %in% installed.packages(lib.loc = pkgPath) || 
-    packageVersion("Require", lib.loc = pkgPath) < "0.1.2") {
-  remotes::install_github("PredictiveEcology/Require@86254b17ad2392de5c9e4dae6dd06a194b69a169",
-                          upgrade = FALSE, force = TRUE)
+if (!"Require" %in% installed.packages(lib.loc = pkgPath) ||
+    packageVersion("Require", lib.loc = pkgPath) < "0.3.1") {
+  remotes::install_github("PredictiveEcology/Require@55ec169e654214d86be62a0e13e9a2157f1aa966",
+                          upgrade = FALSE)
 }
 
 ## use binary linux packages if on Ubuntu
 Require::setLinuxBinaryRepo()
 
-Require::Require(c("SpaDES"), require = FALSE, upgrade = FALSE, standAlone = TRUE) ## automatically downloads all packages in the SpaDES family and their dependencies
+Require::Require(c("SpaDES"), require = FALSE, upgrade = FALSE, dependencies = TRUE, standAlone = TRUE) ## automatically downloads all packages in the SpaDES family and their dependencies
 
 library(SpaDES)
-
-## decide where you're working
-mainPath <- "."
 
 setPaths(cachePath = file.path(mainPath, "cache"),
          inputPath = file.path(mainPath, "inputs"),
@@ -205,14 +203,32 @@ setPaths(cachePath = file.path(mainPath, "cache"),
          outputPath = file.path(mainPath, "outputs"))
 
 getPaths() ## check that this is what you wanted
+## $cachePath
+## [1] "~/SpaDES4Dummies_Part1/cache"
+## 
+## $inputPath
+## [1] "~/SpaDES4Dummies_Part1/inputs"
+## 
+## $modulePath
+## [1] "~/SpaDES4Dummies_Part1/modules"
+## 
+## $outputPath
+## [1] "~/SpaDES4Dummies_Part1/outputs"
+## 
+## $rasterPath
+## [1] "C:\\Users\\cbarros\\AppData\\Local\\Temp\\RtmpUhOITx/SpaDES/scratch/raster"
+## 
+## $scratchPath
+## [1] "C:\\Users\\cbarros\\AppData\\Local\\Temp\\RtmpUhOITx/SpaDES/scratch"
+## 
+## $terraPath
+## [1] "C:\\Users\\cbarros\\AppData\\Local\\Temp\\RtmpUhOITx/SpaDES/scratch/terra"
 
 ## Let's create a self-contained module that will simulate the species' abundance for any given period of time and frequency.
-if (!Path.exists(file.path(getPaths()$modulePath, "speciesAbundance"))) {
+if (!dir.exists(file.path(getPaths()$modulePath, "speciesAbundance"))) {
   newModule(name = "speciesAbundance", path = getPaths()$modulePath)
 }
 ```
-
-
 
 We then create modules using `newModule`.
 `newModule` creates a module folder (*speciesAbundance*) inside `/modules` that contains both the module `.R` script template, as well as the documentation template (the `.Rmd` file).
@@ -265,14 +281,14 @@ Another way of explaining it for objects is illustrated in Fig.
 
 \begin{figure}
 
-{\centering \includegraphics[width=0.8\linewidth]{obj} 
+{\centering \includegraphics[width=0.8\linewidth]{D:/GitHub/SpaDES4Dummies/figures/obj} 
 
 }
 
 \caption{Inputs and outputs in SpaDES: Object A comes from outside of the module (e.g. from an internet URL, from data you have, or from `.inputObjects`), while Module Z produces object C. Both objects serve as an inputs for Module Y, which in return produce as outputs objects B and D, respectivelly from objects A and C. As Module Z uses a simple function *internally* to create object C, it doesn't have any inputs, such as our dummy example.}(\#fig:figObj)
 \end{figure}
 
-The exception to this rule are the default input objects created by the `.inputObjects` function (see [.inputObjects function]) during the `simInit` call.
+Th default input objects created by the `.inputObjects` function (see [.inputObjects function]) during the `simInit` call are exceptions to this rule.
 
 Here is how we defined the *speciesAbundance* module:
 
@@ -284,12 +300,12 @@ defineModule(sim, list(
   keywords = "",
   authors = person("Me", email = "me@example.com", role = c("aut", "cre")),
   childModules = character(0),
-  version = list(speciesAbundanceData = "0.0.0.9000"),
+  version = list(speciesAbundanceData = "1.0.0"),
   timeframe = as.POSIXlt(c(NA, NA)),
   timeunit = "year",
   citation = list("citation.bib"),
   documentation = deparse(list("README.txt", "speciesAbundance.Rmd")),
-  reqdPkgs = list("PredictiveEcology/SpaDES.core@development (>=1.0.10.9000)",
+  reqdPkgs = list("SpaDES.core (>=2.0.2)",
                   "raster", "quickPlot"),
   parameters = bindrows(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
@@ -588,12 +604,12 @@ defineModule(sim, list(
   keywords = c("temperature", "gaussian", "spatial"),
   authors = person("Me", email = "me@example.com", role = c("aut", "cre")),
   childModules = character(0),
-  version = list(speciesAbundanceData = "0.0.0.9000"),
+  version = list(temperature = "1.0.0"),
   timeframe = as.POSIXlt(c(NA, NA)),
   timeunit = "year",
   citation = list("citation.bib"),
   documentation = list("README.txt", "temperature.Rmd"),
-  reqdPkgs = list("PredictiveEcology/SpaDES.core@development (>=1.0.10.9000)",
+  reqdPkgs = list("SpaDES.core (>=2.0.2)",
                   "raster", "achubaty/NLMR"),
    parameters = bindrows(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
@@ -640,7 +656,7 @@ doEvent.temperature = function(sim, eventTime, eventType, debug = FALSE) {
     tempPlot = {
       ## do stuff for this event
       sim <- plotting(sim)
-
+      
       ## schedule future event(s)
       sim <- scheduleEvent(sim, eventTime = time(sim) + P(sim)$.plotInterval, moduleName = "temperature", 
                            eventType = "tempPlot", eventPriority = .normal() + 0.5)
@@ -671,7 +687,7 @@ update <- function(sim) {
 plotting <- function(sim) {
   ## plot temperature
   plotTitle <- paste("Temperature\nat time",
-                      names(sim$tempRasters)[length(sim$tempRasters)])
+                     names(sim$tempRasters)[length(sim$tempRasters)])
   tempPlot <- sim$tempRasters[[length(sim$tempRasters)]] 
   Plot(tempPlot, 
        title = plotTitle, 
@@ -751,12 +767,12 @@ defineModule(sim, list(
   keywords = c("linear model"),
   authors = person("Me", email = "me@example.com", role = c("aut", "cre")),
   childModules = character(0),
-  version = list(speciesAbundanceData = "0.0.0.9000"),
+  version = list(speciesTempLM = "1.0.0"),
   timeframe = as.POSIXlt(c(NA, NA)),
   timeunit = "year",
   citation = list("citation.bib"),
   documentation = list("README.txt", "speciesTempLM.Rmd"),
-  reqdPkgs = list("PredictiveEcology/SpaDES.core@development (>=1.0.10.9000)",
+  reqdPkgs = list("SpaDES.core (>=2.0.2)",
                   "raster", "ggplot2", "data.table", "reshape2"),
    parameters = bindrows(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
@@ -834,7 +850,7 @@ statsAnalysis <- function(sim) {
   tempData <- data.table(getValues(stack(sim$tempRasters)))
   tempData[, pixID := 1:nrow(tempData)]
   tempData <- melt.data.table(tempData, id.var = "pixID",
-                               variable.name = "year", value.name = "temp")
+                              variable.name = "year", value.name = "temp")
   tempData[, year := as.numeric(sub("X", "", year))] 
   
   ## merge per year  
@@ -939,6 +955,9 @@ The function `simInit` needs a few arguments listing simulation folder directori
 -   `paths` contains the folder directory paths that we set earlier.
 
 
+
+
+
 ```r
 ## list the modules to use
 simModules <- list("speciesAbundance", "temperature", "speciesTempLM")
@@ -974,21 +993,16 @@ Before starting the simulations we should check if the modules were linked corre
 
 **Module diagram**
 
-`moduleDiagram` is a useful function that shows module inter-dependencies as a network diagram.
+`moduleDiagram` (Fig. \@ref(fig:moduleDiagram)) is a useful function that shows module inter-dependencies as a network diagram.
 The direction of the arrows indicates an output to input flow.
-You can see that *speciesAbundance* and *temperature* inputs (specifically our \`r\` raster) are supplied by an external source ("*INPUT*") - the user or `.inputObjects`.
+You can see that *speciesAbundance* and *temperature* inputs (specifically our \`r\` raster) are supplied by an external source (*_INPUT_*) - the user or `.inputObjects`.
 Whereas the inputs to the *speciesTempLM* module are outputs of the *speciesAbundance* and *temperature* modules.
 
-
-```r
-moduleDiagram(mySim)
-```
-
-![](Part1_DummyModel_files/figure-latex/modulediagram-1.pdf)<!-- --> 
+![(\#fig:moduleDiagram)Diagram of module connections.](Part1_DummyModel_files/figure-latex/moduleDiagram-1.pdf) 
 
 **Object diagram**
 
-`objectDiagram` provides another way of checking module linkages.
+`objectDiagram` (Fig. \@ref(fig:objectDiagram)) provides another way of checking module linkages.
 It explicitly shows module inter-dependencies by depicting the objects that establish links between modules.
 
 
@@ -996,7 +1010,14 @@ It explicitly shows module inter-dependencies by depicting the objects that esta
 objectDiagram(mySim)
 ```
 
-![](Part1_DummyModel_files/figure-latex/eventdiagram-1.png)<!-- --> 
+\begin{figure}
+
+{\centering \includegraphics{D:/GitHub/SpaDES4Dummies/figures/Part1_objectDiagram} 
+
+}
+
+\caption{Module diagram showing module inter-dependencies with object names.}(\#fig:objectDiagram)
+\end{figure}
 
 #### Running `SpaDES`
 
@@ -1014,7 +1035,7 @@ mySim2 <- spades(mySim, debug = TRUE)
 
 \begin{figure}
 
-{\centering \includegraphics[width=0.8\linewidth]{simul_plot} 
+{\centering \includegraphics[width=0.8\linewidth]{D:/GitHub/SpaDES4Dummies/figures/simul_plot} 
 
 }
 
@@ -1035,4 +1056,8 @@ Also, do go to the [`SpaDES` webpage](https://spades.predictiveecology.org/) to 
 
 ------------------------------------------------------------------------
 
-<center>**Happy SpaDESing!**</center>
+<center> 
+
+**Happy SpaDESing!**
+
+</center>
