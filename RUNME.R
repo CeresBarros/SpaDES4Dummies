@@ -35,12 +35,8 @@ if (!"Require" %in% installed.packages(lib.loc = pkgPath) ||
 ## use binary linux packages if on Ubuntu
 Require::setLinuxBinaryRepo()
 
-Require::Require(c("PredictiveEcology/SpaDES.project@a9fe467953ee4c3ca704a9781ab22e105ce342ba"), 
-                 require = FALSE, upgrade = FALSE, standAlone = TRUE)
-
-outs <- SpaDES.project::packagesInModules(modulePath = file.path("modules"))  ## gets list of module dependencies
-Require::Require(c(unname(unlist(outs)), "SpaDES",
-                   "bookdown", "DiagrammeR", "htmlwidgets", "geodata", "ggplot2", 
+Require::Require(c("bookdown", "htmlwidgets", "geodata", "SpaDES",
+                   "PredictiveEcology/SpaDES.experiment@75d917b70b892802fed0bbdb2a5e9f3c6772f0ba",
                    "ggpubr", "rmarkdown", "rsvg"), 
                  require = FALSE,   ## don't load packages
                  upgrade = FALSE,   ## don't upgrade dependencies
