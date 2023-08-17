@@ -8,8 +8,6 @@ options("width" = 60)
 # example chunk options set globally
 knitr::opts_chunk$set(
   collapse = TRUE,
-  cache = 2, 
-  cache.rebuild = FALSE, 
   tidy = TRUE, 
   tidy.opts = list(width.cutoff = 60),
   size = "tiny"
