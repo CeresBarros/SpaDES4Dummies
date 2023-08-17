@@ -8,7 +8,7 @@ on:
       - master
       - development
 
-name: tutorial-check
+name: Render bookdown website
 
 jobs:
   tutorial-check:
