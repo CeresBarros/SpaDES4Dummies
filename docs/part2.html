@@ -23,7 +23,7 @@
 <meta name="author" content="Ceres Barros" />
 
 
-<meta name="date" content="2023-08-16" />
+<meta name="date" content="2023-08-17" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -49,6 +49,7 @@
 
 
 
+<link href="libs/codefolding-lua-1.1/codefolding-lua.css" rel="stylesheet" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
@@ -266,7 +267,8 @@ We start by creating an <code>.R</code> script to set up and control the simulat
 In this example this script is called <code>Part2_SDMs.R</code>.</p>
 <p>The script begins with a few lines of code that ensure a few packages are installed and loaded (see <a href="part2.html#reproducible-package-installation">Reproducible package installation</a>).
 It then defines the necessary folder directories for the simulation and creates the modules in the <code>modules/</code> folder.</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="part2.html#cb26-1" tabindex="-1"></a><span class="fu">options</span>(<span class="at">repos =</span> <span class="fu">c</span>(<span class="st">&quot;https://predictiveecology.r-universe.dev/&quot;</span>, </span>
+<details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r fold-show"><code class="sourceCode r"><span id="cb26-1"><a href="part2.html#cb26-1" tabindex="-1"></a><span class="fu">options</span>(<span class="at">repos =</span> <span class="fu">c</span>(<span class="st">&quot;https://predictiveecology.r-universe.dev/&quot;</span>, </span>
 <span id="cb26-2"><a href="part2.html#cb26-2" tabindex="-1"></a>                  <span class="at">CRAN =</span> <span class="st">&quot;https://cloud.r-project.org&quot;</span>))</span>
 <span id="cb26-3"><a href="part2.html#cb26-3" tabindex="-1"></a></span>
 <span id="cb26-4"><a href="part2.html#cb26-4" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">getRversion</span>() <span class="sc">&lt;</span> <span class="st">&quot;4.2.1&quot;</span>) {</span>
@@ -313,31 +315,28 @@ It then defines the necessary folder directories for the simulation and creates 
 <span id="cb26-45"><a href="part2.html#cb26-45" tabindex="-1"></a></span>
 <span id="cb26-46"><a href="part2.html#cb26-46" tabindex="-1"></a><span class="do">## there seems to be a problem with `ragg` and a forced install solves it</span></span>
 <span id="cb26-47"><a href="part2.html#cb26-47" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;ragg&quot;</span>)</span>
-<span id="cb26-48"><a href="part2.html#cb26-48" tabindex="-1"></a><span class="do">## package &#39;ragg&#39; successfully unpacked and MD5 sums checked</span></span>
-<span id="cb26-49"><a href="part2.html#cb26-49" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb26-50"><a href="part2.html#cb26-50" tabindex="-1"></a><span class="do">## The downloaded binary packages are in</span></span>
-<span id="cb26-51"><a href="part2.html#cb26-51" tabindex="-1"></a><span class="do">##  C:\Users\cbarros\AppData\Local\Temp\RtmpMTr5Nj\downloaded_packages</span></span>
-<span id="cb26-52"><a href="part2.html#cb26-52" tabindex="-1"></a></span>
-<span id="cb26-53"><a href="part2.html#cb26-53" tabindex="-1"></a>Require<span class="sc">::</span><span class="fu">Require</span>(<span class="st">&quot;SpaDES.core&quot;</span>, <span class="at">install =</span> <span class="cn">FALSE</span>)  <span class="do">## load only</span></span>
-<span id="cb26-54"><a href="part2.html#cb26-54" tabindex="-1"></a><span class="fu">setPaths</span>(<span class="at">cachePath =</span> <span class="fu">file.path</span>(mainPath, <span class="st">&quot;cache&quot;</span>),</span>
-<span id="cb26-55"><a href="part2.html#cb26-55" tabindex="-1"></a>         <span class="at">inputPath =</span> <span class="fu">file.path</span>(mainPath, <span class="st">&quot;inputs&quot;</span>),</span>
-<span id="cb26-56"><a href="part2.html#cb26-56" tabindex="-1"></a>         <span class="at">modulePath =</span> <span class="fu">file.path</span>(mainPath, <span class="st">&quot;modules&quot;</span>),</span>
-<span id="cb26-57"><a href="part2.html#cb26-57" tabindex="-1"></a>         <span class="at">outputPath =</span> <span class="fu">file.path</span>(mainPath, <span class="st">&quot;outputs&quot;</span>))</span>
-<span id="cb26-58"><a href="part2.html#cb26-58" tabindex="-1"></a></span>
-<span id="cb26-59"><a href="part2.html#cb26-59" tabindex="-1"></a>simPaths <span class="ot">&lt;-</span> <span class="fu">getPaths</span>() <span class="do">## check that this is what you wanted</span></span>
-<span id="cb26-60"><a href="part2.html#cb26-60" tabindex="-1"></a></span>
-<span id="cb26-61"><a href="part2.html#cb26-61" tabindex="-1"></a><span class="do">## Let&#39;s create a self-contained module that will simulate the species&#39; abundance for any given period of time and frequency.</span></span>
-<span id="cb26-62"><a href="part2.html#cb26-62" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">dir.exists</span>(<span class="fu">file.path</span>(simPaths<span class="sc">$</span>modulePath, <span class="st">&quot;speciesAbundanceData&quot;</span>))) {</span>
-<span id="cb26-63"><a href="part2.html#cb26-63" tabindex="-1"></a>  <span class="fu">newModule</span>(<span class="at">name =</span> <span class="st">&quot;speciesAbundanceData&quot;</span>, <span class="at">path =</span> simPaths<span class="sc">$</span>modulePath)</span>
+<span id="cb26-48"><a href="part2.html#cb26-48" tabindex="-1"></a></span>
+<span id="cb26-49"><a href="part2.html#cb26-49" tabindex="-1"></a>Require<span class="sc">::</span><span class="fu">Require</span>(<span class="st">&quot;SpaDES.core&quot;</span>, <span class="at">install =</span> <span class="cn">FALSE</span>)  <span class="do">## load only</span></span>
+<span id="cb26-50"><a href="part2.html#cb26-50" tabindex="-1"></a><span class="fu">setPaths</span>(<span class="at">cachePath =</span> <span class="fu">file.path</span>(mainPath, <span class="st">&quot;cache&quot;</span>),</span>
+<span id="cb26-51"><a href="part2.html#cb26-51" tabindex="-1"></a>         <span class="at">inputPath =</span> <span class="fu">file.path</span>(mainPath, <span class="st">&quot;inputs&quot;</span>),</span>
+<span id="cb26-52"><a href="part2.html#cb26-52" tabindex="-1"></a>         <span class="at">modulePath =</span> <span class="fu">file.path</span>(mainPath, <span class="st">&quot;modules&quot;</span>),</span>
+<span id="cb26-53"><a href="part2.html#cb26-53" tabindex="-1"></a>         <span class="at">outputPath =</span> <span class="fu">file.path</span>(mainPath, <span class="st">&quot;outputs&quot;</span>))</span>
+<span id="cb26-54"><a href="part2.html#cb26-54" tabindex="-1"></a></span>
+<span id="cb26-55"><a href="part2.html#cb26-55" tabindex="-1"></a>simPaths <span class="ot">&lt;-</span> <span class="fu">getPaths</span>() <span class="do">## check that this is what you wanted</span></span>
+<span id="cb26-56"><a href="part2.html#cb26-56" tabindex="-1"></a></span>
+<span id="cb26-57"><a href="part2.html#cb26-57" tabindex="-1"></a><span class="do">## Let&#39;s create a self-contained module that will simulate the species&#39; abundance for any given period of time and frequency.</span></span>
+<span id="cb26-58"><a href="part2.html#cb26-58" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">dir.exists</span>(<span class="fu">file.path</span>(simPaths<span class="sc">$</span>modulePath, <span class="st">&quot;speciesAbundanceData&quot;</span>))) {</span>
+<span id="cb26-59"><a href="part2.html#cb26-59" tabindex="-1"></a>  <span class="fu">newModule</span>(<span class="at">name =</span> <span class="st">&quot;speciesAbundanceData&quot;</span>, <span class="at">path =</span> simPaths<span class="sc">$</span>modulePath)</span>
+<span id="cb26-60"><a href="part2.html#cb26-60" tabindex="-1"></a>}</span>
+<span id="cb26-61"><a href="part2.html#cb26-61" tabindex="-1"></a></span>
+<span id="cb26-62"><a href="part2.html#cb26-62" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">dir.exists</span>(<span class="fu">file.path</span>(simPaths<span class="sc">$</span>modulePath, <span class="st">&quot;climateData&quot;</span>))) {</span>
+<span id="cb26-63"><a href="part2.html#cb26-63" tabindex="-1"></a>  <span class="fu">newModule</span>(<span class="at">name =</span> <span class="st">&quot;climateData&quot;</span>, <span class="at">path =</span> simPaths<span class="sc">$</span>modulePath)</span>
 <span id="cb26-64"><a href="part2.html#cb26-64" tabindex="-1"></a>}</span>
 <span id="cb26-65"><a href="part2.html#cb26-65" tabindex="-1"></a></span>
-<span id="cb26-66"><a href="part2.html#cb26-66" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">dir.exists</span>(<span class="fu">file.path</span>(simPaths<span class="sc">$</span>modulePath, <span class="st">&quot;climateData&quot;</span>))) {</span>
-<span id="cb26-67"><a href="part2.html#cb26-67" tabindex="-1"></a>  <span class="fu">newModule</span>(<span class="at">name =</span> <span class="st">&quot;climateData&quot;</span>, <span class="at">path =</span> simPaths<span class="sc">$</span>modulePath)</span>
-<span id="cb26-68"><a href="part2.html#cb26-68" tabindex="-1"></a>}</span>
-<span id="cb26-69"><a href="part2.html#cb26-69" tabindex="-1"></a></span>
-<span id="cb26-70"><a href="part2.html#cb26-70" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">dir.exists</span>(<span class="fu">file.path</span>(simPaths<span class="sc">$</span>modulePath, <span class="st">&quot;projectSpeciesDist&quot;</span>))) {</span>
-<span id="cb26-71"><a href="part2.html#cb26-71" tabindex="-1"></a>  <span class="fu">newModule</span>(<span class="at">name =</span> <span class="st">&quot;projectSpeciesDist&quot;</span>, <span class="at">path =</span> simPaths<span class="sc">$</span>modulePath)</span>
-<span id="cb26-72"><a href="part2.html#cb26-72" tabindex="-1"></a>}</span></code></pre></div>
+<span id="cb26-66"><a href="part2.html#cb26-66" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">dir.exists</span>(<span class="fu">file.path</span>(simPaths<span class="sc">$</span>modulePath, <span class="st">&quot;projectSpeciesDist&quot;</span>))) {</span>
+<span id="cb26-67"><a href="part2.html#cb26-67" tabindex="-1"></a>  <span class="fu">newModule</span>(<span class="at">name =</span> <span class="st">&quot;projectSpeciesDist&quot;</span>, <span class="at">path =</span> simPaths<span class="sc">$</span>modulePath)</span>
+<span id="cb26-68"><a href="part2.html#cb26-68" tabindex="-1"></a>}</span></code></pre></div>
+</details>
 <p>Notice how we protect the <code>newModule</code> call with an <code>if</code> statement that first detects whether the module directory exists already.
 This is necessary to prevent overwriting existing modules should this script be run a second time in the same location (see <a href="part2.html#protect-yourself-and-others-from-common-mistakesproblems">Protect yourself and others from common mistakes/problems</a>).</p>
 <p><code>setPaths</code> will create the project folder directories in case they do not exist (no overwriting occurs in case they do).</p>
@@ -356,6 +355,7 @@ We use the new <code>terra</code> package throughout this example, since the <co
 The module then outputs <em>Picea glauca</em> % cover as a raster (<code>sppAbundanceRas</code>) and as a <code>data.table</code> (<code>sppAbundanceDT</code>).
 The <code>data.table</code> contains added information about the year of the simulation during which the data should be used (here, only the first year when SDM fitting happens).</p>
 <p>We export species % cover in two formats (a raster and a table) for demonstrational purposes, but also because we could envision that this model (i.e. group of modules) could save the species distribution projections for several points in time in a more compact format of a <code>data.table</code> – large raster layers can consume a considerable amount of disk space (see <a href="part2.html#coding-for-the-future">Coding for the future</a>).</p>
+<details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="part2.html#cb27-1" tabindex="-1"></a><span class="do">## Everything in this file and any files in the R directory are sourced during `simInit()`;</span></span>
 <span id="cb27-2"><a href="part2.html#cb27-2" tabindex="-1"></a><span class="do">## all functions and objects are put into the `simList`.</span></span>
 <span id="cb27-3"><a href="part2.html#cb27-3" tabindex="-1"></a><span class="do">## To use objects, use `sim$xxx` (they are globally available to all modules).</span></span>
@@ -517,6 +517,7 @@ The <code>data.table</code> contains added information about the year of the sim
 <span id="cb27-159"><a href="part2.html#cb27-159" tabindex="-1"></a>  <span class="co"># ! ----- STOP EDITING ----- ! #</span></span>
 <span id="cb27-160"><a href="part2.html#cb27-160" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">invisible</span>(sim))</span>
 <span id="cb27-161"><a href="part2.html#cb27-161" tabindex="-1"></a>}</span></code></pre></div>
+</details>
 </div>
 <div id="climatedata-module" class="section level4 hasAnchor" number="2.2.1.2">
 <h4><span class="header-section-number">2.2.1.2</span> <em>climateData</em> module:<a href="part2.html#climatedata-module" class="anchor-section" aria-label="Anchor link to header"></a></h4>
@@ -529,6 +530,7 @@ The climate projections were obtained for 2021-2040, 2041-2060, 2061-2080 and 20
 <p>We encourage providing different (or additional) URLs referring to projections for other climate periods, other climate models and other climate scenarios (see <a href="https://www.worldclim.org/data/cmip6/cmip6climate.html">WorldClim</a> for a list of climate projections).</p>
 <p>If providing other URLs to obtain different climate data, pay special attention to the “year” column of <code>projClimateURLs</code> – the URLs need to correspond to the simulation year during which they will be used (not necessarily the actual climate year, unless the simulation years follow the same numbering).</p>
 <p>Like in the <code>speciesAbundanceData</code> module, the <code>prepInputs</code> function processes the cliamte layers to match the study area raster (<code>studyAreaRas</code>) and compiles all climate data in the <code>climateDT</code> object and as raster layer objects (<code>baselineClimateRas</code> and <code>projClimateRas</code>) – the module’s outputs.</p>
+<details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="part2.html#cb28-1" tabindex="-1"></a><span class="do">## Everything in this file and any files in the R directory are sourced during `simInit()`;</span></span>
 <span id="cb28-2"><a href="part2.html#cb28-2" tabindex="-1"></a><span class="do">## all functions and objects are put into the `simList`.</span></span>
 <span id="cb28-3"><a href="part2.html#cb28-3" tabindex="-1"></a><span class="do">## To use objects, use `sim$xxx` (they are globally available to all modules).</span></span>
@@ -821,6 +823,7 @@ The climate projections were obtained for 2021-2040, 2041-2060, 2061-2080 and 20
 <span id="cb28-290"><a href="part2.html#cb28-290" tabindex="-1"></a>  <span class="co"># ! ----- STOP EDITING ----- ! #</span></span>
 <span id="cb28-291"><a href="part2.html#cb28-291" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">invisible</span>(sim))</span>
 <span id="cb28-292"><a href="part2.html#cb28-292" tabindex="-1"></a>}</span></code></pre></div>
+</details>
 <p>We draw your attention to a few particular aspects of the data modules:</p>
 <ul>
 <li><p>How we took care to define the data classes of parameters, expected inputs and module outputs in their respective metadata sections;</p></li>
@@ -850,6 +853,7 @@ This is, of course, not good practice, but again we warn the user early on (in t
 We recommend having a look at <a href="https://rspatial.org/raster/sdm/index.html">this guide</a> to learn about fitting SDMs with <code>dismo</code> and more.
 Before fitting the SDM, the module converts any non-binary species data into presences and absences.</p>
 <p>The main outputs are species distribution projections in the form of plots and a stacked raster layer (<code>sppDistProj</code>) and the fitted SDM object.</p>
+<details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="part2.html#cb29-1" tabindex="-1"></a><span class="do">## Everything in this file and any files in the R directory are sourced during `simInit()`;</span></span>
 <span id="cb29-2"><a href="part2.html#cb29-2" tabindex="-1"></a><span class="do">## all functions and objects are put into the `simList`.</span></span>
 <span id="cb29-3"><a href="part2.html#cb29-3" tabindex="-1"></a><span class="do">## To use objects, use `sim$xxx` (they are globally available to all modules).</span></span>
@@ -1147,6 +1151,7 @@ Before fitting the SDM, the module converts any non-binary species data into pre
 <span id="cb29-295"><a href="part2.html#cb29-295" tabindex="-1"></a>  <span class="co"># ! ----- STOP EDITING ----- ! #</span></span>
 <span id="cb29-296"><a href="part2.html#cb29-296" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">invisible</span>(sim))</span>
 <span id="cb29-297"><a href="part2.html#cb29-297" tabindex="-1"></a>}</span></code></pre></div>
+</details>
 <p>We draw your attention to:</p>
 <ul>
 <li><p>As we said earlier, we could have added yearly projected values to the <code>sppAbundanceDT</code> table.
@@ -1175,6 +1180,7 @@ We fist ensure that all module dependencies (and their dependencies and so on) a
 <p>Note that the <code>dismo</code> package (a dependency of the <code>projectSpeciesDist</code> module) needs <code>rJava</code> to run <code>maxent</code>.
 In turn, <code>rJava</code> needs a working Java installation (Jave can be downloaded <a href="See%20https://www.java.com/en/download/manual.jsp">here</a>).
 Below you will see that we attempt to warn the user about problems loading <code>rJava</code>, which are likely related to Java not being found on the system.</p>
+<details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="part2.html#cb30-1" tabindex="-1"></a>outs <span class="ot">&lt;-</span> SpaDES.project<span class="sc">::</span><span class="fu">packagesInModules</span>(<span class="at">modulePath =</span> simPaths<span class="sc">$</span>modulePath)  <span class="do">## gets list of module dependencies</span></span>
 <span id="cb30-2"><a href="part2.html#cb30-2" tabindex="-1"></a>Require<span class="sc">::</span><span class="fu">Require</span>(<span class="fu">c</span>(<span class="fu">unname</span>(<span class="fu">unlist</span>(outs)),</span>
 <span id="cb30-3"><a href="part2.html#cb30-3" tabindex="-1"></a>                   <span class="st">&quot;DiagrammeR&quot;</span>), </span>
@@ -1194,13 +1200,13 @@ Below you will see that we attempt to warn the user about problems loading <code
 <span id="cb30-17"><a href="part2.html#cb30-17" tabindex="-1"></a>                  <span class="at">fun =</span> <span class="cn">NA</span>)</span>
 <span id="cb30-18"><a href="part2.html#cb30-18" tabindex="-1"></a><span class="fu">file.copy</span>(out<span class="sc">$</span>targetFilePath, <span class="fu">file.path</span>(<span class="fu">system.file</span>(<span class="st">&quot;java&quot;</span>, <span class="at">package=</span><span class="st">&quot;dismo&quot;</span>), <span class="st">&quot;maxent.jar&quot;</span>),</span>
 <span id="cb30-19"><a href="part2.html#cb30-19" tabindex="-1"></a>          <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb30-20"><a href="part2.html#cb30-20" tabindex="-1"></a><span class="do">## [1] TRUE</span></span>
-<span id="cb30-21"><a href="part2.html#cb30-21" tabindex="-1"></a></span>
-<span id="cb30-22"><a href="part2.html#cb30-22" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">require</span>(rJava)</span>
-<span id="cb30-23"><a href="part2.html#cb30-23" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span>out) {</span>
-<span id="cb30-24"><a href="part2.html#cb30-24" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="fu">paste</span>(<span class="st">&quot;Your Java installation may have problems, please check.</span><span class="sc">\n</span><span class="st">&quot;</span>, </span>
-<span id="cb30-25"><a href="part2.html#cb30-25" tabindex="-1"></a>             <span class="st">&quot;See https://www.java.com/en/download/manual.jsp for Java installation&quot;</span>))</span>
-<span id="cb30-26"><a href="part2.html#cb30-26" tabindex="-1"></a>}</span></code></pre></div>
+<span id="cb30-20"><a href="part2.html#cb30-20" tabindex="-1"></a></span>
+<span id="cb30-21"><a href="part2.html#cb30-21" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">require</span>(rJava)</span>
+<span id="cb30-22"><a href="part2.html#cb30-22" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span>out) {</span>
+<span id="cb30-23"><a href="part2.html#cb30-23" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="fu">paste</span>(<span class="st">&quot;Your Java installation may have problems, please check.</span><span class="sc">\n</span><span class="st">&quot;</span>, </span>
+<span id="cb30-24"><a href="part2.html#cb30-24" tabindex="-1"></a>             <span class="st">&quot;See https://www.java.com/en/download/manual.jsp for Java installation&quot;</span>))</span>
+<span id="cb30-25"><a href="part2.html#cb30-25" tabindex="-1"></a>}</span></code></pre></div>
+</details>
 <p><strong>/!\ ATTENTION /!\</strong></p>
 <p><em>Windows can present problems when many packages are installed and further package installations fail. If you see errors like this after restarting R:</em></p>
 <pre><code>Installing: glue Detaching is fraught with many potential problems; you may 
@@ -1230,6 +1236,7 @@ These lists define the modules used in the simulation (<code>simModules</code>),
 <li><p><code>reproducible.cachePath</code> and <code>reproducible.destinationPath</code> define the cache directory and the directory where downloaded and processed data will be stored;</p></li>
 <li><p><code>reproducible.useCache</code> and <code>reproducible.useTerra</code>, which will activate caching and the use of the <code>terra</code> package across all <code>Cache</code> and <code>prepInputs</code> function calls.</p></li>
 </ul>
+<details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="part2.html#cb32-1" tabindex="-1"></a><span class="do">## a few important options:</span></span>
 <span id="cb32-2"><a href="part2.html#cb32-2" tabindex="-1"></a><span class="fu">options</span>(<span class="at">reproducible.useCache =</span> <span class="cn">TRUE</span>,</span>
 <span id="cb32-3"><a href="part2.html#cb32-3" tabindex="-1"></a>        <span class="at">reproducible.cachePath =</span> simPaths<span class="sc">$</span>cachePath,</span>
@@ -1283,6 +1290,7 @@ These lists define the modules used in the simulation (<code>simModules</code>),
 <span id="cb32-51"><a href="part2.html#cb32-51" tabindex="-1"></a>mySimGLM <span class="ot">&lt;-</span> <span class="fu">simInit</span>(<span class="at">times =</span> simTimes, <span class="at">params =</span> simParamsGLM, </span>
 <span id="cb32-52"><a href="part2.html#cb32-52" tabindex="-1"></a>                    <span class="at">modules =</span> simModules, <span class="at">objects =</span> simObjects, </span>
 <span id="cb32-53"><a href="part2.html#cb32-53" tabindex="-1"></a>                    <span class="at">paths =</span> simPaths)</span></code></pre></div>
+</details>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:studyAreaCanada"></span>
 <img src="Part2_SDMs_files/figure-html/studyAreaCanada-1.png" alt="Study area within Canada." width="672" />
 <p class="caption">
@@ -1290,8 +1298,10 @@ Figure 2.1: Study area within Canada.
 </p>
 </div>
 <p>Before running the simulation we look at the module linkage diagrams produced by <code>moduleDiagram</code> (Fig. <a href="part1.html#fig:moduleDiagram">1.2</a>) and <code>objectDiagram</code> (Fig. <a href="part1.html#fig:objectDiagram">1.3</a>) to assess whether modules are linked as expected.</p>
+<details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="part2.html#cb33-1" tabindex="-1"></a><span class="fu">moduleDiagram</span>(mySimMaxEnt)</span>
 <span id="cb33-2"><a href="part2.html#cb33-2" tabindex="-1"></a><span class="fu">objectDiagram</span>(mySimMaxEnt)</span></code></pre></div>
+</details>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:moduleDiagram"></span>
 <img src="Part2_SDMs_files/figure-html/moduleDiagram-1.png" alt="Module network diagram." width="576" />
 <p class="caption">
@@ -1314,6 +1324,7 @@ See <code>?experiment2</code> for examples.</p>
 <p>We advise using <code>spades</code> when running the model for the first time.
 Passing the argument <code>debug = TRUE</code> will print the progress of the simulation in detail.
 This helps diagnosing problems when the simulation fails, but also seeing which events are being executed and when particular cache calls are activated.</p>
+<details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="part2.html#cb34-1" tabindex="-1"></a><span class="do">## run simulation</span></span>
 <span id="cb34-2"><a href="part2.html#cb34-2" tabindex="-1"></a><span class="fu">clearPlot</span>(<span class="at">force =</span> <span class="cn">TRUE</span>)   <span class="do">## this forces wiping the graphics device and opening a new window</span></span>
 <span id="cb34-3"><a href="part2.html#cb34-3" tabindex="-1"></a></span>
@@ -1329,6 +1340,7 @@ This helps diagnosing problems when the simulation fails, but also seeing which 
 <span id="cb34-13"><a href="part2.html#cb34-13" tabindex="-1"></a>                            <span class="at">clearSimEnv =</span> <span class="cn">FALSE</span>)   <span class="do">## prevent removing objects from the simLists at the end</span></span>
 <span id="cb34-14"><a href="part2.html#cb34-14" tabindex="-1"></a><span class="do">## save outputs</span></span>
 <span id="cb34-15"><a href="part2.html#cb34-15" tabindex="-1"></a>qs<span class="sc">::</span><span class="fu">qsave</span>(myExperiment, <span class="fu">file.path</span>(simPaths<span class="sc">$</span>outputPath, <span class="fu">paste0</span>(<span class="st">&quot;myExperiment&quot;</span>, <span class="st">&quot;.qs&quot;</span>)))</span></code></pre></div>
+</details>
 <p>Try to execute the <code>spades</code> call twice to see how much faster it runs after many of the operations have been cached (see also <a href="part2.html#caching">Caching</a>).</p>
 <p>By default the data modules (<em>speciesAbundanceData</em> and <em>climateData</em>) save figures of the input species and climate layers (Figs. <a href="part2.html#fig:figSimulationSppAbund">2.2</a> and <a href="part2.html#fig:figSimulationClimate">2.3</a>, respectively).</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:figSimulationSppAbund"></span>
@@ -1360,6 +1372,7 @@ Figure 2.5: Prediction plots: Predictions of <em>Picea glauca</em> presence/abse
 <p>From the results we can see that the MaxEnt and GLM predictions do not seem to agree, indicating a potential problem.
 We may be missing important covariates, interactions, or simply more appropriate algorithms.</p>
 <p>Peruse each model’s estimated coefficients and residuals, and validation results will be a good first step to diagnosing the problem.</p>
+<details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="part2.html#cb35-1" tabindex="-1"></a>myExperiment<span class="sc">$</span>MaxEnt_rep1<span class="sc">$</span>sdmOut   <span class="do">## this links to an html page</span></span>
 <span id="cb35-2"><a href="part2.html#cb35-2" tabindex="-1"></a></span>
 <span id="cb35-3"><a href="part2.html#cb35-3" tabindex="-1"></a>sets <span class="ot">&lt;-</span> <span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>))</span>
@@ -1369,6 +1382,7 @@ We may be missing important covariates, interactions, or simply more appropriate
 <span id="cb35-7"><a href="part2.html#cb35-7" tabindex="-1"></a><span class="do">## check validation results for the two models</span></span>
 <span id="cb35-8"><a href="part2.html#cb35-8" tabindex="-1"></a>myExperiment<span class="sc">$</span>MaxEnt_rep1<span class="sc">$</span>evalOut</span>
 <span id="cb35-9"><a href="part2.html#cb35-9" tabindex="-1"></a>myExperiment<span class="sc">$</span>GLM_rep1<span class="sc">$</span>evalOut</span></code></pre></div>
+</details>
 <div id="adding-a-new-climate-scenario" class="section level4 hasAnchor" number="2.3.3.1">
 <h4><span class="header-section-number">2.3.3.1</span> Adding a new climate scenario<a href="part2.html#adding-a-new-climate-scenario" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>Because data were linked to the modules (and the forecasting) via the modules’ metadata and inputs, adding a new climate scenario and re-running forecasts is easy.</p>
@@ -1376,6 +1390,7 @@ We may be missing important covariates, interactions, or simply more appropriate
 <code>SpaDES</code> will take care of downloading and processing the new layers, as well as forecasting.
 Model fitting will also be repeated, even if the baseline data did not change, because the <code>kfold</code> function we use to partition the data into the training and testing subsets randomly assigns cases to each group.
 If this was not desired, we could set a random seed before running the fitting event (<code>fitSDM</code>) by passing the <code>.seed</code> parameter to the <em>projectSpeciesDist</em> module (e.g., <code>.seed = list("fitSDM" = 123)</code>).</p>
+<details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="part2.html#cb36-1" tabindex="-1"></a><span class="do">## Run with another climate scenario - the most contrasting scenario to SSP 585</span></span>
 <span id="cb36-2"><a href="part2.html#cb36-2" tabindex="-1"></a><span class="do">## get the original table from one of the simulations and replace the climate scenario</span></span>
 <span id="cb36-3"><a href="part2.html#cb36-3" tabindex="-1"></a>projClimateURLs <span class="ot">&lt;-</span> <span class="fu">copy</span>(mySimMaxEnt<span class="sc">$</span>projClimateURLs)</span>
@@ -1402,6 +1417,7 @@ If this was not desired, we could set a random seed before running the fitting e
 <span id="cb36-24"><a href="part2.html#cb36-24" tabindex="-1"></a>                             <span class="at">clearSimEnv =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb36-25"><a href="part2.html#cb36-25" tabindex="-1"></a><span class="do">## save outputs</span></span>
 <span id="cb36-26"><a href="part2.html#cb36-26" tabindex="-1"></a>qs<span class="sc">::</span><span class="fu">qsave</span>(myExperiment2, <span class="fu">file.path</span>(simPaths<span class="sc">$</span>outputPath, <span class="fu">paste0</span>(<span class="st">&quot;myExperiment2&quot;</span>, <span class="st">&quot;.qs&quot;</span>)))</span></code></pre></div>
+</details>
 </div>
 <div id="proposed-exercises" class="section level4 hasAnchor" number="2.3.3.2">
 <h4><span class="header-section-number">2.3.3.2</span> Proposed exercises<a href="part2.html#proposed-exercises" class="anchor-section" aria-label="Anchor link to header"></a></h4>
@@ -1416,6 +1432,7 @@ If this was not desired, we could set a random seed before running the fitting e
 <h4><span class="header-section-number">2.3.3.3</span> Making use of <code>simList</code> for reporting<a href="part2.html#making-use-of-simlist-for-reporting" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>Another advantage of having all simulation parameters, inputs and outputs centralised in one object, is that we can easily inspect and manipulated them afterwards, without the need to load separate objects back into <code>R</code>.</p>
 <p>Here we show how we capitalize on this <code>SpaDES</code> feature to create figures of the outputs (Fig. <a href="part2.html#fig:newScenariosFig">2.6</a>).</p>
+<details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="part2.html#cb37-1" tabindex="-1"></a><span class="do">## MaxEnt predictions across time and for each climate scenario --------------</span></span>
 <span id="cb37-2"><a href="part2.html#cb37-2" tabindex="-1"></a><span class="do">## combine plots from two distinct simulations in a single figure</span></span>
 <span id="cb37-3"><a href="part2.html#cb37-3" tabindex="-1"></a><span class="do">## (the same can be done to compare MaxEnt and GLM, or plot all projections)</span></span>
@@ -1480,6 +1497,7 @@ If this was not desired, we could set a random seed before running the fitting e
 <span id="cb37-62"><a href="part2.html#cb37-62" tabindex="-1"></a><span class="do">## save figure:</span></span>
 <span id="cb37-63"><a href="part2.html#cb37-63" tabindex="-1"></a>figDir <span class="ot">&lt;-</span> <span class="fu">checkPath</span>(<span class="fu">file.path</span>(simPaths<span class="sc">$</span>outputPath, <span class="st">&quot;generalFigures&quot;</span>), <span class="at">create =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb37-64"><a href="part2.html#cb37-64" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="fu">file.path</span>(figDir, <span class="st">&quot;MaxEntPredictions.png&quot;</span>), <span class="at">width =</span> <span class="fl">13.5</span>, <span class="at">height =</span> <span class="fl">5.5</span>, <span class="at">units =</span> <span class="st">&quot;in&quot;</span>, <span class="at">dpi =</span> <span class="dv">300</span>)</span></code></pre></div>
+</details>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:newScenariosFig"></span>
 <img src="outputs/generalFigures/MaxEntPredictions.png" alt="Adding a new scenario: Predictions of Picea glauca probabilities of presences and presence/absence under (left to right) baseline climate conditions, 2041-2060, and 2081-2100 climate projections under two emission scenarios (SSP 136 and SSP 585, the default) -- showing MaxEnt forecasts only." width="80%" />
 <p class="caption">
@@ -1550,12 +1568,14 @@ In addition all modules should contain a full list of packages that they depend 
 If <code>options("spades.useRequire")</code> is set to <code>TRUE</code> (the default), <code>SpaDES</code> will automatically attempt to install any packages listed across all modules if they are not installed in <code>.libPaths()</code>, or if the installed version (or branch if installing from GitHub) does not correspond to what is listed in the module <code>.R</code> script.
 Users can also use <code>Require::pkgSnapshot()</code> to save a list of installed packages that can be used later by <code>Require</code> to install all necessary packages in another machine (see example below).</p>
 <p>Please beware that package installation should be done as much as possible from a clean R session especially in the context of a <code>SpaDES</code>-based project, where each module can potentially have many different dependencies, which have dependencies of their own (see, for instance, how we delayed package loading until after all modules were in place and had their dependencies checked in <code>Part2_SDMs.R</code>)</p>
+<details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="part2.html#cb40-1" tabindex="-1"></a>Require<span class="sc">::</span><span class="fu">pkgSnapshot</span>(<span class="st">&quot;pkgsnapshot.txt&quot;</span>, <span class="at">libPaths =</span> <span class="fu">.libPaths</span>()[<span class="dv">1</span>])  <span class="do">## you should make sure the right .libPath is chosen</span></span>
 <span id="cb40-2"><a href="part2.html#cb40-2" tabindex="-1"></a></span>
 <span id="cb40-3"><a href="part2.html#cb40-3" tabindex="-1"></a><span class="do">## on another machine:</span></span>
 <span id="cb40-4"><a href="part2.html#cb40-4" tabindex="-1"></a>Require<span class="sc">::</span><span class="fu">Require</span>(<span class="at">packageVersionFile =</span> <span class="st">&quot;pkgsnapshot.txt&quot;</span>)</span>
 <span id="cb40-5"><a href="part2.html#cb40-5" tabindex="-1"></a></span>
 <span id="cb40-6"><a href="part2.html#cb40-6" tabindex="-1"></a><span class="do">## See ?Require::pkgSnapshot() for more examples.</span></span></code></pre></div>
+</details>
 </div>
 <div id="protect-yourself-and-others-from-common-mistakesproblems" class="section level3 hasAnchor" number="2.5.2">
 <h3><span class="header-section-number">2.5.2</span> Protect yourself and others from common mistakes/problems<a href="part2.html#protect-yourself-and-others-from-common-mistakesproblems" class="anchor-section" aria-label="Anchor link to header"></a></h3>

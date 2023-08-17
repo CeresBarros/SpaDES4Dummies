@@ -27,7 +27,7 @@ In Part \@ref(part2), we introduce `SpaDES` features that we most commonly use i
 This is what you'd normally do... Install all the packages in some way that you probably didn't record in your scripts and then start your script with loading the packages:
 
 
-```r
+```{.r .fold-show}
 ## please start from a clean R session
 remotes::install_github("ropensci/NLMR")  ## you will need this ;)
 
@@ -41,7 +41,7 @@ library(ggpubr)
 And now create a raster template:
 
 
-```r
+```{.r .fold-show}
 r <- raster(nrows = 100, ncols = 100, xmn = -50, xmx = 50, ymn = -50, ymx = 50)
 ```
 
@@ -50,7 +50,7 @@ r <- raster(nrows = 100, ncols = 100, xmn = -50, xmx = 50, ymn = -50, ymx = 50)
 Our VERY simple "simulation" model (in form of a function) generates rasters that follow a Gaussian distribution
 
 
-```r
+```{.r .fold-show}
 abundance_model <- function(ras, Time) {
   abund_outputs <- list()
   for (t in 1:Time) { 
@@ -71,21 +71,21 @@ abundance_model <- function(ras, Time) {
 Set the length of the simulation (or simply the number of model iterations), run it and plot results (all ABUNDANCE plots together):
 
 
-```r
+```{.r .fold-show}
 Time <- 10
 abundance <- abundance_model(ras = r, Time = Time)
 dev()
 plot(stack(abundance))
 ```
 
-![](Part1_DummyModel_files/figure-latex/the_r_way_simulation_length-1.pdf)<!-- --> 
+<img src="Part1_DummyModel_files/figure-html/the_r_way_simulation_length-1.png" width="672" />
 
 ### Temperature "simulations"
 
 The temperature simulation model will be similar to the vegetation one - remember this is a dummy example.
 
 
-```r
+```{.r .fold-show}
 temperature_model <- function(ras, Time) {
   temp_outputs <- list()
   for (t in 1:Time) { 
@@ -106,12 +106,12 @@ temperature_model <- function(ras, Time) {
 Run the model and plot results (all temperature plots together)
 
 
-```r
+```{.r .fold-show}
 temperature <- temperature_model(ras = r, Time = Time)
 plot(stack(temperature))
 ```
 
-![](Part1_DummyModel_files/figure-latex/the_r_way_plot_results_TMP-1.pdf)<!-- --> 
+<img src="Part1_DummyModel_files/figure-html/the_r_way_plot_results_TMP-1.png" width="672" />
 
 ### Data analysis
 
@@ -120,7 +120,7 @@ Now we analyse if species abundance and temperature are correlated.\
 First, we create the data analysis function (a simple linear model):
 
 
-```r
+```{.r .fold-show}
 stats_analysis <- function(Data) {
   if (all(c("abund", "temp") %in% colnames(Data))) {
     lm1 <- lm(abund ~ temp, data = Data)
@@ -140,7 +140,7 @@ stats_analysis <- function(Data) {
 Then we create a loop to analyse each plot of our time-series:
 
 
-```r
+```{.r .fold-show}
 lmPlots <- list()
 for (t in 1:Time) {
   outputdata <- data.frame(abund = abundance[[t]][], temp = temperature[[t]][])
@@ -148,14 +148,14 @@ for (t in 1:Time) {
 }
 ## Warning: Using `size` aesthetic for lines was deprecated in ggplot2
 ## 3.4.0.
-## i Please use `linewidth` instead.
+## ℹ Please use `linewidth` instead.
 ## This warning is displayed once every 8 hours.
 ## Call `lifecycle::last_lifecycle_warnings()` to see where
 ## this warning was generated.
 ggarrange(plotlist = lmPlots)
 ```
 
-![](Part1_DummyModel_files/figure-latex/data_analysis-1.pdf)<!-- --> 
+<img src="Part1_DummyModel_files/figure-html/data_analysis-1.png" width="672" />
 
 ## AFTER `SpaDES`...
 
@@ -203,26 +203,6 @@ setPaths(cachePath = file.path(mainPath, "cache"),
          outputPath = file.path(mainPath, "outputs"))
 
 getPaths() ## check that this is what you wanted
-## $cachePath
-## [1] "~/SpaDES4Dummies_Part1/cache"
-## 
-## $inputPath
-## [1] "~/SpaDES4Dummies_Part1/inputs"
-## 
-## $modulePath
-## [1] "~/SpaDES4Dummies_Part1/modules"
-## 
-## $outputPath
-## [1] "~/SpaDES4Dummies_Part1/outputs"
-## 
-## $rasterPath
-## [1] "C:\\Users\\cbarros\\AppData\\Local\\Temp\\RtmpUhOITx/SpaDES/scratch/raster"
-## 
-## $scratchPath
-## [1] "C:\\Users\\cbarros\\AppData\\Local\\Temp\\RtmpUhOITx/SpaDES/scratch"
-## 
-## $terraPath
-## [1] "C:\\Users\\cbarros\\AppData\\Local\\Temp\\RtmpUhOITx/SpaDES/scratch/terra"
 
 ## Let's create a self-contained module that will simulate the species' abundance for any given period of time and frequency.
 if (!dir.exists(file.path(getPaths()$modulePath, "speciesAbundance"))) {
@@ -279,14 +259,10 @@ To distinguish what input and output objects are in the context of a module, a g
 Another way of explaining it for objects is illustrated in Fig.
 \@ref(fig:figObj):
 
-\begin{figure}
-
-{\centering \includegraphics[width=0.8\linewidth]{D:/GitHub/SpaDES4Dummies/figures/obj} 
-
-}
-
-\caption{Inputs and outputs in SpaDES: Object A comes from outside of the module (e.g. from an internet URL, from data you have, or from `.inputObjects`), while Module Z produces object C. Both objects serve as an inputs for Module Y, which in return produce as outputs objects B and D, respectivelly from objects A and C. As Module Z uses a simple function *internally* to create object C, it doesn't have any inputs, such as our dummy example.}(\#fig:figObj)
-\end{figure}
+<div class="figure" style="text-align: center">
+<img src="D:/GitHub/SpaDES4Dummies/figures/obj.png" alt="Inputs and outputs in SpaDES: Object A comes from outside of the module (e.g. from an internet URL, from data you have, or from `.inputObjects`), while Module Z produces object C. Both objects serve as an inputs for Module Y, which in return produce as outputs objects B and D, respectivelly from objects A and C. As Module Z uses a simple function *internally* to create object C, it doesn't have any inputs, such as our dummy example." width="80%" />
+<p class="caption">(\#fig:figObj)Inputs and outputs in SpaDES: Object A comes from outside of the module (e.g. from an internet URL, from data you have, or from `.inputObjects`), while Module Z produces object C. Both objects serve as an inputs for Module Y, which in return produce as outputs objects B and D, respectivelly from objects A and C. As Module Z uses a simple function *internally* to create object C, it doesn't have any inputs, such as our dummy example.</p>
+</div>
 
 Th default input objects created by the `.inputObjects` function (see [.inputObjects function]) during the `simInit` call are exceptions to this rule.
 
@@ -998,7 +974,10 @@ The direction of the arrows indicates an output to input flow.
 You can see that *speciesAbundance* and *temperature* inputs (specifically our \`r\` raster) are supplied by an external source (*_INPUT_*) - the user or `.inputObjects`.
 Whereas the inputs to the *speciesTempLM* module are outputs of the *speciesAbundance* and *temperature* modules.
 
-![(\#fig:moduleDiagram)Diagram of module connections.](Part1_DummyModel_files/figure-latex/moduleDiagram-1.pdf) 
+<div class="figure">
+<img src="Part1_DummyModel_files/figure-html/moduleDiagram-1.png" alt="Diagram of module connections." width="576" />
+<p class="caption">(\#fig:moduleDiagram)Diagram of module connections.</p>
+</div>
 
 **Object diagram**
 
@@ -1010,14 +989,10 @@ It explicitly shows module inter-dependencies by depicting the objects that esta
 objectDiagram(mySim)
 ```
 
-\begin{figure}
-
-{\centering \includegraphics{D:/GitHub/SpaDES4Dummies/figures/Part1_objectDiagram} 
-
-}
-
-\caption{Module diagram showing module inter-dependencies with object names.}(\#fig:objectDiagram)
-\end{figure}
+<div class="figure" style="text-align: center">
+<img src="D:/GitHub/SpaDES4Dummies/figures/Part1_objectDiagram.png" alt="Module diagram showing module inter-dependencies with object names."  />
+<p class="caption">(\#fig:objectDiagram)Module diagram showing module inter-dependencies with object names.</p>
+</div>
 
 #### Running `SpaDES`
 
@@ -1033,14 +1008,10 @@ clearPlot()
 mySim2 <- spades(mySim, debug = TRUE)
 ```
 
-\begin{figure}
-
-{\centering \includegraphics[width=0.8\linewidth]{D:/GitHub/SpaDES4Dummies/figures/simul_plot} 
-
-}
-
-\caption{Simulation plots: Final plot of the simulation}(\#fig:figSimulationFig)
-\end{figure}
+<div class="figure" style="text-align: center">
+<img src="D:/GitHub/SpaDES4Dummies/figures/simul_plot.png" alt="Simulation plots: Final plot of the simulation" width="80%" />
+<p class="caption">(\#fig:figSimulationFig)Simulation plots: Final plot of the simulation</p>
+</div>
 
 We suggest experimenting with changing parameter values and trying to create and add other modules to further explore all the `SpaDES` flexibility.
 The more complex the project gets, the more advantageous it is to use `SpaDES` to turn modules *on* or *off*, swapping modules to run, e.g., different statistical analyses, or to include different data.

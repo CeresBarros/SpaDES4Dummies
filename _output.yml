@@ -9,7 +9,7 @@
 #     base: https://github.com/CeresBarros/SpaDES4Dummies
 #     branch: master
 
-bookdown::gitbook:
+bookdown::gitbook:    
   description: "A `SpaDES` crash-course"
   css: css/style.css
   number_sections: true
@@ -25,6 +25,7 @@ bookdown::gitbook:
     edit: null
     download: ["pdf"]
     info: false
+  code_folding: hide
   sharing:
     facebook: false
     github: false

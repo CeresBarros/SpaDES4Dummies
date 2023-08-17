@@ -53,7 +53,7 @@ In this example this script is called `Part2_SDMs.R`.
 The script begins with a few lines of code that ensure a few packages are installed and loaded (see [Reproducible package installation]).
 It then defines the necessary folder directories for the simulation and creates the modules in the `modules/` folder.
 
-```{r globalscriptPart2, message = FALSE, warning = FALSE}
+```{r globalscriptPart2, message = FALSE, warning = FALSE, results = 'hide', class.source = "fold-show"}
 options(repos = c("https://predictiveecology.r-universe.dev/", 
                   CRAN = "https://cloud.r-project.org"))
 
@@ -259,7 +259,7 @@ Note that the `dismo` package (a dependency of the `projectSpeciesDist` module) 
 In turn, `rJava` needs a working Java installation (Jave can be downloaded [here](See%20https://www.java.com/en/download/manual.jsp)).
 Below you will see that we attempt to warn the user about problems loading `rJava`, which are likely related to Java not being found on the system.
 
-```{r simulationPkgs, message = FALSE, warning = FALSE}
+```{r simulationPkgs, message = FALSE, warning = FALSE, results = 'hide'}
 outs <- SpaDES.project::packagesInModules(modulePath = simPaths$modulePath)  ## gets list of module dependencies
 Require::Require(c(unname(unlist(outs)),
                    "DiagrammeR"), 
