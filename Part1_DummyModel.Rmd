@@ -250,7 +250,7 @@ Another way of explaining it for objects is illustrated in Fig.
 knitr::include_graphics(normalizePath(file.path(projDir, "figures/obj.png"), winslash = "/"))
 ```
 
-The exception to this rule are the default input objects created by the `.inputObjects` function (see [.inputObjects function]) during the `simInit` call.
+Th default input objects created by the `.inputObjects` function (see [.inputObjects function]) during the `simInit` call are exceptions to this rule.
 
 Here is how we defined the *speciesAbundance* module:
 
