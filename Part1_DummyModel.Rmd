@@ -2,6 +2,16 @@
 
 Authors: Ceres Barros, Tati Micheletti
 
+``` {r setup, include = FALSE}
+projDir <- getwd()   ## save this for later
+rmdDir <- "~/SpaDES4Dummies_Part1"
+dir.create(rmdDir)
+knitr::opts_knit$set(
+  root.dir = rmdDir
+)
+options("knitr.graphics.rel_path" = FALSE)
+```
+
 Let's imagine we want to explore how the relationship between a species' abundance and temperature changes over time.
 Both the abundance data and the temperature data are being constantly updated by a simulation model, and we want to analyse the relationship between the two iteratively, without needing to manually run a script to account for the newly generated data inputs.
 
@@ -237,7 +247,7 @@ Another way of explaining it for objects is illustrated in Fig.
 \@ref(fig:figObj):
 
 ```{r figObj, fig.align = 'center', warning = FALSE, message = FALSE, echo = FALSE, fig.cap = "Inputs and outputs in SpaDES: Object A comes from outside of the module (e.g. from an internet URL, from data you have, or from `.inputObjects`), while Module Z produces object C. Both objects serve as an inputs for Module Y, which in return produce as outputs objects B and D, respectivelly from objects A and C. As Module Z uses a simple function *internally* to create object C, it doesn't have any inputs, such as our dummy example.", out.width="80%"}
-knitr::include_graphics(normalizePath("figures/obj.png", winslash = "/"))
+knitr::include_graphics(normalizePath(file.path(projDir, "figures/obj.png"), winslash = "/"))
 ```
 
 The exception to this rule are the default input objects created by the `.inputObjects` function (see [.inputObjects function]) during the `simInit` call.
@@ -497,7 +507,7 @@ Scripts with accessory functions like these go into module's `R/` folder.
 Functions should also be accompanied by metadata.
 Here we provide a description of the function, its parameters, returning value and what other package functions it relies on using the `roxygen2` documentation style (indicated by `#'`).
 
-```{r abund_module8, code = readLines(file.path("modules", "speciesAbundance", "R", "abundance_model.R")), eval = FALSE}
+```{r abund_module8, code = readLines(file.path(projDir, "modules", "speciesAbundance", "R", "abundance_model.R")), eval = FALSE}
 ```
 
 ------------------------------------------------------------------------
@@ -519,12 +529,12 @@ This may appear trivial in this example, but it can be extremely useful when inu
 
 This is how we set up the `temperature.R` script looks like:
 
-```{r temp_module, code = readLines(file.path("modules", "temperature", "temperature.R")), eval = FALSE}
+```{r temp_module, code = readLines(file.path(projDir, "modules", "temperature", "temperature.R")), eval = FALSE}
 ```
 
 Again, we added an accessory `temperature_model` function in a separate script `R/temperature_model.R`:
 
-```{r temp_module2, code = readLines(file.path("modules", "temperature", "R", "temperature_model.R")), eval = FALSE}
+```{r temp_module2, code = readLines(file.path(projDir, "modules", "temperature", "R", "temperature_model.R")), eval = FALSE}
 ```
 
 ------------------------------------------------------------------------
@@ -554,12 +564,12 @@ Finally, we draw your attention to a few differences in this module's script bef
 Below is the full module script.
 Notice how the future events where scheduled to `P(sim)$statsTimestep + 0.1`, to force the statistical analyses to occur **after** the abundance and temperature rasters are ready.
 
-```{r stats_module, code = readLines(file.path("modules", "speciesTempLM", "speciesTempLM.R")), eval = FALSE}
+```{r stats_module, code = readLines(file.path(projDir, "modules", "speciesTempLM", "speciesTempLM.R")), eval = FALSE}
 ```
 
 And the script with the accessory functions:
 
-```{r stats_module2, code = readLines(file.path("modules", "speciesTempLM", "R",  "linear_model_functions.R")), eval = FALSE}
+```{r stats_module2, code = readLines(file.path(projDir, "modules", "speciesTempLM", "R",  "linear_model_functions.R")), eval = FALSE}
 ```
 
 ------------------------------------------------------------------------
@@ -584,6 +594,19 @@ The function `simInit` needs a few arguments listing simulation folder directori
     Here we chose to list `.plotInitialTime` (a parameter used and defined in the *speciesAbundance* and *temperature* modules), but provide the default value (we experimenting with it by changing its value in the `Part1_DummyModel.R`).
 
 -   `paths` contains the folder directory paths that we set earlier.
+
+```{r getModulesHidden, include = FALSE, cache = FALSE}
+mods <- list.files(file.path(projDir, "modules"), full.names = TRUE)
+
+sapply(mods, function(mod, to) {
+  to <- file.path(to, basename(mod))
+  dir.create(to, showWarnings = FALSE)
+  ff <- list.files(mod, recursive = TRUE, full.names = TRUE)
+  file.copy(ff, to, recursive = TRUE, overwrite = TRUE)
+}, to = getPaths()$modulePath)
+rm(mods)
+```
+
 
 ```{r globalscript2, results=FALSE, warning=FALSE, message=FALSE}
 ## list the modules to use
@@ -638,8 +661,8 @@ It explicitly shows module inter-dependencies by depicting the objects that esta
 objectDiagram(mySim)
 ```
 
-```{r objectDiagram, echo = FALSE, fig.align = 'center', fig.cap = "Module diagram showing module inter-dependencies with object names."}
-knitr::include_graphics(normalizePath("figures/Part1_objectDiagram.png", winslash = "/"))
+```{r objectDiagram, echo = FALSE, fig.align = 'center', fig.cap = "Module diagram showing module inter-dependencies with object names.", fig.width = 7}
+knitr::include_graphics(normalizePath(file.path(projDir, "figures/Part1_objectDiagram.png"), winslash = "/"))
 ```
 
 #### Running `SpaDES`
@@ -656,7 +679,7 @@ mySim2 <- spades(mySim, debug = TRUE)
 ```
 
 ```{r figSimulationFig, fig.align = 'center', warning = FALSE, message = FALSE, echo = FALSE, fig.cap = "Simulation plots: Final plot of the simulation", out.width="80%"}
-knitr::include_graphics(normalizePath("figures/simul_plot.png", winslash = "/"))
+knitr::include_graphics(normalizePath(file.path(projDir, "figures/simul_plot.png"), winslash = "/"))
 ```
 
 We suggest experimenting with changing parameter values and trying to create and add other modules to further explore all the `SpaDES` flexibility.

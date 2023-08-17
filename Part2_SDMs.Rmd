@@ -6,6 +6,17 @@
 
 Authors: Ceres Barros, Alex M. Chubaty
 
+
+``` {r setup, include = FALSE}
+projDir <- getwd()   ## save this for later
+rmdDir <- "~/SpaDES4Dummies_Part2"
+dir.create(rmdDir)
+knitr::opts_knit$set(
+  root.dir = rmdDir
+)
+options("knitr.graphics.rel_path" = FALSE)
+```
+
 In Part \@ref(part1) of this guide, we described how to create new `SpaDES` modules, their different components, how to link different modules and how to set up and run a simulation.
 
 Here, we assume that you are familiar with these steps, but go further in showing important `SpaDES` features that facilitate many of the steps common to most ecological modelling exercises.
@@ -82,6 +93,7 @@ Require::Require(c("PredictiveEcology/SpaDES.project@transition (HEAD)",
                    "PredictiveEcology/SpaDES.core@master (HEAD)",
                    ## these will be needed later on:
                    "ggpubr",
+                   "geodata",
                    "SpaDES.tools",
                    "PredictiveEcology/SpaDES.experiment@75d917b70b892802fed0bbdb2a5e9f3c6772f0ba"),
                  require = FALSE,  ## don't load packages yet 
@@ -111,6 +123,19 @@ if (!dir.exists(file.path(simPaths$modulePath, "projectSpeciesDist"))) {
   newModule(name = "projectSpeciesDist", path = simPaths$modulePath)
 }
 ```
+
+```{r getModulesHidden2, include = FALSE, cache = FALSE}
+mods <- list.files(file.path(projDir, "modules"), full.names = TRUE)
+
+sapply(mods, function(mod, to) {
+  to <- file.path(to, basename(mod))
+  dir.create(to, showWarnings = FALSE)
+  ff <- list.files(mod, recursive = TRUE, full.names = TRUE)
+  file.copy(ff, to, recursive = TRUE, overwrite = TRUE)
+}, to = getPaths()$modulePath)
+rm(mods)
+```
+
 
 Notice how we protect the `newModule` call with an `if` statement that first detects whether the module directory exists already.
 This is necessary to prevent overwriting existing modules should this script be run a second time in the same location (see [Protect yourself and others from common mistakes/problems]).
@@ -380,7 +405,7 @@ moduleDiagram(mySimMaxEnt)
 ```
 
 ```{r objectDiagram, echo = FALSE, fig.align = 'center', fig.cap = "Module diagram showing module inter-dependencies with object names."}
-knitr::include_graphics(normalizePath("figures/Part2_objectDiagram.png", winslash = "/"))
+knitr::include_graphics(normalizePath(file.path(projDir, "figures/Part2_objectDiagram.png"), winslash = "/"))
 ```
 
 ### Simulation runs
@@ -417,23 +442,23 @@ Try to execute the `spades` call twice to see how much faster it runs after many
 By default the data modules (*speciesAbundanceData* and *climateData*) save figures of the input species and climate layers (Figs. \@ref(fig:figSimulationSppAbund) and \@ref(fig:figSimulationClimate), respectively).
 
 ```{r figSimulationSppAbund, echo = FALSE, warning = FALSE, message = FALSE, fig.align = 'center', out.width = "50%", fig.show='hold', fig.cap = "Prediction plots. Input (ref:Pice-gla) percent cover across the landscape. Note that values are converted to (ref:PA)."}
-knitr::include_graphics(normalizePath("outputs/GLM_rep1/figures/speciesAbundance.png", winslash = "/"))
+knitr::include_graphics(normalizePath(file.path(projDir, "outputs/GLM_rep1/figures/speciesAbundance.png"), winslash = "/"))
 ```
 
 ```{r figSimulationClimate, echo = FALSE, warning = FALSE, message = FALSE, fig.align = 'center', out.width = "50%", fig.show='hold', fig.cap = "Prediction plots. Bioclimatic variables under baseline (year 1) and future conditions."}
-figs <- list.files("outputs/GLM_rep1/figures/", pattern = "climateRas", full.names = TRUE)
+figs <- list.files(file.path(projDir, "outputs/GLM_rep1/figures/"), pattern = "climateRas", full.names = TRUE)
 knitr::include_graphics(normalizePath(figs, winslash = "/"))
 ```
 
 The prediction module also outputs the projections for each climate period automatically (Figs. \@ref(fig:simulationProj) and \@ref(fig:simulationProj2)).
 
 ```{r simulationProj, echo = FALSE, warning = FALSE, message = FALSE, fig.align = 'center', out.width = "20%", fig.show='hold', fig.cap = "Prediction plots: Raw predicted values of species probability of occurence under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt."}
-figs <- list.files("outputs/MaxEnt_rep1/figures/", pattern = "projRawVals_MaxEnt", full.names = TRUE)
+figs <- list.files(file.path(projDir, "outputs/MaxEnt_rep1/figures/"), pattern = "projRawVals_MaxEnt", full.names = TRUE)
 knitr::include_graphics(normalizePath(figs, winslash = "/"))
 ```
 
 ```{r simulationProj2, echo = FALSE, warning = FALSE, message = FALSE, fig.align = 'center', out.width = "20%", fig.show='hold', fig.cap = "Prediction plots: Predictions of (ref:Pice-gla) (ref:PA) under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt."}
-figs <- list.files("outputs/MaxEnt_rep1/figures/", pattern = "projPA_MaxEnt", full.names = TRUE)
+figs <- list.files(file.path(projDir, "outputs/MaxEnt_rep1/figures/"), pattern = "projPA_MaxEnt", full.names = TRUE)
 knitr::include_graphics(normalizePath(figs, winslash = "/"))
 ```
 
@@ -578,7 +603,7 @@ ggsave(file.path(figDir, "MaxEntPredictions.png"), width = 13.5, height = 5.5, u
 ```
 
 ```{r newScenariosFig, echo = FALSE, warning = FALSE, message = FALSE, fig.align = 'center', out.width = "80%", fig.show='hold', fig.cap="Adding a new scenario: Predictions of (ref:Pice-gla) probabilities of presences and (ref:PA) under (left to right) baseline climate conditions, 2041-2060, and 2081-2100 climate projections under two emission scenarios (SSP 136 and SSP 585, the default) -- showing MaxEnt forecasts only."}
-knitr::include_graphics(normalizePath("outputs/generalFigures/MaxEntPredictions.png", winslash = "/"))
+knitr::include_graphics(normalizePath(file.path(projDir, "outputs/generalFigures/MaxEntPredictions.png"), winslash = "/"))
 ```
 
 ------------------------------------------------------------------------
