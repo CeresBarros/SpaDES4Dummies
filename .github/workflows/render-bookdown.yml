@@ -25,7 +25,6 @@ jobs:
           - {os: windows-latest, nosuggests: false, r: 'devel'}
           - {os: windows-latest, nosuggests: false, r: 'release'}
           - {os: windows-latest, nosuggests: false, r: 'oldrel'}
-          - {os: windows-latest, nosuggests: false, r: '4.1'}
           - {os: ubuntu-20.04,   nosuggests: false, r: 'devel'}
           - {os: ubuntu-20.04,   nosuggests: false, r: 'release'}
           - {os: ubuntu-20.04,   nosuggests: true,  r: 'release'}
@@ -50,7 +49,14 @@ jobs:
           r-version: ${{ matrix.config.r }}
           use-public-rspm: false
 
-      - uses: r-lib/actions/setup-r-dependencies@v2
+      - name: Install TinyTeX
+        uses: r-lib/actions/setup-tinytex@v2
+        env:
+          # install full prebuilt version
+          TINYTEX_INSTALLER: TinyTeX
+
+      - name: Install package dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: |
             any::rcmdcheck
@@ -60,14 +66,9 @@ jobs:
             tinytex
             fastshp=?ignore
             NLMR=?ignore
-            
-      - name: Install additional package dependencies
-        run: |
-          tinytex::install_tinytex()
-        shell: Rscript {0}
-
+          
       - name: Render Bookdown
         run: |
-          source(".github/workflows/render", echo = TRUE)
+          source(".github/workflows/render.R", echo = TRUE)
         shell: Rscript {0}
 
