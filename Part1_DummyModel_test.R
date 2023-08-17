@@ -6,7 +6,7 @@ options(repos = c("https://predictiveecology.r-universe.dev/",
                   CRAN = "https://cloud.r-project.org"))
 
 ## decide where you're working
-mainPath <- '.'
+mainPath <- "~/SpaDES4Dummies_Part1/"
 pkgPath <- file.path(mainPath, "packages", version$platform,
                      paste0(version$major, ".", strsplit(version$minor, "[.]")[[1]][1]))
 dir.create(pkgPath, recursive = TRUE)
@@ -23,10 +23,9 @@ if (!"Require" %in% installed.packages(lib.loc = pkgPath) ||
 
 ## use binary linux packages if on Ubuntu
 Require::setLinuxBinaryRepo()
-
-Require::Require(c("SpaDES"), require = FALSE, upgrade = FALSE, dependencies = TRUE, standAlone = TRUE) ## automatically downloads all packages in the SpaDES family and their dependencies
-
-library(SpaDES)
+# Require::clearRequirePackageCache(ask = FALSE)
+Require::Require(c("SpaDES.core"),
+                 upgrade = FALSE, dependencies = TRUE, standAlone = TRUE) ## automatically downloads all packages in the SpaDES family and their dependencies
 
 setPaths(cachePath = file.path(mainPath, "cache"),
          inputPath = file.path(mainPath, "inputs"),
