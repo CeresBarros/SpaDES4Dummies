@@ -660,8 +660,9 @@ It explicitly shows module inter-dependencies by depicting the objects that esta
 objectDiagram(mySim)
 ```
 
-```{r objectDiagram, echo = FALSE, fig.align = 'center', fig.cap = "Module diagram showing module inter-dependencies with object names.", fig.width = 7}
-knitr::include_graphics(normalizePath(file.path(projDir, "figures/Part1_objectDiagram.png"), winslash = "/"))
+```{r objectDiagram, echo = FALSE, fig.align = 'center', fig.cap = "Module diagram showing module inter-dependencies with object names.", fig.width = 10}
+knitr::include_graphics(normalizePath(file.path(projDir, "figures/Part1_objectDiagram.png"), winslash = "/"),
+                        dpi = NA)
 ```
 
 #### Running `SpaDES`

@@ -399,12 +399,13 @@ moduleDiagram(mySimMaxEnt)
 objectDiagram(mySimMaxEnt)
 ```
 
-```{r moduleDiagram, echo = FALSE, fig.align = 'center', fig.cap = "Module network diagram.", message=FALSE, warning=FALSE}
+```{r moduleDiagram, echo = FALSE, fig.align = 'center', fig.cap = "Module network diagram.", message=FALSE, warning=FALSE, fig.height=6, fig.width=6}
 moduleDiagram(mySimMaxEnt)
 ```
 
 ```{r objectDiagram, echo = FALSE, fig.align = 'center', fig.cap = "Module diagram showing module inter-dependencies with object names."}
-knitr::include_graphics(normalizePath(file.path(projDir, "figures/Part2_objectDiagram.png"), winslash = "/"))
+knitr::include_graphics(normalizePath(file.path(projDir, "figures/Part2_objectDiagram.png"), winslash = "/"),
+                        dpi = NA)
 ```
 
 ### Simulation runs
