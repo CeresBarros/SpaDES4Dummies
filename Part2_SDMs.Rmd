@@ -259,7 +259,7 @@ Note that the `dismo` package (a dependency of the `projectSpeciesDist` module) 
 In turn, `rJava` needs a working Java installation (Jave can be downloaded [here](See%20https://www.java.com/en/download/manual.jsp)).
 Below you will see that we attempt to warn the user about problems loading `rJava`, which are likely related to Java not being found on the system.
 
-```{r simulationPkgs}
+```{r simulationPkgs, message = FALSE, warning = FALSE}
 outs <- SpaDES.project::packagesInModules(modulePath = simPaths$modulePath)  ## gets list of module dependencies
 Require::Require(c(unname(unlist(outs)),
                    "DiagrammeR"), 
