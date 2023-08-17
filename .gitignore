@@ -16,6 +16,7 @@ nul
 ## render files
 *_files
 *_cache
+render*.rds
 
 rsconnect
 
