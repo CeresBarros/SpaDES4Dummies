@@ -58,12 +58,12 @@ jobs:
       - name: Install package dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
+          cache-version: 2
           extra-packages: |
             any::rcmdcheck
-            rmarkdown 
-            bookdown
-            htmlwidgets
-            tinytex
+            any::rmarkdown 
+            any::bookdown
+            any::htmlwidgets
             fastshp=?ignore
             NLMR=?ignore
           
