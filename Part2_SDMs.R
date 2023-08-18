@@ -250,19 +250,19 @@ plotMaxEnt2_PA <- plotFun(sppDistProjMaxEnt2_PA[[yrs]],
 
 ## organise the plots with mildest scenario first
 ## It is clear that MaxEnt and GLM do not agree in their prediction
-plotAll <- ggarrange(plotMaxEnt2 + labs(title = expression(bold("Scenario - SSP 126")),
-                                        y = expression(atop(bold("Raw predictions"), "Latitude"))) +
-                       theme(legend.title = element_blank(), legend.key.height = unit(3, "lines"),
-                             plot.title = element_text(hjust = 0.5), plot.margin = margin(0,0,0,0)), 
-                     plotMaxEnt + labs(title = expression(bold("Scenario - SSP 585")),
-                                       y = expression(atop(bold(""), ""))) +
-                       theme(plot.title = element_text(hjust = 0.5), plot.margin = margin(0,0,0,0)),
-                     plotMaxEnt2_PA + labs(title = expression(bold("")),
-                                           y = expression(atop(bold("Presence/absence"), "Latitude"))) +
-                       theme(plot.margin = margin(0,0,0,0)), 
-                     plotMaxEnt_PA + labs(title = expression(bold("")),
-                                          y = expression(atop(bold(""), ""))) +
-                       theme(plot.margin = margin(0,0,0,0)), 
-                     legend = "right", common.legend = TRUE, labels = c("a)", "b)", "c)", "d)"))
+plotAll <- ggpubr::ggarrange(plotMaxEnt2 + labs(title = expression(bold("Scenario - SSP 126")),
+                                                y = expression(atop(bold("Raw predictions"), "Latitude"))) +
+                               theme(legend.title = element_blank(), legend.key.height = unit(3, "lines"),
+                                     plot.title = element_text(hjust = 0.5), plot.margin = margin(0,0,0,0)), 
+                             plotMaxEnt + labs(title = expression(bold("Scenario - SSP 585")),
+                                               y = expression(atop(bold(""), ""))) +
+                               theme(plot.title = element_text(hjust = 0.5), plot.margin = margin(0,0,0,0)),
+                             plotMaxEnt2_PA + labs(title = expression(bold("")),
+                                                   y = expression(atop(bold("Presence/absence"), "Latitude"))) +
+                               theme(plot.margin = margin(0,0,0,0)), 
+                             plotMaxEnt_PA + labs(title = expression(bold("")),
+                                                  y = expression(atop(bold(""), ""))) +
+                               theme(plot.margin = margin(0,0,0,0)), 
+                             legend = "right", common.legend = TRUE, labels = c("a)", "b)", "c)", "d)"))
 figDir <- checkPath(file.path(simPaths$outputPath, "generalFigures"), create = TRUE)
 ggsave(file.path(figDir, "MaxEntPredictions.png"), width = 13.5, height = 5.5, units = "in", dpi = 300)

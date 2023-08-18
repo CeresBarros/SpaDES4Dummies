@@ -577,7 +577,7 @@ plotMaxEnt2_PA <- plotFun(sppDistProjMaxEnt2_PA[[yrs]],
 
 ## organise the plots with mildest scenario first
 ## It is clear that MaxEnt and GLM do not agree in their prediction
-plotAll <- ggarrange(
+plotAll <- ggpubr::ggarrange(
   plotMaxEnt2 + 
     labs(title = expression(bold("Scenario - SSP 126")),
          y = expression(atop(bold("Raw predictions"), "Latitude"))) +
