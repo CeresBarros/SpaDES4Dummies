@@ -40,8 +40,6 @@ jobs:
             any::rmarkdown 
             any::bookdown
             any::htmlwidgets
-            fastshp=?ignore
-            NLMR=?ignore
           
       - name: Render Bookdown
         run: |
