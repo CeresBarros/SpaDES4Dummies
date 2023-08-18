@@ -143,6 +143,9 @@ simObjects <- list(
   "studyAreaRas" = studyAreaRas
 )
 
+## remove CHECKSUMS.txt (GHA)
+file.remove(file.path(simPaths$inputPath, "CHECKSUMS.txt"))
+
 ## Simulation setup - create two simulations, one for MaxEnt another for GLM
 ## SpaDES.experiment::experiment2, will take care of subdirectories to store outputs
 mySimMaxEnt <- simInit(times = simTimes, params = simParamsMaxEnt, 
