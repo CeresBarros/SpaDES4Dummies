@@ -648,7 +648,7 @@ The direction of the arrows indicates an output to input flow.
 You can see that *speciesAbundance* and *temperature* inputs (specifically our \`r\` raster) are supplied by an external source (*_INPUT_*) - the user or `.inputObjects`.
 Whereas the inputs to the *speciesTempLM* module are outputs of the *speciesAbundance* and *temperature* modules.
 
-```{r moduleDiagram, echo = -1, fig.height=6, fig.width=6, message=FALSE, warning=FALSE, fig.cap="Diagram of module connections."}
+```{r moduleDiagram, fig.height=6, fig.width=6, message=FALSE, warning=FALSE, fig.cap="Diagram of module connections."}
 moduleDiagram(mySim)
 ```
 
