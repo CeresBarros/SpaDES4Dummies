@@ -592,8 +592,8 @@ sppDistProjMaxEnt2 <- myExperiment2$MaxEnt_rep1$sppDistProj
 
 ## we convert the raw predictions into presence absence
 ## using exported threshold
-sppDistProjMaxEnt_PA <- myExperiment$MaxEnt_rep1$sppDistProj > myExperiment$MaxEnt_rep1$thresh
-sppDistProjMaxEnt2_PA <- myExperiment2$MaxEnt_rep1$sppDistProj > myExperiment2$MaxEnt_rep1$thresh
+sppDistProjMaxEnt_PA <- as.int(myExperiment$MaxEnt_rep1$sppDistProj > myExperiment$MaxEnt_rep1$thresh)
+sppDistProjMaxEnt2_PA <- as.int(myExperiment2$MaxEnt_rep1$sppDistProj > myExperiment2$MaxEnt_rep1$thresh)
 
 ## rename layers from plotting
 names(sppDistProjMaxEnt) <- names(sppDistProjMaxEnt2) <- c("2001", "2021-2040", "2041-2060", "2061-2080", "2081-2100")
