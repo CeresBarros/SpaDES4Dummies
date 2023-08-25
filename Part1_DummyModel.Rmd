@@ -180,7 +180,8 @@ if (!"Require" %in% installed.packages(lib.loc = pkgPath) ||
 ## use binary linux packages if on Ubuntu
 Require::setLinuxBinaryRepo()
 
-Require::Require(c("SpaDES"), require = FALSE, upgrade = FALSE, dependencies = TRUE, standAlone = TRUE) ## automatically downloads all packages in the SpaDES family and their dependencies
+Require::Require(c("SpaDES", "DiagrammeR"), require = FALSE, upgrade = FALSE, 
+                 dependencies = TRUE, standAlone = TRUE) ## automatically downloads all packages in the SpaDES family and their dependencies
 
 library(SpaDES)
 
