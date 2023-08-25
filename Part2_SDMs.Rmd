@@ -244,6 +244,49 @@ You will notice that this module performs model fitting (i.e., calibration), pre
 These three components could be broken into three separate modules.
 As an exercise, we recommend trying to do so on your own.
 
+
+#### Additional module scripts and functions
+
+All functions needed by a module can be coded within the module script. Often they will be 
+located after all the event functions and before the `.inputObjects` function; however, their
+exact location is up to the developer. 
+
+For long, complex modules involving many (potentially long) functions, including all functions
+within a module's script quickly makes the script long and hard to maintain. Instead, we 
+recommend that additional (i.e., non-event functions) are put into separate scripts and in the 
+module's `R/` folder.  `SpaDES` will source any scripts contained in this older and associate
+its objects/functions with the respective module. 
+
+*Note that, these functions/objects will only be available to the module where the `R/` is located.*
+
+Hence, if one or more functions are meant to be shared across modules they will need to either:
+
+-   be defined in `.GlobalEnv` (the global environment -- see `?.GlobalEnv`) before running `simInit`;
+
+-   be put it in an `R` package that is included in the modules' metadata and 
+installed as other packages -- hence the package is in an online repository like GitHub or CRAN;
+
+-   be put it in a *local* `R` package that is included in the modules' metadata and 
+installed (e.g., `devtools::install_local`) or loaded (e.g. `devtools::load_all("<pathToPackage>")`) 
+"separately" by the user before, as `Require` is not able to install local packages.
+
+In this example, we put the plotting functions called by `Plots` into
+separate scripts for each module where they are used. Modules `speciesAbundanceData` and 
+`projectSpeciesDist` both have the function `plotSpatRaster` in a `plotSpatRaster.R` script saved in
+their respective `R/` folders:
+
+```{r plotSpatRaster, code = readLines(file.path("modules", "projectSpeciesDist", "R", "plotSpatRaster.R")), eval = FALSE}
+```
+
+The `climateData` module uses the function `plotSparRasterStk`, which is
+in the `plotSparRasterStk.R` in its `R/` folder:
+
+```{r plotSpatRasterStk, code = readLines(file.path("modules", "climateData", "R", "plotSpatRasterStk.R")), eval = FALSE}
+```
+
+Go ahead and create these scripts with the functions above and put them in the right `R/` 
+folders.
+
 ------------------------------------------------------------------------
 
 ## Running the model
