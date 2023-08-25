@@ -24,7 +24,7 @@ For the sake of simplicity, we focus our example on projecting a species' distri
 Yet, the true power of `SpaDES` is more evident when using complex dynamic simulation models parametrised using large datasets and ran across large spatial areas.
 
 This example is broken into four main parts: 1) Module creation and coding; 2) Running the model; 3) Caching; and 4) Best practices.
-By no mean does it cover caching or best practices in full, as each of these topics is very extensive, but it highlights some of their essentials in `SpaDES` and from our own experience.
+By no means does it cover caching or best practices in full, as each of these topics is very extensive, but it highlights some of their essentials in `SpaDES` and from our own experience.
 
 ## The example: projecting species distribution shifts under climate change
 
@@ -180,7 +180,7 @@ We encourage providing different (or additional) URLs referring to projections f
 
 If providing other URLs to obtain different climate data, pay special attention to the "year" column of `projClimateURLs` -- the URLs need to correspond to the simulation year during which they will be used (not necessarily the actual climate year, unless the simulation years follow the same numbering).
 
-Like in the `speciesAbundanceData` module, the `prepInputs` function processes the cliamte layers to match the study area raster (`studyAreaRas`) and compiles all climate data in the `climateDT` object and as raster layer objects (`baselineClimateRas` and `projClimateRas`) -- the module's outputs.
+Like in the `speciesAbundanceData` module, the `prepInputs` function processes the climate layers to match the study area raster (`studyAreaRas`) and compiles all climate data in the `climateDT` object and as raster layer objects (`baselineClimateRas` and `projClimateRas`) -- the module's outputs.
 
 ```{r dataModule2, code = readLines(file.path("modules", "climateData", "climateData.R")), eval = FALSE}
 ```
@@ -251,12 +251,12 @@ As an exercise, we recommend trying to do so on your own.
 ### Ensuring all packages are installed
 
 After the modules are created, we go back to the `Part2_SDMs.R` script to set up and run the simulation.
-We fist ensure that all module dependencies (and their dependencies and so on) are installed in `.libPaths()`.
+We first ensure that all module dependencies (and their dependencies and so on) are installed in `.libPaths()`.
 
 Only then do we load packages necessary to run the simulation.
 
 Note that the `dismo` package (a dependency of the `projectSpeciesDist` module) needs `rJava` to run `maxent`.
-In turn, `rJava` needs a working Java installation (Jave can be downloaded [here](See%20https://www.java.com/en/download/manual.jsp)).
+In turn, `rJava` needs a working Java installation (Java can be downloaded [here](See%20https://www.java.com/en/download/manual.jsp)).
 Below you will see that we attempt to warn the user about problems loading `rJava`, which are likely related to Java not being found on the system.
 
 ```{r simulationPkgs, message = FALSE, warning = FALSE, results = 'hide'}

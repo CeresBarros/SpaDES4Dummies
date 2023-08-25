@@ -18,9 +18,9 @@ Both the abundance data and the temperature data are being constantly updated by
 ## BEFORE `SpaDES`...
 
 If we use R to develop our species abundance and temperature simulation models in the 'conventional way', we'll probably have i) (the worst case scenario) several scripts that run simulations and data treatment/analysis separately and have to be executed manually, or ii) a long script where everything happens - the simulations and data analysis -, iii) a main script that sources others that do the simulation and analyses.
-Option i is more common when different software are used for different parts of the process (e.g., a simulation model in *C++* generates data that is then analysed in R).
-Option ii is inconvenient because very long scripts make changes and updates to the script - debugging can also be more tiresome.
-Option iii, is similar to the `SpaDES` way of thinking.
+Option i) is more common when different software are used for different parts of the process (e.g., a simulation model in *C++* generates data that is then analysed in R).
+Option ii) is inconvenient because very long scripts make changes and updates to the script - debugging can also be more tiresome.
+Option iii), is similar to the `SpaDES` way of thinking.
 The difference is that `SpaDES` defines a standard way of writing different components of a model, or of a modelling framework.
 This makes changing, updating and sharing code - or modules - easier, as well as swapping and adding modules in a modelling framework.
 
@@ -154,7 +154,7 @@ We start by creating an *.R* script (it can have any name) that sets up and runs
 The control script for this example is located on the root of the *SpaDES4Dummies* GitHub repository under the name `Part1_DummyModel.R`.
 Note that Markdown (`.Rmd`) scripts can also be used instead of \`.R\` scripts.
 
-We start by making sure all `SpaDES` packages and they dependencies are installed (and that the installation is *scripted*)  using the `Require` package.
+We start by making sure all `SpaDES` packages and their dependencies are installed (and that the installation is *scripted*)  using the `Require` package.
 
 ```{r globalscriptPart1, message = FALSE, warning = FALSE, results = 'hide'}
 ## start again from a clean R session
@@ -233,7 +233,7 @@ We will see this see this later in detail.
 
 #### **Defining the module**
 
-The first section of the script is defines the module's [metadata](https://data-informed.com/what-is-metadata-a-simple-guide-to-what-everyone-should-know/).
+The first section of the script defines the module's [metadata](https://data-informed.com/what-is-metadata-a-simple-guide-to-what-everyone-should-know/).
 It allows defining the module's author, keywords, any required packages and module(s) and their versions, but also parameters (and their default values) and input objects that the module requires, and the output objects it creates.
 
 Although this dummy module example requires no true input data, we will define the template raster \`r\` as an "input" in the `expectsInput` function, and provide a default object in `.inputObjects` (see below).
@@ -250,7 +250,7 @@ Another way of explaining it for objects is illustrated in Fig.
 knitr::include_graphics(normalizePath(file.path(projDir, "figures/obj.png"), winslash = "/"))
 ```
 
-Th default input objects created by the `.inputObjects` function (see [.inputObjects function]) during the `simInit` call are exceptions to this rule.
+The default input objects created by the `.inputObjects` function (see [.inputObjects function]) during the `simInit` call are exceptions to this rule.
 
 Here is how we defined the *speciesAbundance* module:
 
@@ -479,7 +479,7 @@ Here's an example of how to do this (the commented instructions have been delete
 }
 ```
 
-If we choose to supply the default `r` in `.inputObjects`, then we need remove its creation from the `abundanceInit` function and add `r` to the metadata as an input.
+If we choose to supply the default `r` in `.inputObjects`, then we need to remove its creation from the `abundanceInit` function and add `r` to the metadata as an input.
 We have done this, so that `abundanceInit` only creates a storage list for the outputs:
 
 ```{r abund_model7, eval = FALSE}
@@ -557,7 +557,7 @@ Finally, we draw your attention to a few differences in this module's script bef
     If `statsTimestep = 5`, the statistical analysis will use the precedent 5 years of data including the year in which the event is running (a total of 6 years of data);
 
 -   This module **requires inputs** that have no defaults in `.inputObjects`.
-    They are specified in `inputObjects` part of `defineModule` - notice how I've respected the names, classes and description of the objects that come from the *speciesAbundance* and the *temperature* modules;
+    They are specified in `inputObjects` part of `defineModule` - notice how we've respected the names, classes and description of the objects that come from the *speciesAbundance* and the *temperature* modules;
 
 -   We have **two additional functions** in a separate script (`R/linear_model_functions.R`): the function fitting the linear model and a plotting function.
 
