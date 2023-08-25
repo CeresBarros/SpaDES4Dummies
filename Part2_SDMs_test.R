@@ -89,7 +89,8 @@ Require::Require(c("reproducible", "SpaDES.core", "SpaDES.experiment"),
 out <- preProcess(targetFile = "maxent.jar",
                   url = "https://github.com/mrmaxent/Maxent/blob/master/ArchivedReleases/3.4.4/maxent.jar?raw=true",
                   destinationPath = simPaths$inputPath,
-                  fun = NA)
+                  fun = NA,
+                  overwrite = TRUE)
 file.copy(out$targetFilePath, file.path(system.file("java", package="dismo"), "maxent.jar"),
           overwrite = TRUE)
 
@@ -166,6 +167,7 @@ clearPlot(force = TRUE)   ## this forces wiping the graphics device and opening 
 # mySimOut <- spades(mySimMaxEnt, debug = TRUE)  
 
 ## Better to use when spades runs error-free on the simLists
+options("spades.useRequire" = FALSE)
 myExperiment <- SpaDES.experiment::experiment2(MaxEnt = mySimMaxEnt, 
                                                GLM = mySimGLM, 
                                                debug = TRUE, 
