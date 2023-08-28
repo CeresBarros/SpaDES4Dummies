@@ -53,6 +53,13 @@ jobs:
           Ncpus: 2
           r-version: ${{ matrix.config.r }}
           use-public-rspm: false
+          
+      - name: Install package dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          cache-version: 2
+          packages: |
+            any::rJava
 
       - name: Run tutorials - Part 1
         run: |
