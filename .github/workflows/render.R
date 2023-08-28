@@ -23,7 +23,7 @@ Require::setLinuxBinaryRepo()
 
 Require::Require(c("bookdown", "htmlwidgets", "geodata", "SpaDES",
                    "PredictiveEcology/SpaDES.experiment@75d917b70b892802fed0bbdb2a5e9f3c6772f0ba",
-                   "ggpubr", "rmarkdown", "rsvg"), 
+                   "ggpubr", "rmarkdown", "rsvg", "png"), 
                  require = FALSE,   ## don't load packages
                  upgrade = FALSE,   ## don't upgrade dependencies
                  standAlone = TRUE) 
