@@ -49,14 +49,11 @@ jobs:
             any::bookdown
             any::htmlwidgets
             any::geodata
-            any::SpaDES
             any::ggpubr
             any::rsvg
             any::png
             any::raster
-            any::quickPlot
             any::ggplot2
-            any::SpaDES.tools
           
       - name: Render Bookdown
         run: |
