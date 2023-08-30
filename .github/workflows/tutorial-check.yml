@@ -12,7 +12,10 @@ name: tutorial-check
 
 jobs:
   tutorial-check:
-    if: "!contains(github.event.commits[0].message, '[skip-ci]')"
+    if: | 
+      !contains(github.event.commits[0].message, '[skip-ci]') &&
+      !contains(github.event.commits[0].message, '[skip-tutocheck]')
+    
     runs-on: ${{ matrix.config.os }}
 
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
