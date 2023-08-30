@@ -649,7 +649,7 @@ In fact, in more complex modelling frameworks, like the LandR model [@BarrosEtAl
 -   How we export objects created within the module functions to `sim`.
 Without doing so, these objects are lost after the function is executed.
 
-#### Prediction module
+### Prediction module
 
 We show below the `.R` script for the *projectSpeciesDist* module.
 This module depends entirely on the other two, as we did not provide any default input objects in the `.inputObjects` function.
@@ -983,7 +983,7 @@ These three components could be broken into three separate modules.
 As an exercise, we recommend trying to do so on your own.
 
 
-#### Additional module scripts and functions
+### Additional module scripts and functions
 
 All functions needed by a module can be coded within the module script. Often they will be 
 located after all the event functions and before the `.inputObjects` function; however, their
