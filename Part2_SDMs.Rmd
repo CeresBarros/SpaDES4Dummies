@@ -9,7 +9,7 @@ Authors: Ceres Barros, Alex M. Chubaty
 
 ``` {r setup, include = FALSE}
 projDir <- getwd()   ## save this for later
-rmdDir <- "~/SpaDES4Dummies_Part2"
+rmdDir <- "~/SpaDES4Dummies_Part2"   ## same as mainPath below.
 dir.create(rmdDir)
 knitr::opts_knit$set(
   root.dir = rmdDir
@@ -130,8 +130,8 @@ mods <- list.files(file.path(projDir, "modules"), full.names = TRUE)
 sapply(mods, function(mod, to) {
   to <- file.path(to, basename(mod))
   dir.create(to, showWarnings = FALSE)
-  ff <- list.files(mod, recursive = TRUE, full.names = TRUE)
-  file.copy(ff, to, recursive = TRUE, overwrite = TRUE)
+  ff <- list.files(mod, full.names = TRUE) ## don't recurse into dirs to preserve structure
+  file.copy(ff, to, recursive = TRUE, overwrite = TRUE)  ## now recurse to copy files in dirs
 }, to = getPaths()$modulePath)
 rm(mods)
 ```

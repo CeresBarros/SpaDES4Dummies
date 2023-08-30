@@ -53,8 +53,8 @@ jobs:
         
       - uses: actions/upload-artifact@v2
         with:
-          name: _book
-          path: _book/
+          name: docs
+          path: docs/
 
 
   checkout-and-deploy:
@@ -69,14 +69,14 @@ jobs:
          uses: actions/download-artifact@v2
          with:
            # Artifact name
-           name: _book # optional
+           name: docs # optional
            # Destination path
-           path: _book # optional
+           path: docs/ # optional
            
        - name: Deploy to GitHub Pages
          uses: Cecilapp/GitHub-Pages-deploy@v3
          env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
          with:
-          build_dir: _book
+          build_dir: docs/
           branch: gh-pages
