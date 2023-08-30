@@ -57,6 +57,9 @@ if (FALSE) { ## not needed anymore but may come in handy
   if (!inherits(out, "error")) system("git push")
 } 
 
+## create .nojekyll file
+file.create(".nojekyll")
+
 bookdown::render_book(output_format = "all", envir = new.env())
 
 
