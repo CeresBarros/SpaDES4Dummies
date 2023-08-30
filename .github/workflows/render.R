@@ -20,9 +20,9 @@ Require::Require(c("bookdown", "htmlwidgets", "geodata", "SpaDES",
                    ## pkgs for Part1:
                    "raster", "quickPlot", "ggplot2", "SpaDES.tools"), 
                  require = FALSE,   ## don't load packages
-                 upgrade = FALSE)   ## don't upgrade dependencies)
+                 upgrade = FALSE)   ## don't upgrade dependencies
 
 ## create .nojekyll file
 file.create(".nojekyll")
 
-bookdown::render_book(output_format = "all", envir = new.env())
+bookdown::render_book(output_format = "all")
