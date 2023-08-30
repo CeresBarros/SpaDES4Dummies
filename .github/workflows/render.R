@@ -2,18 +2,11 @@
 ## GHA RENDER SCRIPT
 ## ---------------------------------------------------
 
-pkgPath <- normalizePath(file.path("packages", version$platform,
-                                   paste0(version$major, ".", strsplit(version$minor, "[.]")[[1]][1])),
-                         winslash = "/")
-dir.create(pkgPath, recursive = TRUE)
-.libPaths(pkgPath, include.site = FALSE)
-
 ## note that pkgPath is defined in common.R
-if (!"remotes" %in% installed.packages(lib.loc = pkgPath))
+if (!"remotes" %in% installed.packages())
   install.packages("remotes")
 
-if (!"Require" %in% installed.packages(lib.loc = pkgPath) ||
-    packageVersion("Require", lib.loc = pkgPath) < "0.3.1") {
+if (!"Require" %in% installed.packages() || packageVersion("Require") < "0.3.1") {
   remotes::install_github("PredictiveEcology/Require@55ec169e654214d86be62a0e13e9a2157f1aa966",
                           upgrade = FALSE)
 }
@@ -27,11 +20,9 @@ Require::Require(c("bookdown", "htmlwidgets", "geodata", "SpaDES",
                    ## pkgs for Part1:
                    "raster", "quickPlot", "ggplot2", "SpaDES.tools"), 
                  require = FALSE,   ## don't load packages
-                 upgrade = FALSE,   ## don't upgrade dependencies
-                 standAlone = TRUE) 
+                 upgrade = FALSE)   ## don't upgrade dependencies)
 
 ## create .nojekyll file
 file.create(".nojekyll")
-
 
 bookdown::render_book(output_format = "all", envir = new.env())
