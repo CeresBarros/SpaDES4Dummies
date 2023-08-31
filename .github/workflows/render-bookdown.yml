@@ -45,15 +45,16 @@ jobs:
           cache-version: 2
           packages: |
             any::rcmdcheck
+            any::knitr
             any::rmarkdown 
             any::bookdown
             any::htmlwidgets
             any::geodata
-            any::ggpubr
             any::rsvg
             any::png
             any::raster
             any::ggplot2
+            any::ggpubr
           
       - name: Render Bookdown
         run: |
