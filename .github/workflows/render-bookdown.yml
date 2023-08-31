@@ -34,7 +34,7 @@ jobs:
         with:
           Ncpus: 2
           use-public-rspm: false
-          extra-repositories: https://predictiveecology.r-universe.dev
+          extra-repositories: 'https://predictiveecology.r-universe.dev'
       
       # - uses: r-lib/actions/setup-renv@v2
       # 

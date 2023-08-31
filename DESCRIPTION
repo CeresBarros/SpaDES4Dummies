@@ -1,4 +1,4 @@
-Package: SpaDES4Dummies
+Type: project
 Title: A SpaDES tutorial for begginners 
 Description: This guide is an introduction to the `SpaDES` `R` modelling platform. 
     It covers how to make and link `SpaDES` modules using `SpaDES` in two examples. 
@@ -34,7 +34,6 @@ Imports:
     SpaDES.experiment
 Remotes:
     PredictiveEcology/SpaDES.experiment@development
-Additional_repositories: https://predictiveecology.r-universe.dev/
 License: GPL-3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
