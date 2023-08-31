@@ -36,32 +36,23 @@ jobs:
           use-public-rspm: false
           extra-repositories: 'https://predictiveecology.r-universe.dev'
       
-      # - uses: r-lib/actions/setup-renv@v2
-      # 
-      # - name: Install packages
-      #   run: |
-      #     renv::install('rcmdcheck')
-      #     renv::install('knitr')
-      #     renv::install('rmarkdown')
-      #     renv::install('bookdown')
-      #     renv::install('htmlwidgets')
-      #     renv::install('geodata')
-      #     renv::install('rsvg')
-      #     renv::install('png')
-      #     renv::install('raster')
-      #     renv::install('ggplot2')
-      #     renv::install('ggpubr')
-      #   shell: Rscript {0}
-      
       - name: Install package dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          cache-version: 2
-          # packages: |
-          #   any::rcmdcheck
-          #   any::rmarkdown
-          #   any::bookdown
-          #   any::htmlwidgets
+          # cache-version: 2
+          packages: |
+            any::bookdown
+            any::htmlwidgets
+            any::rcmdcheck
+            any::rmarkdown
+            any::geodata
+            any::ggplot2
+            any::ggpubr
+            any::png
+            any::raster
+            any::rsvg
+            any::SpaDES
+            any::SpaDES.tools
       
       - name: Install TinyTeX
         uses: r-lib/actions/setup-tinytex@v2
