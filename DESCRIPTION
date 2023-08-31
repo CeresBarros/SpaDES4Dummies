@@ -1,13 +1,6 @@
 Type: project
 Title: A SpaDES tutorial for begginners 
-Description: This guide is an introduction to the `SpaDES` `R` modelling platform. 
-    It covers how to make and link `SpaDES` modules using `SpaDES` in two examples. 
-    Both examples draw on basic uses of statistical models in ecology, notably the 
-    relationships between environmental variables and species abundance and presence.
 Version: 1.2.1
-URL: https://ceresbarros.github.io/SpaDES4Dummies,
-     https://github.com/CeresBarros/SpaDES4Dummies
-
 Authors@R: c(
     person("Ceres", "Barros", email = "ceres.barros@gov.bc.ca", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-4036-977X")),
@@ -16,6 +9,11 @@ Authors@R: c(
     person("Alex M", "Chubaty", email = "achubaty@for-cast.ca", role = c("ctb"),
            comment = c(ORCID = "0000-0001-7146-8135"))
 )
+Description: This guide is an introduction to the `SpaDES` `R` modelling platform. 
+    It covers how to make and link `SpaDES` modules using `SpaDES` in two examples. 
+    Both examples draw on basic uses of statistical models in ecology, notably the 
+    relationships between environmental variables and species abundance and presence.
+License: GPL-3
 Depends:
     R (>= 4.3)
 Imports:
@@ -34,7 +32,5 @@ Imports:
     SpaDES.experiment
 Remotes:
     PredictiveEcology/SpaDES.experiment@development
-License: GPL-3
 Encoding: UTF-8
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+Language: en-CA
