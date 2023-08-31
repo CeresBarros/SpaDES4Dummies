@@ -11,7 +11,7 @@ on:
 name: Render bookdown website
 
 jobs:
-  bookdown:
+  build-bookdown:
     if: | 
       !contains(github.event.commits[0].message, '[skip-ci]') &&
       !contains(github.event.commits[0].message, '[skip-renderbook]')
@@ -60,39 +60,44 @@ jobs:
         run: |
           source(".github/workflows/render.R", echo = TRUE)
         shell: Rscript {0}
-          
-      - name: Deploy Gitbook to gh-pages
-        uses: JamesIves/github-pages-deploy-action@4.1.5
+        
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v2
         with:
+          path: 'docs/'
+
+  checkout-and-deploy:
+    if: |
+      !contains(github.event.commits[0].message, '[skip-ci]') &&
+      !contains(github.event.commits[0].message, '[skip-renderbook]')
+
+    needs: build-bookdown
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Deploy to GitHub pages 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          clean: false
           branch: gh-pages
           folder: docs
 
-
-  # checkout-and-deploy:
-  #   if: | 
-  #     !contains(github.event.commits[0].message, '[skip-ci]') &&
-  #     !contains(github.event.commits[0].message, '[skip-renderbook]')
-  #     
-  #   runs-on: ubuntu-20.04
-  #   
-  #   needs: bookdown
-  #   
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
-  #        
-  #     - name: Download artifact
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         # Artifact name
-  #         name: docs # optional
-  #         # Destination path
-  #         path: docs/ # optional
-  #        
-  #     - name: Deploy to GitHub Pages
-  #       uses: Cecilapp/GitHub-Pages-deploy@v3
-  #       env:
-  #        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #       with:
-  #        build_dir: docs/
-  #        branch: gh-pages
+    # steps:
+    #   - name: Checkout
+    #     uses: actions/checkout@v3
+    # 
+    #   - name: Download artifact
+    #     uses: actions/download-artifact@v3
+    #     with:
+    #       # Artifact name
+    #       name: docs # optional
+    #       # Destination path
+    #       path: docs/ # optional
+    # 
+    #   - name: Deploy to GitHub Pages
+    #     uses: Cecilapp/GitHub-Pages-deploy@v3
+    #     env:
+    #      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #     with:
+    #      build_dir: docs/
+    #      branch: gh-pages
