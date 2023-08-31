@@ -51,7 +51,6 @@ jobs:
             any::png
             any::raster
             any::rsvg
-            any::SpaDES
             any::SpaDES.tools
       
       - name: Install TinyTeX
