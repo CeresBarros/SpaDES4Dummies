@@ -20,7 +20,7 @@ jobs:
     
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-      RENV_PATHS_ROOT: ~/.local/share/renv
+      # RENV_PATHS_ROOT: ~/.local/share/renv
 
     steps:
       - uses: actions/checkout@v3
@@ -34,22 +34,32 @@ jobs:
           Ncpus: 2
           use-public-rspm: false
       
-      - uses: r-lib/actions/setup-renv@v2
+      # - uses: r-lib/actions/setup-renv@v2
+      # 
+      # - name: Install packages
+      #   run: |
+      #     renv::install('rcmdcheck')
+      #     renv::install('knitr')
+      #     renv::install('rmarkdown')
+      #     renv::install('bookdown')
+      #     renv::install('htmlwidgets')
+      #     renv::install('geodata')
+      #     renv::install('rsvg')
+      #     renv::install('png')
+      #     renv::install('raster')
+      #     renv::install('ggplot2')
+      #     renv::install('ggpubr')
+      #   shell: Rscript {0}
       
-      - name: Install packages
-        run: |
-          renv::install('rcmdcheck')
-          renv::install('knitr')
-          renv::install('rmarkdown')
-          renv::install('bookdown')
-          renv::install('htmlwidgets')
-          renv::install('geodata')
-          renv::install('rsvg')
-          renv::install('png')
-          renv::install('raster')
-          renv::install('ggplot2')
-          renv::install('ggpubr')
-        shell: Rscript {0}
+      - name: Install package dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          cache-version: 2
+          packages: |
+            any::rcmdcheck
+            any::rmarkdown
+            any::bookdown
+            any::htmlwidgets
       
       - name: Install TinyTeX
         uses: r-lib/actions/setup-tinytex@v2
@@ -57,12 +67,12 @@ jobs:
           # install full prebuilt version
           TINYTEX_INSTALLER: TinyTeX
   
-      - name: Cache bookdown results
-        uses: actions/cache@v3
-        with:
-          path: _bookdown_files
-          key: bookdown-${{ hashFiles('**/*Rmd') }}
-          restore-keys: bookdown-
+      # - name: Cache bookdown results
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: _bookdown_files
+      #     key: bookdown-${{ hashFiles('**/*Rmd') }}
+      #     restore-keys: bookdown-
           
       - name: Render Bookdown
         run: |

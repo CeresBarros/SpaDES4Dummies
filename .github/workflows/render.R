@@ -25,6 +25,4 @@ Require::Require(c("bookdown", "htmlwidgets", "geodata", "SpaDES",
 ## create .nojekyll file
 file.create(".nojekyll")
 
-library(bookdown)
-
-render_book(output_format = "all", envir = new.env())
+bookdown::render_book(output_format = "all", envir = new.env())
