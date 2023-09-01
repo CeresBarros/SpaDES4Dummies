@@ -2,6 +2,13 @@
 ## GHA RENDER SCRIPT
 ## ---------------------------------------------------
 
+## not necessary when rendering via GHA
+# pkgPath <- normalizePath(file.path("packages", version$platform,
+#                                    paste0(version$major, ".", strsplit(version$minor, "[.]")[[1]][1])),
+#                          winslash = "/")
+# dir.create(pkgPath, recursive = TRUE)
+# .libPaths(pkgPath, include.site = FALSE)
+
 options(repos = c("https://predictiveecology.r-universe.dev/", 
                   CRAN = "https://cloud.r-project.org"))
 
@@ -29,12 +36,5 @@ Require::Require(c(#"bookdown", "htmlwidgets", "geodata",
 
 ## create .nojekyll file
 file.create(".nojekyll")
-
-.libPaths()
-
-library(bookdown)
-library(rmarkdown)
-
-sessionInfo()
 
 bookdown::render_book(output_format = "all", envir = new.env())
