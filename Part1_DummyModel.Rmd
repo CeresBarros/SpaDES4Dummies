@@ -41,7 +41,6 @@ remotes::install_github("ropensci/NLMR")  ## you will need this ;)
 library(terra)
 library(quickPlot)
 library(ggplot2)
-library(SpaDES.tools)
 library(ggpubr)
 ```
 
@@ -49,7 +48,6 @@ library(ggpubr)
 library(terra)
 library(quickPlot)
 library(ggplot2)
-library(SpaDES.tools)
 library(ggpubr)
 ```
 
