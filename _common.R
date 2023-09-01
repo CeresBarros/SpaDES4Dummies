@@ -1,6 +1,7 @@
-pkgPath <- file.path("packages", version$platform,
-                     paste0(version$major, ".", strsplit(version$minor, "[.]")[[1]][1]))
-.libPaths(pkgPath)   ## need to include.side = TRUE to use bookdown and rmarkdown
+## not necessary when rendering via GHA
+# pkgPath <- file.path("packages", version$platform,
+#                      paste0(version$major, ".", strsplit(version$minor, "[.]")[[1]][1]))
+# .libPaths(pkgPath)   ## need to include.side = TRUE to use bookdown and rmarkdown
 
 # example R options set globally
 options("width" = 60)
