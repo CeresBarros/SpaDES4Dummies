@@ -21,7 +21,7 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       # RENV_PATHS_ROOT: ~/.local/share/renv
-      # R_LIBS_USER: 
+      R_LIBS_USER: /home/runner/work/_temp/Library
 
     steps:
       - uses: actions/checkout@v3
