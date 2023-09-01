@@ -209,6 +209,20 @@ if (!dir.exists(file.path(getPaths()$modulePath, "speciesAbundance"))) {
 }
 ```
 
+```{r getModulesHiddenPart1, include = FALSE, cache = FALSE}
+mods <- list.files(file.path(projDir, "modules"), full.names = TRUE)
+mods <- mods[basename(mods) %in% c("speciesAbundance", "temperature", "speciesTempLM")]
+
+sapply(mods, function(mod, to) {
+  browser()
+  to <- file.path(to, basename(mod))
+  dir.create(to, showWarnings = FALSE)
+  ff <- list.files(mod, full.names = TRUE) ## don't recurse into dirs to preserve structure
+  file.copy(ff, to, recursive = TRUE, overwrite = TRUE)  ## now recurse to copy files in dirs
+}, to = getPaths()$modulePath)
+rm(mods)
+```
+
 We then create modules using `newModule`.
 `newModule` creates a module folder (*speciesAbundance*) inside `/modules` that contains both the module `.R` script template, as well as the documentation template (the `.Rmd` file).
 Although we will not be discussing the `.Rmd` file, please bear in mind that this is a **fundamental** part of creating a reproducible and transparent module - check out the [Guide to Reproducible Code in Ecology and Evolution](https://www.britishecologicalsociety.org/wp-content/uploads/2017/12/guide-to-reproducible-code.pdf) from the British Ecological Society).
@@ -606,19 +620,6 @@ The function `simInit` needs a few arguments listing simulation folder directori
     Here we chose to list `.plotInitialTime` (a parameter used and defined in the *speciesAbundance* and *temperature* modules), but provide the default value (we experimenting with it by changing its value in the `Part1_DummyModel.R`).
 
 -   `paths` contains the folder directory paths that we set earlier.
-
-```{r getModulesHidden, include = FALSE, cache = FALSE}
-mods <- list.files(file.path(projDir, "modules"), full.names = TRUE)
-
-sapply(mods, function(mod, to) {
-  to <- file.path(to, basename(mod))
-  dir.create(to, showWarnings = FALSE)
-  ff <- list.files(mod, recursive = TRUE, full.names = TRUE)
-  file.copy(ff, to, recursive = TRUE, overwrite = TRUE)
-}, to = getPaths()$modulePath)
-rm(mods)
-```
-
 
 ```{r globalscript2, results=FALSE, warning=FALSE, message=FALSE}
 ## list the modules to use
