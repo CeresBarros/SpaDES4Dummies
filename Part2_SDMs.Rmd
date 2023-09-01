@@ -14,7 +14,8 @@ dir.create(rmdDir)
 knitr::opts_knit$set(
   root.dir = rmdDir
 )
-options("knitr.graphics.rel_path" = FALSE)
+options("knitr.graphics.rel_path" = FALSE,
+        "spades.useRequire" = FALSE)
 ```
 
 In Part \@ref(part1) of this guide, we described how to create new `SpaDES` modules, their different components, how to link different modules and how to set up and run a simulation.

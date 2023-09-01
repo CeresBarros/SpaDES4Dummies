@@ -9,7 +9,8 @@ dir.create(rmdDir)
 knitr::opts_knit$set(
   root.dir = rmdDir
 )
-options("knitr.graphics.rel_path" = FALSE)
+options("knitr.graphics.rel_path" = FALSE,
+        "spades.useRequire" = FALSE)
 ```
 
 Let's imagine we want to explore how the relationship between a species' abundance and temperature changes over time.
