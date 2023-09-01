@@ -57,13 +57,6 @@ jobs:
         env:
           # install full prebuilt version
           TINYTEX_INSTALLER: TinyTeX
-  
-      # - name: Cache bookdown results
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: _bookdown_files
-      #     key: bookdown-${{ hashFiles('**/*Rmd') }}
-      #     restore-keys: bookdown-
       
       - name: Cache bookdown results
         uses: actions/cache@v3
@@ -74,13 +67,8 @@ jobs:
       
       - name: Render Bookdown
         run: |
-          source(".github/workflows/render.R", echo = TRUE)
+          source("render.R", echo = TRUE)
         shell: Rscript {0}
-        
-      # - name: Upload artifact
-      #   uses: actions/upload-pages-artifact@v2
-      #   with:
-      #     path: 'docs/'
       
       - name: Deploy to GitHub pages 🚀
         uses: JamesIves/github-pages-deploy-action@v4
@@ -89,39 +77,4 @@ jobs:
           branch: gh-pages
           folder: docs
 
-  # checkout-and-deploy:
-  #   if: |
-  #     !contains(github.event.commits[0].message, '[skip-ci]') &&
-  #     !contains(github.event.commits[0].message, '[skip-renderbook]')
-  # 
-  #   needs: build-bookdown
-  #   runs-on: ubuntu-20.04
-  # 
-  #   steps:
-  #     - name: Download artifact
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         # Artifact name
-  #         name: docs # optional
-  #         # Destination path
-  #         path: docs/ # optional
-  #   
-  #     - name: Deploy to GitHub pages 🚀
-  #       uses: JamesIves/github-pages-deploy-action@v4
-  #       with:
-  #         clean: false
-  #         branch: gh-pages
-  #         folder: docs
-
-    # steps:
-    #   - name: Checkout
-    #     uses: actions/checkout@v3
-    # 
-    # 
-    #   - name: Deploy to GitHub Pages
-    #     uses: Cecilapp/GitHub-Pages-deploy@v3
-    #     env:
-    #      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #     with:
-    #      build_dir: docs/
-    #      branch: gh-pages
+  
