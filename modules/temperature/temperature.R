@@ -14,7 +14,7 @@ defineModule(sim, list(
   citation = list("citation.bib"),
   documentation = list("README.txt", "temperature.Rmd"),
   reqdPkgs = list("SpaDES.core (>=2.0.2)",
-                  "terra", "achubaty/NLMR"),
+                  "terra", "ropensci/NLMR"),
    parameters = bindrows(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
     defineParameter("simulationTimeStep", "numeric", 1, NA, NA, 
