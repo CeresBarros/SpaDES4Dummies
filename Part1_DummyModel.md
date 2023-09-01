@@ -38,6 +38,9 @@ library(SpaDES.tools)
 library(ggpubr)
 ```
 
+
+
+
 And now create a raster template:
 
 
