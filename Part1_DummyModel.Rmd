@@ -49,6 +49,8 @@ library(terra)
 library(quickPlot)
 library(ggplot2)
 library(ggpubr)
+
+stopifnot("NLMR" %in% installed.packages())
 ```
 
 
