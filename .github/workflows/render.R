@@ -2,6 +2,9 @@
 ## GHA RENDER SCRIPT
 ## ---------------------------------------------------
 
+options(repos = c("https://predictiveecology.r-universe.dev/", 
+                  CRAN = "https://cloud.r-project.org"))
+
 ## note that pkgPath is defined in common.R
 if (!"remotes" %in% installed.packages())
   install.packages("remotes")

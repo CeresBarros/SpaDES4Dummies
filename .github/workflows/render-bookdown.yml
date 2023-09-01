@@ -34,12 +34,11 @@ jobs:
         with:
           Ncpus: 2
           use-public-rspm: false
-          extra-repositories: 'https://predictiveecology.r-universe.dev'
+          extra-repositories: 'https://predictiveecology.r-universe.dev/'
       
       - name: Install package dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          # cache-version: 2
           packages: |
             any::bookdown
             any::htmlwidgets
