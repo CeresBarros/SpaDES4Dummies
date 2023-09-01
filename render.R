@@ -3,11 +3,13 @@
 ## ---------------------------------------------------
 
 ## not necessary when rendering via GHA
-# pkgPath <- normalizePath(file.path("packages", version$platform,
-#                                    paste0(version$major, ".", strsplit(version$minor, "[.]")[[1]][1])),
-#                          winslash = "/")
-# dir.create(pkgPath, recursive = TRUE)
-# .libPaths(pkgPath, include.site = FALSE)
+if (!isTRUE(as.logical(Sys.getenv("CI")))) {
+  pkgPath <- normalizePath(file.path("packages", version$platform,
+                                     paste0(version$major, ".", strsplit(version$minor, "[.]")[[1]][1])),
+                           winslash = "/")
+  dir.create(pkgPath, recursive = TRUE)
+  .libPaths(pkgPath, include.site = FALSE)
+}
 
 options(repos = c("https://predictiveecology.r-universe.dev/", 
                   CRAN = "https://cloud.r-project.org"))
@@ -28,7 +30,7 @@ Require::Require(c(#"bookdown", "htmlwidgets", "geodata",
                    # "PredictiveEcology/SpaDES.experiment@75d917b70b892802fed0bbdb2a5e9f3c6772f0ba",
                    # "ggpubr", "rmarkdown", "rsvg", "png",
                    ## pkgs for Part1:
-                   # "raster", "quickPlot", "ggplot2", "SpaDES.tools"
+                   # "terra", "quickPlot", "ggplot2",
                    "SpaDES",
                    "ropensci/NLMR"
                    ), 
