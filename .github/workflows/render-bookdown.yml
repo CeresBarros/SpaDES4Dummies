@@ -13,7 +13,6 @@ name: Render bookdown website
 jobs:
   build-bookdown:
     if: | 
-      !contains(github.event.commits[0].message, '[skip-ci]') &&
       !contains(github.event.commits[0].message, '[skip-renderbook]')
     
     runs-on: ubuntu-20.04
