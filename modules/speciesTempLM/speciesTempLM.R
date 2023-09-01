@@ -14,7 +14,7 @@ defineModule(sim, list(
   citation = list("citation.bib"),
   documentation = list("README.txt", "speciesTempLM.Rmd"),
   reqdPkgs = list("SpaDES.core (>=2.0.2)",
-                  "raster", "ggplot2", "data.table", "reshape2"),
+                  "terra", "ggplot2", "data.table", "reshape2"),
    parameters = bindrows(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
     defineParameter("statsTimestep", "numeric", 1, NA, NA, "This describes the how often the statitiscal analysis will be done")
@@ -81,14 +81,14 @@ statsInit <- function(sim) {
 ## Statistical analysis event
 statsAnalysis <- function(sim) {
   ## get all species abundances data available
-  abundData <- data.table(getValues(stack(sim$abundRasters)))
+  abundData <- as.data.table(rast(sim$abundRasters))
   abundData[, pixID := 1:nrow(abundData)]
   abundData <- melt.data.table(abundData, id.var = "pixID",
                                variable.name = "year", value.name = "abund")
   abundData[, year := as.numeric(sub("X", "", year))]
   
   ## get all temperature data available
-  tempData <- data.table(getValues(stack(sim$tempRasters)))
+  tempData <- as.data.table(rast(sim$tempRasters))
   tempData[, pixID := 1:nrow(tempData)]
   tempData <- melt.data.table(tempData, id.var = "pixID",
                               variable.name = "year", value.name = "temp")

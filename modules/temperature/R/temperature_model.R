@@ -1,10 +1,10 @@
 #' Accessory function to temperature module
 #' 
 #' @param ras a raster layer used as template.
-#' @return a fake temperature raster generated as a Gaussian map with scale = 100 and variance = 0.01
-#' @import NLMR nlm_mpd
+#' @return a fake temperature SpatRaster generated as a Gaussian map with scale = 100 and variance = 0.01
+#' @importFrom NLMR nlm_mpd
+#' @importFrom terra rast
 temperature_model <- function(ras) {
-  # temp_ras <- gaussMap(ras, scale = 100, var = 0.01) ## RandomFields no longer available
   temp_ras <- NLMR::nlm_mpd(
     ncol = ncol(ras),
     nrow = nrow(ras),
@@ -13,6 +13,7 @@ temperature_model <- function(ras) {
     rand_dev = 10,
     rescale = FALSE,
     verbose = FALSE
-  )
+  ) |>
+    rast()
   return(temp_ras)
 }

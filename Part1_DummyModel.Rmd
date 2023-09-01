@@ -38,7 +38,7 @@ This is what you'd normally do... Install all the packages in some way that you 
 ## please start from a clean R session
 remotes::install_github("ropensci/NLMR")  ## you will need this ;)
 
-library(raster)
+library(terra)
 library(quickPlot)
 library(ggplot2)
 library(SpaDES.tools)
@@ -46,7 +46,7 @@ library(ggpubr)
 ```
 
 ```{r loadPkgsHidden, include = FALSE}
-library(raster)
+library(terra)
 library(quickPlot)
 library(ggplot2)
 library(SpaDES.tools)
@@ -57,7 +57,7 @@ library(ggpubr)
 And now create a raster template:
 
 ```{r the_r_way_raster, message = FALSE, warning = FALSE, class.source = "fold-show"}
-r <- raster(nrows = 100, ncols = 100, xmn = -50, xmx = 50, ymn = -50, ymx = 50)
+r <- rast(nrows = 100, ncols = 100, xmin = -50, xmax = 50, ymin = -50, ymax = 50)
 ```
 
 ### Species abundance "simulations"
@@ -76,7 +76,8 @@ abundance_model <- function(ras, Time) {
       rand_dev = 100,
       rescale = TRUE,
       verbose = FALSE
-    )
+    ) |>
+      rast()
   }
   return(abund_outputs)
 }
@@ -88,7 +89,7 @@ Set the length of the simulation (or simply the number of model iterations), run
 Time <- 10
 abundance <- abundance_model(ras = r, Time = Time)
 dev()
-plot(stack(abundance))
+plot(rast(abundance))
 ```
 
 ### Temperature "simulations"
@@ -107,7 +108,8 @@ temperature_model <- function(ras, Time) {
       rand_dev = 10,
       rescale = FALSE,
       verbose = FALSE
-    )
+    ) |>
+      rast()
   }
   return(temp_outputs)
 }
@@ -117,7 +119,7 @@ Run the model and plot results (all temperature plots together)
 
 ```{r the_r_way_plot_results_TMP, class.source = "fold-show"}
 temperature <- temperature_model(ras = r, Time = Time)
-plot(stack(temperature))
+plot(rast(temperature))
 ```
 
 ### Data analysis
@@ -148,7 +150,7 @@ Then we create a loop to analyse each plot of our time-series:
 ```{r data_analysis, class.source = "fold-show"}
 lmPlots <- list()
 for (t in 1:Time) {
-  outputdata <- data.frame(abund = abundance[[t]][], temp = temperature[[t]][])
+  outputdata <- data.frame(abund = as.vector(abundance[[t]][]), temp = as.vector(temperature[[t]][]))
   lmPlots[[t]] <- stats_analysis(Data = outputdata)
 }
 ggarrange(plotlist = lmPlots)
@@ -277,7 +279,7 @@ defineModule(sim, list(
   citation = list("citation.bib"),
   documentation = deparse(list("README.txt", "speciesAbundance.Rmd")),
   reqdPkgs = list("SpaDES.core (>=2.0.2)",
-                  "raster", "quickPlot"),
+                  "terra", "quickPlot"),
   parameters = bindrows(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
     defineParameter("simulationTimeStep", "numeric", 1, NA, NA, 
@@ -289,7 +291,7 @@ defineModule(sim, list(
   ),
   inputObjects = bindrows(
     # expectsInput("objectName", "objectClass", "input object description", sourceURL, ...),
-    expectsInput("r", objectClass = "RasterLayer", desc = "Template raster")
+    expectsInput("r", objectClass = "SpatRaster", desc = "Template raster")
   ),
   outputObjects = bindrows(
     #createsOutput("objectName", "objectClass", "output object description", ...),
@@ -483,7 +485,7 @@ Here's an example of how to do this (the commented instructions have been delete
 .inputObjects <- function(sim) {
   if (!suppliedElsewhere("r")) {
     ## make template raster if not supplied elsewhere.
-    sim$r <- raster(nrows = 100, ncols = 100, xmn = -50, xmx = 50, ymn = -50, ymx = 50)
+    sim$r <- rast(nrows = 100, ncols = 100, xmin = -50, xmax = 50, ymin = -50, ymax = 50)
   }
   return(invisible(sim))
 }

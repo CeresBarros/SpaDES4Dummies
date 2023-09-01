@@ -52,7 +52,7 @@ defineModule(sim, list(
     expectsInput("sppAbundanceDT", "data.table",
                  desc = paste("A species abundance data. Converted to presence/absence data, if not binary.",
                               "By default a table with % species cover.")),
-    expectsInput("studyAreaRas", objectClass = "RasterLayer",
+    expectsInput("studyAreaRas", objectClass = "SpatRaster",
                  desc = "A binary raster of the study area")
   ),
   outputObjects = bindrows(

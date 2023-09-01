@@ -26,7 +26,7 @@ defineModule(sim, list(
                            "canada-forests-attributes_attributs-forests-canada/",
                            "2001-attributes_attributs-2001/",
                            "NFI_MODIS250m_2001_kNN_Species_Pice_Gla_v1.tif"), NA, NA,
-                    paste("URL where the first RasterLayer of species abundance resides.",
+                    paste("URL where the first SpatRaster of species abundance resides.",
                           "This will be the abundance data used to fit the species ditribution model.",
                           "Defaults to *Picea glauca* percent cover across Canada, in 2001", 
                           "(from Canadian National Forest Inventory forest attributes)")),
@@ -50,7 +50,7 @@ defineModule(sim, list(
   ),
   inputObjects = bindrows(
     #expectsInput("objectName", "objectClass", "input object description", sourceURL, ...),
-    expectsInput("studyAreaRas", objectClass = "RasterLayer", 
+    expectsInput("studyAreaRas", objectClass = "SpatRaster", 
                  desc = "A binary raster of the study area")
   ),
   outputObjects = bindrows(
