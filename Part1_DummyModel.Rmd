@@ -168,7 +168,7 @@ Note that Markdown (`.Rmd`) scripts can also be used instead of \`.R\` scripts.
 
 We start by making sure all `SpaDES` packages and their dependencies are installed (and that the installation is *scripted*)  using the `Require` package.
 
-```{r globalscriptPart1, message = FALSE, warning = FALSE, results = 'hide'}
+```{r globalscriptPart1, eval = FALSE, message = FALSE, warning = FALSE, results = 'hide'}
 ## start again from a clean R session
 options(repos = c("https://predictiveecology.r-universe.dev/", 
                   CRAN = "https://cloud.r-project.org"))
@@ -210,12 +210,43 @@ if (!dir.exists(file.path(getPaths()$modulePath, "speciesAbundance"))) {
 }
 ```
 
-```{r getModulesHiddenPart1, include = FALSE, cache = FALSE}
+```{r globalscriptPart1Hidden, include = FALSE, cache = FALSE}
+## for faster rendering use all .libPaths to avoid installing all packages.
+options(repos = c("https://predictiveecology.r-universe.dev/", 
+                  CRAN = "https://cloud.r-project.org"))
+
+mainPath <- "~/SpaDES4Dummies_Part1"
+pkgPath <- file.path(mainPath, "packages", version$platform,
+                     paste0(version$major, ".", strsplit(version$minor, "[.]")[[1]][1]))
+dir.create(pkgPath, recursive = TRUE)
+.libPaths(pkgPath)
+
+if (!"remotes" %in% installed.packages(lib.loc = pkgPath))
+  install.packages("remotes")
+
+if (!"Require" %in% installed.packages(lib.loc = pkgPath) ||
+    packageVersion("Require", lib.loc = pkgPath) < "0.3.1") {
+  remotes::install_github("PredictiveEcology/Require@55ec169e654214d86be62a0e13e9a2157f1aa966",
+                          upgrade = FALSE)
+}
+
+## use binary linux packages if on Ubuntu
+Require::setLinuxBinaryRepo()
+
+Require::Require(c("SpaDES", "DiagrammeR"), require = FALSE, upgrade = FALSE, 
+                 dependencies = TRUE)
+
+library(SpaDES)
+
+setPaths(cachePath = file.path(mainPath, "cache"),
+         inputPath = file.path(mainPath, "inputs"),
+         modulePath = file.path(mainPath, "modules"),
+         outputPath = file.path(mainPath, "outputs"))
+
 mods <- list.files(file.path(projDir, "modules"), full.names = TRUE)
 mods <- mods[basename(mods) %in% c("speciesAbundance", "temperature", "speciesTempLM")]
 
 sapply(mods, function(mod, to) {
-  browser()
   to <- file.path(to, basename(mod))
   dir.create(to, showWarnings = FALSE)
   ff <- list.files(mod, full.names = TRUE) ## don't recurse into dirs to preserve structure

@@ -54,7 +54,7 @@ In this example this script is called `Part2_SDMs.R`.
 The script begins with a few lines of code that ensure a few packages are installed and loaded (see [Reproducible package installation]).
 It then defines the necessary folder directories for the simulation and creates the modules in the `modules/` folder.
 
-```{r globalscriptPart2, message = FALSE, warning = FALSE, results = 'hide', class.source = "fold-show"}
+```{r globalscriptPart2, eval = FALSE, message = FALSE, warning = FALSE, results = 'hide', class.source = "fold-show"}
 options(repos = c("https://predictiveecology.r-universe.dev/", 
                   CRAN = "https://cloud.r-project.org"))
 
@@ -125,7 +125,57 @@ if (!dir.exists(file.path(simPaths$modulePath, "projectSpeciesDist"))) {
 }
 ```
 
-```{r getModulesHiddenPart2, include = FALSE, cache = FALSE}
+```{r globalscriptPart2Hidden, include = FALSE, cache = FALSE}
+## for faster rendering use all .libPaths to avoid installing all packages.
+options(repos = c("https://predictiveecology.r-universe.dev/", 
+                  CRAN = "https://cloud.r-project.org"))
+
+## decide where you're working
+mainPath <- file.path("~/SpaDES4Dummies_Part2")
+pkgPath <- file.path(mainPath, "packages", version$platform,
+                     paste0(version$major, ".", strsplit(version$minor, "[.]")[[1]][1]))
+dir.create(pkgPath, recursive = TRUE)
+.libPaths(pkgPath) 
+
+if (!"remotes" %in% installed.packages(lib.loc = pkgPath))
+  install.packages("remotes")
+
+if (!"Require" %in% installed.packages(lib.loc = pkgPath) ||
+    packageVersion("Require", lib.loc = pkgPath) < "0.3.1") {
+  remotes::install_github("PredictiveEcology/Require@55ec169e654214d86be62a0e13e9a2157f1aa966",
+                          upgrade = FALSE)
+}
+
+## use binary linux packages if on Ubuntu
+Require::setLinuxBinaryRepo()
+
+## Notes: 
+## 1) if you are working from RStudio and have an older version of base packages like `Rcpp`, `rlang` 
+## (and others) installed, you may  need to run the following lines (and code above) directly from R
+## in order to update these base packages
+## 2) Please ensure the appropriate Rtools version is installed (see)
+
+Require::Require(c("PredictiveEcology/SpaDES.project@transition (HEAD)", 
+                   "PredictiveEcology/SpaDES.core@master (HEAD)",
+                   ## these will be needed later on:
+                   "ggpubr",
+                   "geodata",
+                   "SpaDES.tools",
+                   "PredictiveEcology/SpaDES.experiment@75d917b70b892802fed0bbdb2a5e9f3c6772f0ba"),
+                 require = FALSE,
+                 upgrade = FALSE)
+
+## there seems to be a problem with `ragg` and a forced install solves it
+install.packages("ragg")
+
+Require::Require("SpaDES.core", install = FALSE)  ## load only
+setPaths(cachePath = file.path(mainPath, "cache"),
+         inputPath = file.path(mainPath, "inputs"),
+         modulePath = file.path(mainPath, "modules"),
+         outputPath = file.path(mainPath, "outputs"))
+
+simPaths <- getPaths() ## check that this is what you wanted
+
 mods <- list.files(file.path(projDir, "modules"), full.names = TRUE)
 mods <- mods[basename(mods) %in% c("speciesAbundanceData", "climateData", "projectSpeciesDist")]
 
@@ -134,7 +184,7 @@ sapply(mods, function(mod, to) {
   dir.create(to, showWarnings = FALSE)
   ff <- list.files(mod, full.names = TRUE) ## don't recurse into dirs to preserve structure
   file.copy(ff, to, recursive = TRUE, overwrite = TRUE)  ## now recurse to copy files in dirs
-}, to = getPaths()$modulePath)
+}, to = simPaths$modulePath)
 rm(mods)
 ```
 
