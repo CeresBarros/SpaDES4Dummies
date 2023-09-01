@@ -386,7 +386,7 @@ The <code>data.table</code> contains added information about the year of the sim
 <span id="cb28-26"><a href="part2.html#cb28-26" aria-hidden="true" tabindex="-1"></a>                           <span class="st">&quot;canada-forests-attributes_attributs-forests-canada/&quot;</span>,</span>
 <span id="cb28-27"><a href="part2.html#cb28-27" aria-hidden="true" tabindex="-1"></a>                           <span class="st">&quot;2001-attributes_attributs-2001/&quot;</span>,</span>
 <span id="cb28-28"><a href="part2.html#cb28-28" aria-hidden="true" tabindex="-1"></a>                           <span class="st">&quot;NFI_MODIS250m_2001_kNN_Species_Pice_Gla_v1.tif&quot;</span>), <span class="cn">NA</span>, <span class="cn">NA</span>,</span>
-<span id="cb28-29"><a href="part2.html#cb28-29" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">paste</span>(<span class="st">&quot;URL where the first RasterLayer of species abundance resides.&quot;</span>,</span>
+<span id="cb28-29"><a href="part2.html#cb28-29" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">paste</span>(<span class="st">&quot;URL where the first SpatRaster of species abundance resides.&quot;</span>,</span>
 <span id="cb28-30"><a href="part2.html#cb28-30" aria-hidden="true" tabindex="-1"></a>                          <span class="st">&quot;This will be the abundance data used to fit the species ditribution model.&quot;</span>,</span>
 <span id="cb28-31"><a href="part2.html#cb28-31" aria-hidden="true" tabindex="-1"></a>                          <span class="st">&quot;Defaults to *Picea glauca* percent cover across Canada, in 2001&quot;</span>, </span>
 <span id="cb28-32"><a href="part2.html#cb28-32" aria-hidden="true" tabindex="-1"></a>                          <span class="st">&quot;(from Canadian National Forest Inventory forest attributes)&quot;</span>)),</span>
@@ -410,7 +410,7 @@ The <code>data.table</code> contains added information about the year of the sim
 <span id="cb28-50"><a href="part2.html#cb28-50" aria-hidden="true" tabindex="-1"></a>  ),</span>
 <span id="cb28-51"><a href="part2.html#cb28-51" aria-hidden="true" tabindex="-1"></a>  <span class="at">inputObjects =</span> <span class="fu">bindrows</span>(</span>
 <span id="cb28-52"><a href="part2.html#cb28-52" aria-hidden="true" tabindex="-1"></a>    <span class="co">#expectsInput(&quot;objectName&quot;, &quot;objectClass&quot;, &quot;input object description&quot;, sourceURL, ...),</span></span>
-<span id="cb28-53"><a href="part2.html#cb28-53" aria-hidden="true" tabindex="-1"></a>    <span class="fu">expectsInput</span>(<span class="st">&quot;studyAreaRas&quot;</span>, <span class="at">objectClass =</span> <span class="st">&quot;RasterLayer&quot;</span>, </span>
+<span id="cb28-53"><a href="part2.html#cb28-53" aria-hidden="true" tabindex="-1"></a>    <span class="fu">expectsInput</span>(<span class="st">&quot;studyAreaRas&quot;</span>, <span class="at">objectClass =</span> <span class="st">&quot;SpatRaster&quot;</span>, </span>
 <span id="cb28-54"><a href="part2.html#cb28-54" aria-hidden="true" tabindex="-1"></a>                 <span class="at">desc =</span> <span class="st">&quot;A binary raster of the study area&quot;</span>)</span>
 <span id="cb28-55"><a href="part2.html#cb28-55" aria-hidden="true" tabindex="-1"></a>  ),</span>
 <span id="cb28-56"><a href="part2.html#cb28-56" aria-hidden="true" tabindex="-1"></a>  <span class="at">outputObjects =</span> <span class="fu">bindrows</span>(</span>
@@ -912,7 +912,7 @@ Before fitting the SDM, the module converts any non-binary species data into pre
 <span id="cb30-52"><a href="part2.html#cb30-52" aria-hidden="true" tabindex="-1"></a>    <span class="fu">expectsInput</span>(<span class="st">&quot;sppAbundanceDT&quot;</span>, <span class="st">&quot;data.table&quot;</span>,</span>
 <span id="cb30-53"><a href="part2.html#cb30-53" aria-hidden="true" tabindex="-1"></a>                 <span class="at">desc =</span> <span class="fu">paste</span>(<span class="st">&quot;A species abundance data. Converted to presence/absence data, if not binary.&quot;</span>,</span>
 <span id="cb30-54"><a href="part2.html#cb30-54" aria-hidden="true" tabindex="-1"></a>                              <span class="st">&quot;By default a table with % species cover.&quot;</span>)),</span>
-<span id="cb30-55"><a href="part2.html#cb30-55" aria-hidden="true" tabindex="-1"></a>    <span class="fu">expectsInput</span>(<span class="st">&quot;studyAreaRas&quot;</span>, <span class="at">objectClass =</span> <span class="st">&quot;RasterLayer&quot;</span>,</span>
+<span id="cb30-55"><a href="part2.html#cb30-55" aria-hidden="true" tabindex="-1"></a>    <span class="fu">expectsInput</span>(<span class="st">&quot;studyAreaRas&quot;</span>, <span class="at">objectClass =</span> <span class="st">&quot;SpatRaster&quot;</span>,</span>
 <span id="cb30-56"><a href="part2.html#cb30-56" aria-hidden="true" tabindex="-1"></a>                 <span class="at">desc =</span> <span class="st">&quot;A binary raster of the study area&quot;</span>)</span>
 <span id="cb30-57"><a href="part2.html#cb30-57" aria-hidden="true" tabindex="-1"></a>  ),</span>
 <span id="cb30-58"><a href="part2.html#cb30-58" aria-hidden="true" tabindex="-1"></a>  <span class="at">outputObjects =</span> <span class="fu">bindrows</span>(</span>
@@ -1376,21 +1376,21 @@ These lists define the modules used in the simulation (<code>simModules</code>),
 Figure 2.1: Study area within Canada.
 </p>
 </div>
-<p>Before running the simulation we look at the module linkage diagrams produced by <code>moduleDiagram</code> (Fig. <a href="part1.html#fig:moduleDiagram">1.2</a>) and <code>objectDiagram</code> (Fig. <a href="part1.html#fig:objectDiagram">1.3</a>) to assess whether modules are linked as expected.</p>
+<p>Before running the simulation we look at the module linkage diagrams produced by <code>moduleDiagram</code> (Fig. <a href="part2.html#fig:moduleDiagram2">2.2</a>) and <code>objectDiagram</code> (Fig. <a href="part2.html#fig:objectDiagram2">2.3</a>) to assess whether modules are linked as expected.</p>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="part2.html#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">moduleDiagram</span>(mySimMaxEnt)</span>
 <span id="cb36-2"><a href="part2.html#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">objectDiagram</span>(mySimMaxEnt)</span></code></pre></div>
 </details>
-<div class="figure" style="text-align: center"><span style="display:block;" id="fig:moduleDiagram"></span>
-<img src="Part2_SDMs_files/figure-html/moduleDiagram-1.png" alt="Module network diagram." width="576" />
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:moduleDiagram2"></span>
+<img src="Part2_SDMs_files/figure-html/moduleDiagram2-1.png" alt="Module network diagram." width="576" />
 <p class="caption">
-Figure 1.2: Module network diagram.
+Figure 2.2: Module network diagram.
 </p>
 </div>
-<div class="figure" style="text-align: center"><span style="display:block;" id="fig:objectDiagram"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:objectDiagram2"></span>
 <img src="figures/Part2_objectDiagram.png" alt="Module diagram showing module inter-dependencies with object names."  />
 <p class="caption">
-Figure 1.3: Module diagram showing module inter-dependencies with object names.
+Figure 2.3: Module diagram showing module inter-dependencies with object names.
 </p>
 </div>
 </div>
@@ -1421,30 +1421,30 @@ This helps diagnosing problems when the simulation fails, but also seeing which 
 <span id="cb37-15"><a href="part2.html#cb37-15" aria-hidden="true" tabindex="-1"></a>qs<span class="sc">::</span><span class="fu">qsave</span>(myExperiment, <span class="fu">file.path</span>(simPaths<span class="sc">$</span>outputPath, <span class="fu">paste0</span>(<span class="st">&quot;myExperiment&quot;</span>, <span class="st">&quot;.qs&quot;</span>)))</span></code></pre></div>
 </details>
 <p>Try to execute the <code>spades</code> call twice to see how much faster it runs after many of the operations have been cached (see also <a href="part2.html#caching">Caching</a>).</p>
-<p>By default the data modules (<em>speciesAbundanceData</em> and <em>climateData</em>) save figures of the input species and climate layers (Figs. <a href="part2.html#fig:figSimulationSppAbund">2.2</a> and <a href="part2.html#fig:figSimulationClimate">2.3</a>, respectively).</p>
+<p>By default the data modules (<em>speciesAbundanceData</em> and <em>climateData</em>) save figures of the input species and climate layers (Figs. <a href="part2.html#fig:figSimulationSppAbund">2.4</a> and <a href="part2.html#fig:figSimulationClimate">2.5</a>, respectively).</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:figSimulationSppAbund"></span>
 <img src="outputs/GLM_rep1/figures/speciesAbundance.png" alt="Prediction plots. Input Picea glauca percent cover across the landscape. Note that values are converted to presence/absence." width="50%" />
 <p class="caption">
-Figure 2.2: Prediction plots. Input <em>Picea glauca</em> percent cover across the landscape. Note that values are converted to presence/absence.
+Figure 2.4: Prediction plots. Input <em>Picea glauca</em> percent cover across the landscape. Note that values are converted to presence/absence.
 </p>
 </div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:figSimulationClimate"></span>
 <img src="outputs/GLM_rep1/figures/climateRas_BIO1.png" alt="Prediction plots. Bioclimatic variables under baseline (year 1) and future conditions." width="50%" /><img src="outputs/GLM_rep1/figures/climateRas_BIO12.png" alt="Prediction plots. Bioclimatic variables under baseline (year 1) and future conditions." width="50%" /><img src="outputs/GLM_rep1/figures/climateRas_BIO15.png" alt="Prediction plots. Bioclimatic variables under baseline (year 1) and future conditions." width="50%" /><img src="outputs/GLM_rep1/figures/climateRas_BIO4.png" alt="Prediction plots. Bioclimatic variables under baseline (year 1) and future conditions." width="50%" />
 <p class="caption">
-Figure 2.3: Prediction plots. Bioclimatic variables under baseline (year 1) and future conditions.
+Figure 2.5: Prediction plots. Bioclimatic variables under baseline (year 1) and future conditions.
 </p>
 </div>
-<p>The prediction module also outputs the projections for each climate period automatically (Figs. <a href="part2.html#fig:simulationProj">2.4</a> and <a href="part2.html#fig:simulationProj2">2.5</a>).</p>
+<p>The prediction module also outputs the projections for each climate period automatically (Figs. <a href="part2.html#fig:simulationProj">2.6</a> and <a href="part2.html#fig:simulationProj2">2.7</a>).</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:simulationProj"></span>
 <img src="outputs/MaxEnt_rep1/figures/projRawVals_MaxEnt_Year1.png" alt="Prediction plots: Raw predicted values of species probability of occurence under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt." width="20%" /><img src="outputs/MaxEnt_rep1/figures/projRawVals_MaxEnt_Year2.png" alt="Prediction plots: Raw predicted values of species probability of occurence under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt." width="20%" /><img src="outputs/MaxEnt_rep1/figures/projRawVals_MaxEnt_Year3.png" alt="Prediction plots: Raw predicted values of species probability of occurence under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt." width="20%" /><img src="outputs/MaxEnt_rep1/figures/projRawVals_MaxEnt_Year4.png" alt="Prediction plots: Raw predicted values of species probability of occurence under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt." width="20%" /><img src="outputs/MaxEnt_rep1/figures/projRawVals_MaxEnt_Year5.png" alt="Prediction plots: Raw predicted values of species probability of occurence under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt." width="20%" />
 <p class="caption">
-Figure 2.4: Prediction plots: Raw predicted values of species probability of occurence under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt.
+Figure 2.6: Prediction plots: Raw predicted values of species probability of occurence under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt.
 </p>
 </div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:simulationProj2"></span>
 <img src="outputs/MaxEnt_rep1/figures/projPA_MaxEnt_Year1.png" alt="Prediction plots: Predictions of Picea glauca presence/absence under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt." width="20%" /><img src="outputs/MaxEnt_rep1/figures/projPA_MaxEnt_Year2.png" alt="Prediction plots: Predictions of Picea glauca presence/absence under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt." width="20%" /><img src="outputs/MaxEnt_rep1/figures/projPA_MaxEnt_Year3.png" alt="Prediction plots: Predictions of Picea glauca presence/absence under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt." width="20%" /><img src="outputs/MaxEnt_rep1/figures/projPA_MaxEnt_Year4.png" alt="Prediction plots: Predictions of Picea glauca presence/absence under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt." width="20%" /><img src="outputs/MaxEnt_rep1/figures/projPA_MaxEnt_Year5.png" alt="Prediction plots: Predictions of Picea glauca presence/absence under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt." width="20%" />
 <p class="caption">
-Figure 2.5: Prediction plots: Predictions of <em>Picea glauca</em> presence/absence under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt.
+Figure 2.7: Prediction plots: Predictions of <em>Picea glauca</em> presence/absence under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt.
 </p>
 </div>
 <p>The projected layers can also be accessed and plotted via the <code>simList</code> object, as can the model validation results.</p>
@@ -1510,7 +1510,7 @@ If this was not desired, we could set a random seed before running the fitting e
 <div id="making-use-of-simlist-for-reporting" class="section level4 hasAnchor" number="2.3.3.3">
 <h4><span class="header-section-number">2.3.3.3</span> Making use of <code>simList</code> for reporting<a href="part2.html#making-use-of-simlist-for-reporting" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>Another advantage of having all simulation parameters, inputs and outputs centralised in one object, is that we can easily inspect and manipulated them afterwards, without the need to load separate objects back into <code>R</code>.</p>
-<p>Here we show how we capitalize on this <code>SpaDES</code> feature to create figures of the outputs (Fig. <a href="part2.html#fig:newScenariosFig">2.6</a>).</p>
+<p>Here we show how we capitalize on this <code>SpaDES</code> feature to create figures of the outputs (Fig. <a href="part2.html#fig:newScenariosFig">2.8</a>).</p>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="part2.html#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="do">## MaxEnt predictions across time and for each climate scenario --------------</span></span>
 <span id="cb40-2"><a href="part2.html#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="do">## combine plots from two distinct simulations in a single figure</span></span>
@@ -1580,7 +1580,7 @@ If this was not desired, we could set a random seed before running the fitting e
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:newScenariosFig"></span>
 <img src="outputs/generalFigures/MaxEntPredictions.png" alt="Adding a new scenario: Predictions of Picea glauca probabilities of presences and presence/absence under (left to right) baseline climate conditions, 2041-2060, and 2081-2100 climate projections under two emission scenarios (SSP 136 and SSP 585, the default) -- showing MaxEnt forecasts only." width="80%" />
 <p class="caption">
-Figure 2.6: Adding a new scenario: Predictions of <em>Picea glauca</em> probabilities of presences and presence/absence under (left to right) baseline climate conditions, 2041-2060, and 2081-2100 climate projections under two emission scenarios (SSP 136 and SSP 585, the default) – showing MaxEnt forecasts only.
+Figure 2.8: Adding a new scenario: Predictions of <em>Picea glauca</em> probabilities of presences and presence/absence under (left to right) baseline climate conditions, 2041-2060, and 2081-2100 climate projections under two emission scenarios (SSP 136 and SSP 585, the default) – showing MaxEnt forecasts only.
 </p>
 </div>
 <hr />

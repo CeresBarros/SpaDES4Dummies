@@ -31,10 +31,9 @@ This is what you'd normally do... Install all the packages in some way that you 
 ## please start from a clean R session
 remotes::install_github("ropensci/NLMR")  ## you will need this ;)
 
-library(raster)
+library(terra)
 library(quickPlot)
 library(ggplot2)
-library(SpaDES.tools)
 library(ggpubr)
 ```
 
@@ -45,7 +44,7 @@ And now create a raster template:
 
 
 ```{.r .fold-show}
-r <- raster(nrows = 100, ncols = 100, xmn = -50, xmx = 50, ymn = -50, ymx = 50)
+r <- rast(nrows = 100, ncols = 100, xmin = -50, xmax = 50, ymin = -50, ymax = 50)
 ```
 
 ### Species abundance "simulations"
@@ -65,7 +64,8 @@ abundance_model <- function(ras, Time) {
       rand_dev = 100,
       rescale = TRUE,
       verbose = FALSE
-    )
+    ) |>
+      rast()
   }
   return(abund_outputs)
 }
@@ -78,7 +78,7 @@ Set the length of the simulation (or simply the number of model iterations), run
 Time <- 10
 abundance <- abundance_model(ras = r, Time = Time)
 dev()
-plot(stack(abundance))
+plot(rast(abundance))
 ```
 
 ![](Part1_DummyModel_files/figure-latex/the_r_way_simulation_length-1.pdf)<!-- --> 
@@ -100,7 +100,8 @@ temperature_model <- function(ras, Time) {
       rand_dev = 10,
       rescale = FALSE,
       verbose = FALSE
-    )
+    ) |>
+      rast()
   }
   return(temp_outputs)
 }
@@ -111,7 +112,7 @@ Run the model and plot results (all temperature plots together)
 
 ```{.r .fold-show}
 temperature <- temperature_model(ras = r, Time = Time)
-plot(stack(temperature))
+plot(rast(temperature))
 ```
 
 ![](Part1_DummyModel_files/figure-latex/the_r_way_plot_results_TMP-1.pdf)<!-- --> 
@@ -146,7 +147,7 @@ Then we create a loop to analyse each plot of our time-series:
 ```{.r .fold-show}
 lmPlots <- list()
 for (t in 1:Time) {
-  outputdata <- data.frame(abund = abundance[[t]][], temp = temperature[[t]][])
+  outputdata <- data.frame(abund = as.vector(abundance[[t]][]), temp = as.vector(temperature[[t]][]))
   lmPlots[[t]] <- stats_analysis(Data = outputdata)
 }
 ## Warning: Using `size` aesthetic for lines was deprecated in ggplot2
@@ -213,6 +214,8 @@ if (!dir.exists(file.path(getPaths()$modulePath, "speciesAbundance"))) {
   newModule(name = "speciesAbundance", path = getPaths()$modulePath)
 }
 ```
+
+
 
 We then create modules using `newModule`.
 `newModule` creates a module folder (*speciesAbundance*) inside `/modules` that contains both the module `.R` script template, as well as the documentation template (the `.Rmd` file).
@@ -290,7 +293,7 @@ defineModule(sim, list(
   citation = list("citation.bib"),
   documentation = deparse(list("README.txt", "speciesAbundance.Rmd")),
   reqdPkgs = list("SpaDES.core (>=2.0.2)",
-                  "raster", "quickPlot"),
+                  "terra", "quickPlot"),
   parameters = bindrows(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
     defineParameter("simulationTimeStep", "numeric", 1, NA, NA, 
@@ -302,7 +305,7 @@ defineModule(sim, list(
   ),
   inputObjects = bindrows(
     # expectsInput("objectName", "objectClass", "input object description", sourceURL, ...),
-    expectsInput("r", objectClass = "RasterLayer", desc = "Template raster")
+    expectsInput("r", objectClass = "SpatRaster", desc = "Template raster")
   ),
   outputObjects = bindrows(
     #createsOutput("objectName", "objectClass", "output object description", ...),
@@ -501,7 +504,7 @@ Here's an example of how to do this (the commented instructions have been delete
 .inputObjects <- function(sim) {
   if (!suppliedElsewhere("r")) {
     ## make template raster if not supplied elsewhere.
-    sim$r <- raster(nrows = 100, ncols = 100, xmn = -50, xmx = 50, ymn = -50, ymx = 50)
+    sim$r <- rast(nrows = 100, ncols = 100, xmin = -50, xmax = 50, ymin = -50, ymax = 50)
   }
   return(invisible(sim))
 }
@@ -541,10 +544,10 @@ Here we provide a description of the function, its parameters, returning value a
 #' Accessory function to speciesAbundance module
 #' 
 #' @param ras a raster layer used as template.
-#' @return a fake abundance raster generated as a Gaussian map with scale = 100 and variance = 0.01
-#' @import NLMR nlm_mpd
+#' @return a fake abundance SpatRaster generated as a Gaussian map with scale = 100 and variance = 0.01
+#' @importFrom NLMR nlm_mpd
+#' @importFrom terra rast
 abundance_model <- function(ras) {
-  # abund_ras <- gaussMap(ras, scale = 100, var = 0.01) ## RandomFields no longer available
   abund_ras <- NLMR::nlm_mpd(
     ncol = ncol(ras),
     nrow = nrow(ras),
@@ -553,7 +556,8 @@ abundance_model <- function(ras) {
     rand_dev = 100,
     rescale = TRUE,
     verbose = FALSE
-  )
+  ) |>
+    rast()
   return(abund_ras)
 }
 ```
@@ -595,7 +599,7 @@ defineModule(sim, list(
   citation = list("citation.bib"),
   documentation = list("README.txt", "temperature.Rmd"),
   reqdPkgs = list("SpaDES.core (>=2.0.2)",
-                  "raster", "achubaty/NLMR"),
+                  "terra", "ropensci/NLMR"),
    parameters = bindrows(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
     defineParameter("simulationTimeStep", "numeric", 1, NA, NA, 
@@ -607,7 +611,7 @@ defineModule(sim, list(
   ),
   inputObjects = bindrows(
     #expectsInput("objectName", "objectClass", "input object description", sourceURL, ...),
-    expectsInput("r", "RasterLayer", "Template raster")
+    expectsInput("r", "SpatRaster", "Template raster")
   ),
   outputObjects = bindrows(
     #createsOutput("objectName", "objectClass", "output object description", ...),
@@ -684,7 +688,7 @@ plotting <- function(sim) {
 .inputObjects <- function(sim) {
   if (!suppliedElsewhere("r")) {
     ## make template raster if not supplied elsewhere.
-    sim$r <- raster(nrows = 100, ncols = 100, xmn = -50, xmx = 50, ymn = -50, ymx = 50)
+    sim$r <- rast(nrows = 100, ncols = 100, xmin = -50, xmax = 50, ymin = -50, ymax = 50)
   }
   return(invisible(sim))
 }
@@ -697,10 +701,10 @@ Again, we added an accessory `temperature_model` function in a separate script `
 #' Accessory function to temperature module
 #' 
 #' @param ras a raster layer used as template.
-#' @return a fake temperature raster generated as a Gaussian map with scale = 100 and variance = 0.01
-#' @import NLMR nlm_mpd
+#' @return a fake temperature SpatRaster generated as a Gaussian map with scale = 100 and variance = 0.01
+#' @importFrom NLMR nlm_mpd
+#' @importFrom terra rast
 temperature_model <- function(ras) {
-  # temp_ras <- gaussMap(ras, scale = 100, var = 0.01) ## RandomFields no longer available
   temp_ras <- NLMR::nlm_mpd(
     ncol = ncol(ras),
     nrow = nrow(ras),
@@ -709,7 +713,8 @@ temperature_model <- function(ras) {
     rand_dev = 10,
     rescale = FALSE,
     verbose = FALSE
-  )
+  ) |>
+    rast()
   return(temp_ras)
 }
 ```
@@ -759,7 +764,7 @@ defineModule(sim, list(
   citation = list("citation.bib"),
   documentation = list("README.txt", "speciesTempLM.Rmd"),
   reqdPkgs = list("SpaDES.core (>=2.0.2)",
-                  "raster", "ggplot2", "data.table", "reshape2"),
+                  "terra", "ggplot2", "data.table", "reshape2"),
    parameters = bindrows(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
     defineParameter("statsTimestep", "numeric", 1, NA, NA, "This describes the how often the statitiscal analysis will be done")
@@ -826,14 +831,14 @@ statsInit <- function(sim) {
 ## Statistical analysis event
 statsAnalysis <- function(sim) {
   ## get all species abundances data available
-  abundData <- data.table(getValues(stack(sim$abundRasters)))
+  abundData <- as.data.table(rast(sim$abundRasters))
   abundData[, pixID := 1:nrow(abundData)]
   abundData <- melt.data.table(abundData, id.var = "pixID",
                                variable.name = "year", value.name = "abund")
   abundData[, year := as.numeric(sub("X", "", year))]
   
   ## get all temperature data available
-  tempData <- data.table(getValues(stack(sim$tempRasters)))
+  tempData <- as.data.table(rast(sim$tempRasters))
   tempData[, pixID := 1:nrow(tempData)]
   tempData <- melt.data.table(tempData, id.var = "pixID",
                               variable.name = "year", value.name = "temp")
@@ -939,9 +944,6 @@ The function `simInit` needs a few arguments listing simulation folder directori
     Here we chose to list `.plotInitialTime` (a parameter used and defined in the *speciesAbundance* and *temperature* modules), but provide the default value (we experimenting with it by changing its value in the `Part1_DummyModel.R`).
 
 -   `paths` contains the folder directory paths that we set earlier.
-
-
-
 
 
 ```r

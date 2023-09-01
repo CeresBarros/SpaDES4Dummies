@@ -175,7 +175,7 @@ defineModule(sim, list(
                            "canada-forests-attributes_attributs-forests-canada/",
                            "2001-attributes_attributs-2001/",
                            "NFI_MODIS250m_2001_kNN_Species_Pice_Gla_v1.tif"), NA, NA,
-                    paste("URL where the first RasterLayer of species abundance resides.",
+                    paste("URL where the first SpatRaster of species abundance resides.",
                           "This will be the abundance data used to fit the species ditribution model.",
                           "Defaults to *Picea glauca* percent cover across Canada, in 2001", 
                           "(from Canadian National Forest Inventory forest attributes)")),
@@ -199,7 +199,7 @@ defineModule(sim, list(
   ),
   inputObjects = bindrows(
     #expectsInput("objectName", "objectClass", "input object description", sourceURL, ...),
-    expectsInput("studyAreaRas", objectClass = "RasterLayer", 
+    expectsInput("studyAreaRas", objectClass = "SpatRaster", 
                  desc = "A binary raster of the study area")
   ),
   outputObjects = bindrows(
@@ -717,7 +717,7 @@ defineModule(sim, list(
     expectsInput("sppAbundanceDT", "data.table",
                  desc = paste("A species abundance data. Converted to presence/absence data, if not binary.",
                               "By default a table with % species cover.")),
-    expectsInput("studyAreaRas", objectClass = "RasterLayer",
+    expectsInput("studyAreaRas", objectClass = "SpatRaster",
                  desc = "A binary raster of the study area")
   ),
   outputObjects = bindrows(
@@ -1217,7 +1217,7 @@ mySimGLM <- simInit(times = simTimes, params = simParamsGLM,
 \caption{Study area within Canada.}(\#fig:studyAreaCanada)
 \end{figure}
 
-Before running the simulation we look at the module linkage diagrams produced by `moduleDiagram` (Fig. \@ref(fig:moduleDiagram)) and `objectDiagram` (Fig. \@ref(fig:objectDiagram)) to assess whether modules are linked as expected.
+Before running the simulation we look at the module linkage diagrams produced by `moduleDiagram` (Fig. \@ref(fig:moduleDiagram2)) and `objectDiagram` (Fig. \@ref(fig:objectDiagram2)) to assess whether modules are linked as expected.
 
 
 ```r
@@ -1227,11 +1227,11 @@ objectDiagram(mySimMaxEnt)
 
 \begin{figure}
 
-{\centering \includegraphics{Part2_SDMs_files/figure-latex/moduleDiagram-1} 
+{\centering \includegraphics{Part2_SDMs_files/figure-latex/moduleDiagram2-1} 
 
 }
 
-\caption{Module network diagram.}(\#fig:moduleDiagram)
+\caption{Module network diagram.}(\#fig:moduleDiagram2)
 \end{figure}
 
 \begin{figure}
@@ -1240,7 +1240,7 @@ objectDiagram(mySimMaxEnt)
 
 }
 
-\caption{Module diagram showing module inter-dependencies with object names.}(\#fig:objectDiagram)
+\caption{Module diagram showing module inter-dependencies with object names.}(\#fig:objectDiagram2)
 \end{figure}
 
 ### Simulation runs

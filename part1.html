@@ -260,15 +260,14 @@ In Part <a href="part2.html#part2">2</a>, we introduce <code>SpaDES</code> featu
 <div class="sourceCode" id="cb1"><pre class="sourceCode r fold-show"><code class="sourceCode r"><span id="cb1-1"><a href="part1.html#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="do">## please start from a clean R session</span></span>
 <span id="cb1-2"><a href="part1.html#cb1-2" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;ropensci/NLMR&quot;</span>)  <span class="do">## you will need this ;)</span></span>
 <span id="cb1-3"><a href="part1.html#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="part1.html#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(raster)</span>
+<span id="cb1-4"><a href="part1.html#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
 <span id="cb1-5"><a href="part1.html#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(quickPlot)</span>
 <span id="cb1-6"><a href="part1.html#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb1-7"><a href="part1.html#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(SpaDES.tools)</span>
-<span id="cb1-8"><a href="part1.html#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggpubr)</span></code></pre></div>
+<span id="cb1-7"><a href="part1.html#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggpubr)</span></code></pre></div>
 </details>
 <p>And now create a raster template:</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r fold-show"><code class="sourceCode r"><span id="cb2-1"><a href="part1.html#cb2-1" aria-hidden="true" tabindex="-1"></a>r <span class="ot">&lt;-</span> <span class="fu">raster</span>(<span class="at">nrows =</span> <span class="dv">100</span>, <span class="at">ncols =</span> <span class="dv">100</span>, <span class="at">xmn =</span> <span class="sc">-</span><span class="dv">50</span>, <span class="at">xmx =</span> <span class="dv">50</span>, <span class="at">ymn =</span> <span class="sc">-</span><span class="dv">50</span>, <span class="at">ymx =</span> <span class="dv">50</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r fold-show"><code class="sourceCode r"><span id="cb2-1"><a href="part1.html#cb2-1" aria-hidden="true" tabindex="-1"></a>r <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="at">nrows =</span> <span class="dv">100</span>, <span class="at">ncols =</span> <span class="dv">100</span>, <span class="at">xmin =</span> <span class="sc">-</span><span class="dv">50</span>, <span class="at">xmax =</span> <span class="dv">50</span>, <span class="at">ymin =</span> <span class="sc">-</span><span class="dv">50</span>, <span class="at">ymax =</span> <span class="dv">50</span>)</span></code></pre></div>
 </details>
 </div>
 <div id="species-abundance-simulations" class="section level3 hasAnchor" number="1.1.2">
@@ -286,17 +285,18 @@ In Part <a href="part2.html#part2">2</a>, we introduce <code>SpaDES</code> featu
 <span id="cb3-9"><a href="part1.html#cb3-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">rand_dev =</span> <span class="dv">100</span>,</span>
 <span id="cb3-10"><a href="part1.html#cb3-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">rescale =</span> <span class="cn">TRUE</span>,</span>
 <span id="cb3-11"><a href="part1.html#cb3-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">verbose =</span> <span class="cn">FALSE</span></span>
-<span id="cb3-12"><a href="part1.html#cb3-12" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb3-13"><a href="part1.html#cb3-13" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb3-14"><a href="part1.html#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(abund_outputs)</span>
-<span id="cb3-15"><a href="part1.html#cb3-15" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<span id="cb3-12"><a href="part1.html#cb3-12" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb3-13"><a href="part1.html#cb3-13" aria-hidden="true" tabindex="-1"></a>      <span class="fu">rast</span>()</span>
+<span id="cb3-14"><a href="part1.html#cb3-14" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-15"><a href="part1.html#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(abund_outputs)</span>
+<span id="cb3-16"><a href="part1.html#cb3-16" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 </details>
 <p>Set the length of the simulation (or simply the number of model iterations), run it and plot results (all ABUNDANCE plots together):</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r fold-show"><code class="sourceCode r"><span id="cb4-1"><a href="part1.html#cb4-1" aria-hidden="true" tabindex="-1"></a>Time <span class="ot">&lt;-</span> <span class="dv">10</span></span>
 <span id="cb4-2"><a href="part1.html#cb4-2" aria-hidden="true" tabindex="-1"></a>abundance <span class="ot">&lt;-</span> <span class="fu">abundance_model</span>(<span class="at">ras =</span> r, <span class="at">Time =</span> Time)</span>
 <span id="cb4-3"><a href="part1.html#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dev</span>()</span>
-<span id="cb4-4"><a href="part1.html#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">stack</span>(abundance))</span></code></pre></div>
+<span id="cb4-4"><a href="part1.html#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">rast</span>(abundance))</span></code></pre></div>
 </details>
 <p><img src="Part1_DummyModel_files/figure-html/the_r_way_simulation_length-1.png" width="672" /></p>
 </div>
@@ -315,15 +315,16 @@ In Part <a href="part2.html#part2">2</a>, we introduce <code>SpaDES</code> featu
 <span id="cb5-9"><a href="part1.html#cb5-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">rand_dev =</span> <span class="dv">10</span>,</span>
 <span id="cb5-10"><a href="part1.html#cb5-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">rescale =</span> <span class="cn">FALSE</span>,</span>
 <span id="cb5-11"><a href="part1.html#cb5-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">verbose =</span> <span class="cn">FALSE</span></span>
-<span id="cb5-12"><a href="part1.html#cb5-12" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb5-13"><a href="part1.html#cb5-13" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb5-14"><a href="part1.html#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(temp_outputs)</span>
-<span id="cb5-15"><a href="part1.html#cb5-15" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<span id="cb5-12"><a href="part1.html#cb5-12" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb5-13"><a href="part1.html#cb5-13" aria-hidden="true" tabindex="-1"></a>      <span class="fu">rast</span>()</span>
+<span id="cb5-14"><a href="part1.html#cb5-14" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb5-15"><a href="part1.html#cb5-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(temp_outputs)</span>
+<span id="cb5-16"><a href="part1.html#cb5-16" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 </details>
 <p>Run the model and plot results (all temperature plots together)</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r fold-show"><code class="sourceCode r"><span id="cb6-1"><a href="part1.html#cb6-1" aria-hidden="true" tabindex="-1"></a>temperature <span class="ot">&lt;-</span> <span class="fu">temperature_model</span>(<span class="at">ras =</span> r, <span class="at">Time =</span> Time)</span>
-<span id="cb6-2"><a href="part1.html#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">stack</span>(temperature))</span></code></pre></div>
+<span id="cb6-2"><a href="part1.html#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">rast</span>(temperature))</span></code></pre></div>
 </details>
 <p><img src="Part1_DummyModel_files/figure-html/the_r_way_plot_results_TMP-1.png" width="672" /></p>
 </div>
@@ -352,7 +353,7 @@ In Part <a href="part2.html#part2">2</a>, we introduce <code>SpaDES</code> featu
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r fold-show"><code class="sourceCode r"><span id="cb8-1"><a href="part1.html#cb8-1" aria-hidden="true" tabindex="-1"></a>lmPlots <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
 <span id="cb8-2"><a href="part1.html#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>Time) {</span>
-<span id="cb8-3"><a href="part1.html#cb8-3" aria-hidden="true" tabindex="-1"></a>  outputdata <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">abund =</span> abundance[[t]][], <span class="at">temp =</span> temperature[[t]][])</span>
+<span id="cb8-3"><a href="part1.html#cb8-3" aria-hidden="true" tabindex="-1"></a>  outputdata <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">abund =</span> <span class="fu">as.vector</span>(abundance[[t]][]), <span class="at">temp =</span> <span class="fu">as.vector</span>(temperature[[t]][]))</span>
 <span id="cb8-4"><a href="part1.html#cb8-4" aria-hidden="true" tabindex="-1"></a>  lmPlots[[t]] <span class="ot">&lt;-</span> <span class="fu">stats_analysis</span>(<span class="at">Data =</span> outputdata)</span>
 <span id="cb8-5"><a href="part1.html#cb8-5" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb8-6"><a href="part1.html#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Warning: Using `size` aesthetic for lines was deprecated in ggplot2</span></span>
@@ -471,7 +472,7 @@ Figure 1.1: Inputs and outputs in SpaDES: Object A comes from outside of the mod
 <span id="cb10-10"><a href="part1.html#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">citation =</span> <span class="fu">list</span>(<span class="st">&quot;citation.bib&quot;</span>),</span>
 <span id="cb10-11"><a href="part1.html#cb10-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">documentation =</span> <span class="fu">deparse</span>(<span class="fu">list</span>(<span class="st">&quot;README.txt&quot;</span>, <span class="st">&quot;speciesAbundance.Rmd&quot;</span>)),</span>
 <span id="cb10-12"><a href="part1.html#cb10-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">reqdPkgs =</span> <span class="fu">list</span>(<span class="st">&quot;SpaDES.core (&gt;=2.0.2)&quot;</span>,</span>
-<span id="cb10-13"><a href="part1.html#cb10-13" aria-hidden="true" tabindex="-1"></a>                  <span class="st">&quot;raster&quot;</span>, <span class="st">&quot;quickPlot&quot;</span>),</span>
+<span id="cb10-13"><a href="part1.html#cb10-13" aria-hidden="true" tabindex="-1"></a>                  <span class="st">&quot;terra&quot;</span>, <span class="st">&quot;quickPlot&quot;</span>),</span>
 <span id="cb10-14"><a href="part1.html#cb10-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameters =</span> <span class="fu">bindrows</span>(</span>
 <span id="cb10-15"><a href="part1.html#cb10-15" aria-hidden="true" tabindex="-1"></a>    <span class="co">#defineParameter(&quot;paramName&quot;, &quot;paramClass&quot;, value, min, max, &quot;parameter description&quot;),</span></span>
 <span id="cb10-16"><a href="part1.html#cb10-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">defineParameter</span>(<span class="st">&quot;simulationTimeStep&quot;</span>, <span class="st">&quot;numeric&quot;</span>, <span class="dv">1</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, </span>
@@ -483,7 +484,7 @@ Figure 1.1: Inputs and outputs in SpaDES: Object A comes from outside of the mod
 <span id="cb10-22"><a href="part1.html#cb10-22" aria-hidden="true" tabindex="-1"></a>  ),</span>
 <span id="cb10-23"><a href="part1.html#cb10-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">inputObjects =</span> <span class="fu">bindrows</span>(</span>
 <span id="cb10-24"><a href="part1.html#cb10-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># expectsInput(&quot;objectName&quot;, &quot;objectClass&quot;, &quot;input object description&quot;, sourceURL, ...),</span></span>
-<span id="cb10-25"><a href="part1.html#cb10-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">expectsInput</span>(<span class="st">&quot;r&quot;</span>, <span class="at">objectClass =</span> <span class="st">&quot;RasterLayer&quot;</span>, <span class="at">desc =</span> <span class="st">&quot;Template raster&quot;</span>)</span>
+<span id="cb10-25"><a href="part1.html#cb10-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">expectsInput</span>(<span class="st">&quot;r&quot;</span>, <span class="at">objectClass =</span> <span class="st">&quot;SpatRaster&quot;</span>, <span class="at">desc =</span> <span class="st">&quot;Template raster&quot;</span>)</span>
 <span id="cb10-26"><a href="part1.html#cb10-26" aria-hidden="true" tabindex="-1"></a>  ),</span>
 <span id="cb10-27"><a href="part1.html#cb10-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">outputObjects =</span> <span class="fu">bindrows</span>(</span>
 <span id="cb10-28"><a href="part1.html#cb10-28" aria-hidden="true" tabindex="-1"></a>    <span class="co">#createsOutput(&quot;objectName&quot;, &quot;objectClass&quot;, &quot;output object description&quot;, ...),</span></span>
@@ -655,7 +656,7 @@ In more complex cases it is a good idea to pass a vector of module names to <cod
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="part1.html#cb15-1" aria-hidden="true" tabindex="-1"></a>.inputObjects <span class="ot">&lt;-</span> <span class="cf">function</span>(sim) {</span>
 <span id="cb15-2"><a href="part1.html#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">suppliedElsewhere</span>(<span class="st">&quot;r&quot;</span>)) {</span>
 <span id="cb15-3"><a href="part1.html#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="do">## make template raster if not supplied elsewhere.</span></span>
-<span id="cb15-4"><a href="part1.html#cb15-4" aria-hidden="true" tabindex="-1"></a>    sim<span class="sc">$</span>r <span class="ot">&lt;-</span> <span class="fu">raster</span>(<span class="at">nrows =</span> <span class="dv">100</span>, <span class="at">ncols =</span> <span class="dv">100</span>, <span class="at">xmn =</span> <span class="sc">-</span><span class="dv">50</span>, <span class="at">xmx =</span> <span class="dv">50</span>, <span class="at">ymn =</span> <span class="sc">-</span><span class="dv">50</span>, <span class="at">ymx =</span> <span class="dv">50</span>)</span>
+<span id="cb15-4"><a href="part1.html#cb15-4" aria-hidden="true" tabindex="-1"></a>    sim<span class="sc">$</span>r <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="at">nrows =</span> <span class="dv">100</span>, <span class="at">ncols =</span> <span class="dv">100</span>, <span class="at">xmin =</span> <span class="sc">-</span><span class="dv">50</span>, <span class="at">xmax =</span> <span class="dv">50</span>, <span class="at">ymin =</span> <span class="sc">-</span><span class="dv">50</span>, <span class="at">ymax =</span> <span class="dv">50</span>)</span>
 <span id="cb15-5"><a href="part1.html#cb15-5" aria-hidden="true" tabindex="-1"></a>  }</span>
 <span id="cb15-6"><a href="part1.html#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">invisible</span>(sim))</span>
 <span id="cb15-7"><a href="part1.html#cb15-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
@@ -686,10 +687,10 @@ Here we provide a description of the function, its parameters, returning value a
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="part1.html#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co">#&#39; Accessory function to speciesAbundance module</span></span>
 <span id="cb17-2"><a href="part1.html#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&#39; </span></span>
 <span id="cb17-3"><a href="part1.html#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&#39; @param ras a raster layer used as template.</span></span>
-<span id="cb17-4"><a href="part1.html#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&#39; @return a fake abundance raster generated as a Gaussian map with scale = 100 and variance = 0.01</span></span>
-<span id="cb17-5"><a href="part1.html#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&#39; @import NLMR nlm_mpd</span></span>
-<span id="cb17-6"><a href="part1.html#cb17-6" aria-hidden="true" tabindex="-1"></a>abundance_model <span class="ot">&lt;-</span> <span class="cf">function</span>(ras) {</span>
-<span id="cb17-7"><a href="part1.html#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># abund_ras &lt;- gaussMap(ras, scale = 100, var = 0.01) ## RandomFields no longer available</span></span>
+<span id="cb17-4"><a href="part1.html#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&#39; @return a fake abundance SpatRaster generated as a Gaussian map with scale = 100 and variance = 0.01</span></span>
+<span id="cb17-5"><a href="part1.html#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&#39; @importFrom NLMR nlm_mpd</span></span>
+<span id="cb17-6"><a href="part1.html#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&#39; @importFrom terra rast</span></span>
+<span id="cb17-7"><a href="part1.html#cb17-7" aria-hidden="true" tabindex="-1"></a>abundance_model <span class="ot">&lt;-</span> <span class="cf">function</span>(ras) {</span>
 <span id="cb17-8"><a href="part1.html#cb17-8" aria-hidden="true" tabindex="-1"></a>  abund_ras <span class="ot">&lt;-</span> NLMR<span class="sc">::</span><span class="fu">nlm_mpd</span>(</span>
 <span id="cb17-9"><a href="part1.html#cb17-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">ncol =</span> <span class="fu">ncol</span>(ras),</span>
 <span id="cb17-10"><a href="part1.html#cb17-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">nrow =</span> <span class="fu">nrow</span>(ras),</span>
@@ -698,9 +699,10 @@ Here we provide a description of the function, its parameters, returning value a
 <span id="cb17-13"><a href="part1.html#cb17-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">rand_dev =</span> <span class="dv">100</span>,</span>
 <span id="cb17-14"><a href="part1.html#cb17-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">rescale =</span> <span class="cn">TRUE</span>,</span>
 <span id="cb17-15"><a href="part1.html#cb17-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">verbose =</span> <span class="cn">FALSE</span></span>
-<span id="cb17-16"><a href="part1.html#cb17-16" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb17-17"><a href="part1.html#cb17-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(abund_ras)</span>
-<span id="cb17-18"><a href="part1.html#cb17-18" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<span id="cb17-16"><a href="part1.html#cb17-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb17-17"><a href="part1.html#cb17-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rast</span>()</span>
+<span id="cb17-18"><a href="part1.html#cb17-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(abund_ras)</span>
+<span id="cb17-19"><a href="part1.html#cb17-19" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 </details>
 <hr />
 </div>
@@ -735,7 +737,7 @@ This may appear trivial in this example, but it can be extremely useful when inu
 <span id="cb18-14"><a href="part1.html#cb18-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">citation =</span> <span class="fu">list</span>(<span class="st">&quot;citation.bib&quot;</span>),</span>
 <span id="cb18-15"><a href="part1.html#cb18-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">documentation =</span> <span class="fu">list</span>(<span class="st">&quot;README.txt&quot;</span>, <span class="st">&quot;temperature.Rmd&quot;</span>),</span>
 <span id="cb18-16"><a href="part1.html#cb18-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">reqdPkgs =</span> <span class="fu">list</span>(<span class="st">&quot;SpaDES.core (&gt;=2.0.2)&quot;</span>,</span>
-<span id="cb18-17"><a href="part1.html#cb18-17" aria-hidden="true" tabindex="-1"></a>                  <span class="st">&quot;raster&quot;</span>, <span class="st">&quot;achubaty/NLMR&quot;</span>),</span>
+<span id="cb18-17"><a href="part1.html#cb18-17" aria-hidden="true" tabindex="-1"></a>                  <span class="st">&quot;terra&quot;</span>, <span class="st">&quot;ropensci/NLMR&quot;</span>),</span>
 <span id="cb18-18"><a href="part1.html#cb18-18" aria-hidden="true" tabindex="-1"></a>   <span class="at">parameters =</span> <span class="fu">bindrows</span>(</span>
 <span id="cb18-19"><a href="part1.html#cb18-19" aria-hidden="true" tabindex="-1"></a>    <span class="co">#defineParameter(&quot;paramName&quot;, &quot;paramClass&quot;, value, min, max, &quot;parameter description&quot;),</span></span>
 <span id="cb18-20"><a href="part1.html#cb18-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">defineParameter</span>(<span class="st">&quot;simulationTimeStep&quot;</span>, <span class="st">&quot;numeric&quot;</span>, <span class="dv">1</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, </span>
@@ -747,7 +749,7 @@ This may appear trivial in this example, but it can be extremely useful when inu
 <span id="cb18-26"><a href="part1.html#cb18-26" aria-hidden="true" tabindex="-1"></a>  ),</span>
 <span id="cb18-27"><a href="part1.html#cb18-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">inputObjects =</span> <span class="fu">bindrows</span>(</span>
 <span id="cb18-28"><a href="part1.html#cb18-28" aria-hidden="true" tabindex="-1"></a>    <span class="co">#expectsInput(&quot;objectName&quot;, &quot;objectClass&quot;, &quot;input object description&quot;, sourceURL, ...),</span></span>
-<span id="cb18-29"><a href="part1.html#cb18-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">expectsInput</span>(<span class="st">&quot;r&quot;</span>, <span class="st">&quot;RasterLayer&quot;</span>, <span class="st">&quot;Template raster&quot;</span>)</span>
+<span id="cb18-29"><a href="part1.html#cb18-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">expectsInput</span>(<span class="st">&quot;r&quot;</span>, <span class="st">&quot;SpatRaster&quot;</span>, <span class="st">&quot;Template raster&quot;</span>)</span>
 <span id="cb18-30"><a href="part1.html#cb18-30" aria-hidden="true" tabindex="-1"></a>  ),</span>
 <span id="cb18-31"><a href="part1.html#cb18-31" aria-hidden="true" tabindex="-1"></a>  <span class="at">outputObjects =</span> <span class="fu">bindrows</span>(</span>
 <span id="cb18-32"><a href="part1.html#cb18-32" aria-hidden="true" tabindex="-1"></a>    <span class="co">#createsOutput(&quot;objectName&quot;, &quot;objectClass&quot;, &quot;output object description&quot;, ...),</span></span>
@@ -824,7 +826,7 @@ This may appear trivial in this example, but it can be extremely useful when inu
 <span id="cb18-103"><a href="part1.html#cb18-103" aria-hidden="true" tabindex="-1"></a>.inputObjects <span class="ot">&lt;-</span> <span class="cf">function</span>(sim) {</span>
 <span id="cb18-104"><a href="part1.html#cb18-104" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">suppliedElsewhere</span>(<span class="st">&quot;r&quot;</span>)) {</span>
 <span id="cb18-105"><a href="part1.html#cb18-105" aria-hidden="true" tabindex="-1"></a>    <span class="do">## make template raster if not supplied elsewhere.</span></span>
-<span id="cb18-106"><a href="part1.html#cb18-106" aria-hidden="true" tabindex="-1"></a>    sim<span class="sc">$</span>r <span class="ot">&lt;-</span> <span class="fu">raster</span>(<span class="at">nrows =</span> <span class="dv">100</span>, <span class="at">ncols =</span> <span class="dv">100</span>, <span class="at">xmn =</span> <span class="sc">-</span><span class="dv">50</span>, <span class="at">xmx =</span> <span class="dv">50</span>, <span class="at">ymn =</span> <span class="sc">-</span><span class="dv">50</span>, <span class="at">ymx =</span> <span class="dv">50</span>)</span>
+<span id="cb18-106"><a href="part1.html#cb18-106" aria-hidden="true" tabindex="-1"></a>    sim<span class="sc">$</span>r <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="at">nrows =</span> <span class="dv">100</span>, <span class="at">ncols =</span> <span class="dv">100</span>, <span class="at">xmin =</span> <span class="sc">-</span><span class="dv">50</span>, <span class="at">xmax =</span> <span class="dv">50</span>, <span class="at">ymin =</span> <span class="sc">-</span><span class="dv">50</span>, <span class="at">ymax =</span> <span class="dv">50</span>)</span>
 <span id="cb18-107"><a href="part1.html#cb18-107" aria-hidden="true" tabindex="-1"></a>  }</span>
 <span id="cb18-108"><a href="part1.html#cb18-108" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">invisible</span>(sim))</span>
 <span id="cb18-109"><a href="part1.html#cb18-109" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
@@ -834,10 +836,10 @@ This may appear trivial in this example, but it can be extremely useful when inu
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="part1.html#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co">#&#39; Accessory function to temperature module</span></span>
 <span id="cb19-2"><a href="part1.html#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&#39; </span></span>
 <span id="cb19-3"><a href="part1.html#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&#39; @param ras a raster layer used as template.</span></span>
-<span id="cb19-4"><a href="part1.html#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&#39; @return a fake temperature raster generated as a Gaussian map with scale = 100 and variance = 0.01</span></span>
-<span id="cb19-5"><a href="part1.html#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&#39; @import NLMR nlm_mpd</span></span>
-<span id="cb19-6"><a href="part1.html#cb19-6" aria-hidden="true" tabindex="-1"></a>temperature_model <span class="ot">&lt;-</span> <span class="cf">function</span>(ras) {</span>
-<span id="cb19-7"><a href="part1.html#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># temp_ras &lt;- gaussMap(ras, scale = 100, var = 0.01) ## RandomFields no longer available</span></span>
+<span id="cb19-4"><a href="part1.html#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&#39; @return a fake temperature SpatRaster generated as a Gaussian map with scale = 100 and variance = 0.01</span></span>
+<span id="cb19-5"><a href="part1.html#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&#39; @importFrom NLMR nlm_mpd</span></span>
+<span id="cb19-6"><a href="part1.html#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&#39; @importFrom terra rast</span></span>
+<span id="cb19-7"><a href="part1.html#cb19-7" aria-hidden="true" tabindex="-1"></a>temperature_model <span class="ot">&lt;-</span> <span class="cf">function</span>(ras) {</span>
 <span id="cb19-8"><a href="part1.html#cb19-8" aria-hidden="true" tabindex="-1"></a>  temp_ras <span class="ot">&lt;-</span> NLMR<span class="sc">::</span><span class="fu">nlm_mpd</span>(</span>
 <span id="cb19-9"><a href="part1.html#cb19-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">ncol =</span> <span class="fu">ncol</span>(ras),</span>
 <span id="cb19-10"><a href="part1.html#cb19-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">nrow =</span> <span class="fu">nrow</span>(ras),</span>
@@ -846,9 +848,10 @@ This may appear trivial in this example, but it can be extremely useful when inu
 <span id="cb19-13"><a href="part1.html#cb19-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">rand_dev =</span> <span class="dv">10</span>,</span>
 <span id="cb19-14"><a href="part1.html#cb19-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">rescale =</span> <span class="cn">FALSE</span>,</span>
 <span id="cb19-15"><a href="part1.html#cb19-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">verbose =</span> <span class="cn">FALSE</span></span>
-<span id="cb19-16"><a href="part1.html#cb19-16" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb19-17"><a href="part1.html#cb19-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(temp_ras)</span>
-<span id="cb19-18"><a href="part1.html#cb19-18" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<span id="cb19-16"><a href="part1.html#cb19-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb19-17"><a href="part1.html#cb19-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rast</span>()</span>
+<span id="cb19-18"><a href="part1.html#cb19-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(temp_ras)</span>
+<span id="cb19-19"><a href="part1.html#cb19-19" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 </details>
 <hr />
 </div>
@@ -888,7 +891,7 @@ Notice how the future events where scheduled to <code>P(sim)$statsTimestep + 0.1
 <span id="cb20-14"><a href="part1.html#cb20-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">citation =</span> <span class="fu">list</span>(<span class="st">&quot;citation.bib&quot;</span>),</span>
 <span id="cb20-15"><a href="part1.html#cb20-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">documentation =</span> <span class="fu">list</span>(<span class="st">&quot;README.txt&quot;</span>, <span class="st">&quot;speciesTempLM.Rmd&quot;</span>),</span>
 <span id="cb20-16"><a href="part1.html#cb20-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">reqdPkgs =</span> <span class="fu">list</span>(<span class="st">&quot;SpaDES.core (&gt;=2.0.2)&quot;</span>,</span>
-<span id="cb20-17"><a href="part1.html#cb20-17" aria-hidden="true" tabindex="-1"></a>                  <span class="st">&quot;raster&quot;</span>, <span class="st">&quot;ggplot2&quot;</span>, <span class="st">&quot;data.table&quot;</span>, <span class="st">&quot;reshape2&quot;</span>),</span>
+<span id="cb20-17"><a href="part1.html#cb20-17" aria-hidden="true" tabindex="-1"></a>                  <span class="st">&quot;terra&quot;</span>, <span class="st">&quot;ggplot2&quot;</span>, <span class="st">&quot;data.table&quot;</span>, <span class="st">&quot;reshape2&quot;</span>),</span>
 <span id="cb20-18"><a href="part1.html#cb20-18" aria-hidden="true" tabindex="-1"></a>   <span class="at">parameters =</span> <span class="fu">bindrows</span>(</span>
 <span id="cb20-19"><a href="part1.html#cb20-19" aria-hidden="true" tabindex="-1"></a>    <span class="co">#defineParameter(&quot;paramName&quot;, &quot;paramClass&quot;, value, min, max, &quot;parameter description&quot;),</span></span>
 <span id="cb20-20"><a href="part1.html#cb20-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">defineParameter</span>(<span class="st">&quot;statsTimestep&quot;</span>, <span class="st">&quot;numeric&quot;</span>, <span class="dv">1</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="st">&quot;This describes the how often the statitiscal analysis will be done&quot;</span>)</span>
@@ -955,14 +958,14 @@ Notice how the future events where scheduled to <code>P(sim)$statsTimestep + 0.1
 <span id="cb20-81"><a href="part1.html#cb20-81" aria-hidden="true" tabindex="-1"></a><span class="do">## Statistical analysis event</span></span>
 <span id="cb20-82"><a href="part1.html#cb20-82" aria-hidden="true" tabindex="-1"></a>statsAnalysis <span class="ot">&lt;-</span> <span class="cf">function</span>(sim) {</span>
 <span id="cb20-83"><a href="part1.html#cb20-83" aria-hidden="true" tabindex="-1"></a>  <span class="do">## get all species abundances data available</span></span>
-<span id="cb20-84"><a href="part1.html#cb20-84" aria-hidden="true" tabindex="-1"></a>  abundData <span class="ot">&lt;-</span> <span class="fu">data.table</span>(<span class="fu">getValues</span>(<span class="fu">stack</span>(sim<span class="sc">$</span>abundRasters)))</span>
+<span id="cb20-84"><a href="part1.html#cb20-84" aria-hidden="true" tabindex="-1"></a>  abundData <span class="ot">&lt;-</span> <span class="fu">as.data.table</span>(<span class="fu">rast</span>(sim<span class="sc">$</span>abundRasters))</span>
 <span id="cb20-85"><a href="part1.html#cb20-85" aria-hidden="true" tabindex="-1"></a>  abundData[, pixID <span class="sc">:</span><span class="er">=</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(abundData)]</span>
 <span id="cb20-86"><a href="part1.html#cb20-86" aria-hidden="true" tabindex="-1"></a>  abundData <span class="ot">&lt;-</span> <span class="fu">melt.data.table</span>(abundData, <span class="at">id.var =</span> <span class="st">&quot;pixID&quot;</span>,</span>
 <span id="cb20-87"><a href="part1.html#cb20-87" aria-hidden="true" tabindex="-1"></a>                               <span class="at">variable.name =</span> <span class="st">&quot;year&quot;</span>, <span class="at">value.name =</span> <span class="st">&quot;abund&quot;</span>)</span>
 <span id="cb20-88"><a href="part1.html#cb20-88" aria-hidden="true" tabindex="-1"></a>  abundData[, year <span class="sc">:</span><span class="er">=</span> <span class="fu">as.numeric</span>(<span class="fu">sub</span>(<span class="st">&quot;X&quot;</span>, <span class="st">&quot;&quot;</span>, year))]</span>
 <span id="cb20-89"><a href="part1.html#cb20-89" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb20-90"><a href="part1.html#cb20-90" aria-hidden="true" tabindex="-1"></a>  <span class="do">## get all temperature data available</span></span>
-<span id="cb20-91"><a href="part1.html#cb20-91" aria-hidden="true" tabindex="-1"></a>  tempData <span class="ot">&lt;-</span> <span class="fu">data.table</span>(<span class="fu">getValues</span>(<span class="fu">stack</span>(sim<span class="sc">$</span>tempRasters)))</span>
+<span id="cb20-91"><a href="part1.html#cb20-91" aria-hidden="true" tabindex="-1"></a>  tempData <span class="ot">&lt;-</span> <span class="fu">as.data.table</span>(<span class="fu">rast</span>(sim<span class="sc">$</span>tempRasters))</span>
 <span id="cb20-92"><a href="part1.html#cb20-92" aria-hidden="true" tabindex="-1"></a>  tempData[, pixID <span class="sc">:</span><span class="er">=</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(tempData)]</span>
 <span id="cb20-93"><a href="part1.html#cb20-93" aria-hidden="true" tabindex="-1"></a>  tempData <span class="ot">&lt;-</span> <span class="fu">melt.data.table</span>(tempData, <span class="at">id.var =</span> <span class="st">&quot;pixID&quot;</span>,</span>
 <span id="cb20-94"><a href="part1.html#cb20-94" aria-hidden="true" tabindex="-1"></a>                              <span class="at">variable.name =</span> <span class="st">&quot;year&quot;</span>, <span class="at">value.name =</span> <span class="st">&quot;temp&quot;</span>)</span>
