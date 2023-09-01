@@ -3,7 +3,7 @@
 
 
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
-\ProvidesClass{krantz}
+\ProvidesClass{latex/krantz}
               [2005/09/16 v1.4f
  Standard LaTeX document class]
 \newcommand\@ptsize{}
