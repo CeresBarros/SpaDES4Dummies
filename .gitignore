@@ -14,8 +14,7 @@ SpaDES4Dummies.*
 nul
 
 ## render files
-*_files
-*_cache
+*_files/
 render*.rds
 !docs/
 
