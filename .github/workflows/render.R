@@ -14,11 +14,13 @@ if (!"Require" %in% installed.packages() || packageVersion("Require") < "0.3.1")
 ## use binary linux packages if on Ubuntu
 Require::setLinuxBinaryRepo()
 
-Require::Require(c("bookdown", "htmlwidgets", "geodata", "SpaDES",
-                   "PredictiveEcology/SpaDES.experiment@75d917b70b892802fed0bbdb2a5e9f3c6772f0ba",
-                   "ggpubr", "rmarkdown", "rsvg", "png",
+Require::Require(c(#"bookdown", "htmlwidgets", "geodata", 
+                   "SpaDES"#,
+                   # "PredictiveEcology/SpaDES.experiment@75d917b70b892802fed0bbdb2a5e9f3c6772f0ba",
+                   # "ggpubr", "rmarkdown", "rsvg", "png",
                    ## pkgs for Part1:
-                   "raster", "quickPlot", "ggplot2", "SpaDES.tools"), 
+                   # "raster", "quickPlot", "ggplot2", "SpaDES.tools"
+                   ), 
                  require = FALSE,   ## don't load packages
                  upgrade = FALSE)   ## don't upgrade dependencies
 
