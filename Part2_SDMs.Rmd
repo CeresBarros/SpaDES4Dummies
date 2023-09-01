@@ -124,8 +124,9 @@ if (!dir.exists(file.path(simPaths$modulePath, "projectSpeciesDist"))) {
 }
 ```
 
-```{r getModulesHidden2, include = FALSE, cache = FALSE}
+```{r getModulesHiddenPart2, include = FALSE, cache = FALSE}
 mods <- list.files(file.path(projDir, "modules"), full.names = TRUE)
+mods <- mods[basename(mods) %in% c("speciesAbundanceData", "climateData", "projectSpeciesDist")]
 
 sapply(mods, function(mod, to) {
   to <- file.path(to, basename(mod))
