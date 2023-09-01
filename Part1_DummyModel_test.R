@@ -5,7 +5,6 @@
 options(repos = c("https://predictiveecology.r-universe.dev/", 
                   CRAN = "https://cloud.r-project.org"))
 
-## decide where you're working
 mainPath <- "~/SpaDES4Dummies_Part1/"
 pkgPath <- file.path(mainPath, "packages", version$platform,
                      paste0(version$major, ".", strsplit(version$minor, "[.]")[[1]][1]))
