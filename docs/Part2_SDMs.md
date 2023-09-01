@@ -1217,7 +1217,7 @@ mySimGLM <- simInit(times = simTimes, params = simParamsGLM,
 \caption{Study area within Canada.}(\#fig:studyAreaCanada)
 \end{figure}
 
-Before running the simulation we look at the module linkage diagrams produced by `moduleDiagram` (Fig. \@ref(fig:moduleDiagram)) and `objectDiagram` (Fig. \@ref(fig:objectDiagram)) to assess whether modules are linked as expected.
+Before running the simulation we look at the module linkage diagrams produced by `moduleDiagram` (Fig. \@ref(fig:moduleDiagram2)) and `objectDiagram` (Fig. \@ref(fig:objectDiagram2)) to assess whether modules are linked as expected.
 
 
 ```r
@@ -1227,11 +1227,11 @@ objectDiagram(mySimMaxEnt)
 
 \begin{figure}
 
-{\centering \includegraphics{Part2_SDMs_files/figure-latex/moduleDiagram-1} 
+{\centering \includegraphics{Part2_SDMs_files/figure-latex/moduleDiagram2-1} 
 
 }
 
-\caption{Module network diagram.}(\#fig:moduleDiagram)
+\caption{Module network diagram.}(\#fig:moduleDiagram2)
 \end{figure}
 
 \begin{figure}
@@ -1240,7 +1240,7 @@ objectDiagram(mySimMaxEnt)
 
 }
 
-\caption{Module diagram showing module inter-dependencies with object names.}(\#fig:objectDiagram)
+\caption{Module diagram showing module inter-dependencies with object names.}(\#fig:objectDiagram2)
 \end{figure}
 
 ### Simulation runs

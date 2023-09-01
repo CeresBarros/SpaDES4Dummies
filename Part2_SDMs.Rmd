@@ -436,18 +436,18 @@ terra::plot(can1)
 terra::plot(studyArea, add = TRUE, col = "darkgreen")
 ```
 
-Before running the simulation we look at the module linkage diagrams produced by `moduleDiagram` (Fig. \@ref(fig:moduleDiagram)) and `objectDiagram` (Fig. \@ref(fig:objectDiagram)) to assess whether modules are linked as expected.
+Before running the simulation we look at the module linkage diagrams produced by `moduleDiagram` (Fig. \@ref(fig:moduleDiagram2)) and `objectDiagram` (Fig. \@ref(fig:objectDiagram2)) to assess whether modules are linked as expected.
 
 ```{r moduleDiagramsCode, eval = FALSE}
 moduleDiagram(mySimMaxEnt)
 objectDiagram(mySimMaxEnt)
 ```
 
-```{r moduleDiagram, echo = FALSE, fig.align = 'center', fig.cap = "Module network diagram.", message=FALSE, warning=FALSE, fig.height=6, fig.width=6}
+```{r moduleDiagram2, echo = FALSE, fig.align = 'center', fig.cap = "Module network diagram.", message=FALSE, warning=FALSE, fig.height=6, fig.width=6}
 moduleDiagram(mySimMaxEnt)
 ```
 
-```{r objectDiagram, echo = FALSE, fig.align = 'center', fig.cap = "Module diagram showing module inter-dependencies with object names."}
+```{r objectDiagram2, echo = FALSE, fig.align = 'center', fig.cap = "Module diagram showing module inter-dependencies with object names."}
 knitr::include_graphics(normalizePath(file.path(projDir, "figures/Part2_objectDiagram.png"), winslash = "/"),
                         dpi = NA)
 ```
