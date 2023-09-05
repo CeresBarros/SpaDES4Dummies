@@ -40,16 +40,18 @@ jobs:
         with:
           packages: |
             any::bookdown
-            any::htmlwidgets
-            any::rcmdcheck
-            any::rmarkdown
+            any::cffr
             any::geodata
             any::ggplot2
             any::ggpubr
+            any::htmlwidgets
+            any::rcmdcheck
+            any::rmarkdown
             any::png
             any::raster
             any::rsvg
             any::SpaDES.tools
+            any::V8
       
       - name: Install TinyTeX
         uses: r-lib/actions/setup-tinytex@v2
@@ -64,6 +66,11 @@ jobs:
           key: bookdown-${{ hashFiles('**/*Rmd') }}
           restore-keys: bookdown-
       
+      - name: Update CITATION.cff
+        run: |
+          cffr::cff_write(dependencies = FALSE, authors_roles = c("aut", "cre", "ctb"))
+        shell: Rscript {0}
+        
       - name: Render Bookdown
         run: |
           source("render.R", echo = TRUE)
@@ -75,5 +82,13 @@ jobs:
           clean: false
           branch: gh-pages
           folder: docs
+          
+      - name: Commit CITATION.cff update
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CITATION.cff
+          git commit -m 'Update CITATION.cff' || echo "No changes to commit"
+          git push origin || echo "No changes to commit"
 
   
