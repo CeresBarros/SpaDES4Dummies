@@ -1,16 +1,36 @@
-cff-version: 1.1.0
-message: "If you use this software, please cite it as below."
+# -----------------------------------------------------------
+# CITATION file created with {cffr} R package, v0.5.0
+# See also: https://docs.ropensci.org/cffr/
+# -----------------------------------------------------------
+ 
+cff-version: 1.2.0
+message: 'To cite package "SpaDES4Dummies" in publications use:'
+type: software
+license: GPL-3.0-only
+title: 'SpaDES4Dummies: A SpaDES tutorial for begginners'
+version: 1.3.0
+abstract: This guide is an introduction to the `SpaDES` `R` modelling platform. It
+  covers how to make and link `SpaDES` modules using `SpaDES` in two examples. Both
+  examples draw on basic uses of statistical models in ecology, notably the relationships
+  between environmental variables and species abundance and presence.
 authors:
-  - family-names: Barros
-    given-names: Ceres
-    orcid: https://orcid.org/0000-0003-4036-977X
-  - family-names: Chubaty
-    given-names: Alex M.
-    orcid: https://orcid.org/0000-0001-7146-8135
-  - family-names: Micheletti
-    given-names: Tati
-    orcid: https://orcid.org/0000-0003-4838-8342
-
-title: SpaDES4Dummies
-version: v1.3.0
-date-released: 2022-10-05
+- family-names: Barros
+  given-names: Ceres
+  email: ceres.barros@gov.bc.ca
+  orcid: https://orcid.org/0000-0003-4036-977X
+- family-names: Micheletti
+  given-names: Tati
+  email: tati.micheletti@gmail.com
+  orcid: https://orcid.org/0000-0003-4838-8342
+- family-names: Chubaty
+  given-names: Alex M
+  email: achubaty@for-cast.ca
+  orcid: https://orcid.org/0000-0001-7146-8135
+repository-code: https://github.com/CeresBarros/SpaDES4Dummies
+url: https://ceresbarros.github.io/SpaDES4Dummies/
+date-released: '2023-09-05'
+contact:
+- family-names: Barros
+  given-names: Ceres
+  email: ceres.barros@gov.bc.ca
+  orcid: https://orcid.org/0000-0003-4036-977X
