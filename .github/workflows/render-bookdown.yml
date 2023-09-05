@@ -65,11 +65,6 @@ jobs:
           path: _bookdown_files
           key: bookdown-${{ hashFiles('**/*Rmd') }}
           restore-keys: bookdown-
-      
-      - name: Update CITATION.cff
-        run: |
-          cffr::cff_write(dependencies = FALSE, authors_roles = c("aut", "cre", "ctb"))
-        shell: Rscript {0}
         
       - name: Render Bookdown
         run: |
@@ -82,6 +77,30 @@ jobs:
           clean: false
           branch: gh-pages
           folder: docs
+          
+  update-citation:
+    needs: build-bookdown
+    
+    runs-on: ubuntu-20.04
+    
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - uses: r-lib/actions/setup-r@v2
+      
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: |
+            any::cffr
+            any::V8
+    
+      - name: Update CITATION.cff
+        run: |
+          cffr::cff_write(dependencies = FALSE, authors_roles = c("aut", "cre", "ctb"))
+        shell: Rscript {0}
           
       - name: Commit CITATION.cff update
         run: |
