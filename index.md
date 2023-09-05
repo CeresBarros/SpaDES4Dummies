@@ -1,7 +1,7 @@
 ---
 title: "SpaDES 4 Dummies guide"
 author: "Ceres Barros"
-date: "2023-09-01"
+date: "2023-09-05"
 description: "A `SpaDES` crash-course"
 site: bookdown::bookdown_site
 knit: "bookdown::render_book"
