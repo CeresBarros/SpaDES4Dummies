@@ -1,9 +1,19 @@
-# Introducing `SpaDES` with a dummy ecological model {#part1}
+# Introducing `SpaDES` with a dummy ecological model {#sec-part1}
+
+```{r}
+#| echo: false
+#| cache: false
+
+source("_common.R")
+```
 
 Authors: Ceres Barros, Tati Micheletti
 
-``` {r setup, include = FALSE}
-projDir <- getwd()   ## save this for later
+```{r setup}
+#| include: false
+#| cache: false
+
+projDir <- Sys.getenv("QUARTO_PROJECT_DIR")   ## save this for later
 rmdDir <- "~/SpaDES4Dummies_Part1"
 dir.create(rmdDir)
 knitr::opts_knit$set(
@@ -16,7 +26,7 @@ options("knitr.graphics.rel_path" = FALSE,
 Let's imagine we want to explore how the relationship between a species' abundance and temperature changes over time.
 Both the abundance data and the temperature data are being constantly updated by a simulation model, and we want to analyse the relationship between the two iteratively, without needing to manually run a script to account for the newly generated data inputs.
 
-## BEFORE `SpaDES`...
+## BEFORE `SpaDES`
 
 If we use R to develop our species abundance and temperature simulation models in the 'conventional way', we'll probably have i) (the worst case scenario) several scripts that run simulations and data treatment/analysis separately and have to be executed manually, or ii) a long script where everything happens - the simulations and data analysis -, iii) a main script that sources others that do the simulation and analyses.
 Option i) is more common when different software are used for different parts of the process (e.g., a simulation model in *C++* generates data that is then analysed in R).
@@ -28,14 +38,20 @@ This makes changing, updating and sharing code - or modules - easier, as well as
 The example below is so minimal that it is unlikely to show the full benefits of using `SpaDES` - the same could be accomplished with a fairly short script.
 However, it introduces the different parts of a module and how to link modules.
 
-Part \@ref(part2) goes a step further and uses real datasets to project species presences across a landscape in Canada.
-In Part \@ref(part2), we introduce `SpaDES` features that we most commonly use in our work (e.g., caching and spatial data processing) and provide some coding best practices that we use ourselves (e.g., code assertions).
+[Chapter 2](Part2_SDMs.qmd) goes a step further and uses real datasets to project species presences across a landscape in Canada.
+In [Chapter 2](Part2_SDMs.qmd), we introduce `SpaDES` features that we most commonly use in our work (e.g., caching and spatial data processing) and provide some coding best practices that we use ourselves (e.g., code assertions).
 
 ### Setup
 
 This is what you'd normally do... Install all the packages in some way that you probably didn't record in your scripts and then start your script with loading the packages:
 
-```{r loadPkgs, eval = FALSE, message = FALSE, warning = FALSE, results = 'hide', class.source = "fold-show"}
+```{r loadPkgs}
+#| eval: false
+#| message: false
+#| warning: false
+#| results: "hide"
+#| class-source: fold-show
+
 ## please start from a clean R session
 remotes::install_github("ropensci/NLMR")  ## you will need this ;)
 
@@ -45,7 +61,10 @@ library(ggplot2)
 library(ggpubr)
 ```
 
-```{r loadPkgsHidden, include = FALSE}
+```{r loadPkgsHidden}
+#| include: false
+#| cache: false
+
 library(terra)
 library(quickPlot)
 library(ggplot2)
@@ -54,10 +73,13 @@ library(ggpubr)
 stopifnot("NLMR" %in% installed.packages())
 ```
 
-
 And now create a raster template:
 
-```{r the_r_way_raster, message = FALSE, warning = FALSE, class.source = "fold-show"}
+```{r the_r_way_raster}
+#| message: false
+#| warning: false
+#| class-source: fold-show
+
 r <- rast(nrows = 100, ncols = 100, xmin = -50, xmax = 50, ymin = -50, ymax = 50)
 ```
 
@@ -65,7 +87,9 @@ r <- rast(nrows = 100, ncols = 100, xmin = -50, xmax = 50, ymin = -50, ymax = 50
 
 Our VERY simple "simulation" model (in form of a function) generates rasters that follow a Gaussian distribution
 
-```{r the_r_way_simulation_function_AB, class.source = "fold-show"}
+```{r the_r_way_simulation_function_AB}
+#| class-source: fold-show
+
 abundance_model <- function(ras, Time) {
   abund_outputs <- list()
   for (t in 1:Time) { 
@@ -86,7 +110,10 @@ abundance_model <- function(ras, Time) {
 
 Set the length of the simulation (or simply the number of model iterations), run it and plot results (all ABUNDANCE plots together):
 
-```{r the_r_way_simulation_length, message=FALSE, class.source = "fold-show"}
+```{r the_r_way_simulation_length}
+#| message: false
+#| class-source: fold-show
+
 Time <- 10
 abundance <- abundance_model(ras = r, Time = Time)
 dev()
@@ -97,7 +124,9 @@ plot(rast(abundance))
 
 The temperature simulation model will be similar to the vegetation one - remember this is a dummy example.
 
-```{r the_r_way_simulation_function_TMP, class.source = "fold-show"}
+```{r the_r_way_simulation_function_TMP}
+#| class-source: fold-show
+
 temperature_model <- function(ras, Time) {
   temp_outputs <- list()
   for (t in 1:Time) { 
@@ -118,7 +147,9 @@ temperature_model <- function(ras, Time) {
 
 Run the model and plot results (all temperature plots together)
 
-```{r the_r_way_plot_results_TMP, class.source = "fold-show"}
+```{r the_r_way_plot_results_TMP}
+#| class-source: fold-show
+
 temperature <- temperature_model(ras = r, Time = Time)
 plot(rast(temperature))
 ```
@@ -129,7 +160,9 @@ Now we analyse if species abundance and temperature are correlated.\
 
 First, we create the data analysis function (a simple linear model):
 
-```{r data_analysis_model, class.source = "fold-show"}
+```{r data_analysis_model}
+#| class-source: fold-show
+
 stats_analysis <- function(Data) {
   if (all(c("abund", "temp") %in% colnames(Data))) {
     lm1 <- lm(abund ~ temp, data = Data)
@@ -148,7 +181,9 @@ stats_analysis <- function(Data) {
 
 Then we create a loop to analyse each plot of our time-series:
 
-```{r data_analysis, class.source = "fold-show"}
+```{r data_analysis}
+#| class-source: fold-show
+
 lmPlots <- list()
 for (t in 1:Time) {
   outputdata <- data.frame(abund = as.vector(abundance[[t]][]), temp = as.vector(temperature[[t]][]))
@@ -157,18 +192,22 @@ for (t in 1:Time) {
 ggarrange(plotlist = lmPlots)
 ```
 
-## AFTER `SpaDES`...
+## AFTER `SpaDES`
 
 ### The control script
 
-Let us now solve the same problem using the `SpaDES` approach.
+Let us now solve the same problem using the `SpaDES` approach.[^part1old-1]
 We start by creating an *.R* script (it can have any name) that sets up and runs the `SpaDES` model.
-The control script for this example is located on the root of the *SpaDES4Dummies* GitHub repository under the name `Part1_DummyModel.R`.
-Note that Markdown (`.Rmd`) scripts can also be used instead of \`.R\` scripts.
+The control script for this example is located on the root of the *SpaDES4Dummies* GitHub repository under the name `Part1_DummyModel.R`. Note that Markdown (`.Rmd`) scripts can also be used instead of \`.R\` scripts.
 
-We start by making sure all `SpaDES` packages and their dependencies are installed (and that the installation is *scripted*)  using the `Require` package.
+We start by making sure all `SpaDES` packages and their dependencies are installed (and that the installation is *scripted*) using the `Require` package.
 
-```{r globalscriptPart1, eval = FALSE, message = FALSE, warning = FALSE, results = 'hide'}
+```{r globalscriptPart1}
+#| eval: false
+#| message: false
+#| warning: false
+#| results: hide
+ 
 ## start again from a clean R session
 options(repos = c("https://predictiveecology.r-universe.dev/", 
                   CRAN = "https://cloud.r-project.org"))
@@ -184,13 +223,10 @@ if (!"remotes" %in% installed.packages(lib.loc = pkgPath))
   install.packages("remotes")
 
 if (!"Require" %in% installed.packages(lib.loc = pkgPath) ||
-    packageVersion("Require", lib.loc = pkgPath) < "0.3.1") {
-  remotes::install_github("PredictiveEcology/Require@55ec169e654214d86be62a0e13e9a2157f1aa966",
+    packageVersion("Require", lib.loc = pkgPath) < "0.3.1.9015") {
+  remotes::install_github("PredictiveEcology/Require@2788b023ad191c29346ef8c64df71b937be307e2",
                           upgrade = FALSE)
 }
-
-## use binary linux packages if on Ubuntu
-Require::setLinuxBinaryRepo()
 
 Require::Require(c("SpaDES", "DiagrammeR"), require = FALSE, upgrade = FALSE, 
                  dependencies = TRUE, standAlone = TRUE) ## automatically downloads all packages in the SpaDES family and their dependencies
@@ -210,7 +246,10 @@ if (!dir.exists(file.path(getPaths()$modulePath, "speciesAbundance"))) {
 }
 ```
 
-```{r globalscriptPart1Hidden, include = FALSE, cache = FALSE}
+```{r globalscriptPart1Hidden}
+#| include: false
+#| cache: false
+
 ## for faster rendering use all .libPaths to avoid installing all packages.
 options(repos = c("https://predictiveecology.r-universe.dev/", 
                   CRAN = "https://cloud.r-project.org"))
@@ -225,13 +264,10 @@ if (!"remotes" %in% installed.packages(lib.loc = pkgPath))
   install.packages("remotes")
 
 if (!"Require" %in% installed.packages(lib.loc = pkgPath) ||
-    packageVersion("Require", lib.loc = pkgPath) < "0.3.1") {
-  remotes::install_github("PredictiveEcology/Require@55ec169e654214d86be62a0e13e9a2157f1aa966",
+    packageVersion("Require", lib.loc = pkgPath) < "0.3.1.9015") {
+  remotes::install_github("PredictiveEcology/Require@2788b023ad191c29346ef8c64df71b937be307e2",
                           upgrade = FALSE)
 }
-
-## use binary linux packages if on Ubuntu
-Require::setLinuxBinaryRepo()
 
 Require::Require(c("SpaDES", "DiagrammeR"), require = FALSE, upgrade = FALSE, 
                  dependencies = TRUE)
@@ -301,18 +337,26 @@ So we define it as an output in the`createsOutput` function.
 Note that we removed several parameters that come with the template created by the `newModule` function, as they are not needed for this example.
 
 To distinguish what input and output objects are in the context of a module, a good rule of thumb is that inputs are all the `sim$...` objects that appear for the first time (in the module events) on the **right-hand side** of a `<-`, whereas output parameters are the `sim$...` objects that appear for the first time to the **left-hand side** of a `<-`.
-Another way of explaining it for objects is illustrated in Fig.
-\@ref(fig:figObj):
+Another way of explaining it for objects is illustrated in @fig-inOutObj :
 
-```{r figObj, fig.align = 'center', warning = FALSE, message = FALSE, echo = FALSE, fig.cap = "Inputs and outputs in SpaDES: Object A comes from outside of the module (e.g. from an internet URL, from data you have, or from `.inputObjects`), while Module Z produces object C. Both objects serve as an inputs for Module Y, which in return produce as outputs objects B and D, respectivelly from objects A and C. As Module Z uses a simple function *internally* to create object C, it doesn't have any inputs, such as our dummy example.", out.width="80%"}
+```{r fig-inOutObj}
+#| fig-align: center
+#| warning: false
+#| message: false
+#| echo: false
+#| fig-cap: "Inputs and outputs in SpaDES: Object A comes from outside of the module (e.g. from an internet URL, from data you have, or from `.inputObjects`), while Module Z produces object C. Both objects serve as an inputs for Module Y, which in return produce as outputs objects B and D, respectivelly from objects A and C. As Module Z uses a simple function *internally* to create object C, it doesn't have any inputs, such as our dummy example."
+#| out-width: 80%
+
 knitr::include_graphics(normalizePath(file.path(projDir, "figures/obj.png"), winslash = "/"))
 ```
 
-The default input objects created by the `.inputObjects` function (see [.inputObjects function]) during the `simInit` call are exceptions to this rule.
+The default input objects created by the `.inputObjects` function (see \[.inputObjects function\]) during the `simInit` call are exceptions to this rule.
 
 Here is how we defined the *speciesAbundance* module:
 
-```{r abund_module, eval=FALSE}
+```{r abund_module}
+#| eval: false
+
 defineModule(sim, list(
   name = "speciesAbundance",
   description = "",
@@ -358,7 +402,7 @@ The rest of the script defines the events and their sequences for this module - 
 
 #### **Events and event functions**
 
-Module events are defined and scheduled in the `doEvent.<module name>` function (in this example, `doEvent.speciesAbundance` function; see [Scheduling events]. Since we are only interested in simulating and plotting species abundances, we removed unnecessary events from the script and kept: the initialisation (`init`), an abundance simulation event (`SimulAbund`) and a plotting event (`abundPlot`).
+Module events are defined and scheduled in the `doEvent.<module name>` function (in this example, `doEvent.speciesAbundance` function; see \[Scheduling events\]. Since we are only interested in simulating and plotting species abundances, we removed unnecessary events from the script and kept: the initialisation (`init`), an abundance simulation event (`SimulAbund`) and a plotting event (`abundPlot`).
 Each of these events can execute one or more functions.
 
 *Event functions* (actual R functions) mustn't be confused with *event names*, which are the names of the events appearing in the `doEvent.<module name>`.
@@ -370,13 +414,15 @@ Each of these events can execute one or more functions.
 ##### *Initialisation event function*
 
 The initialisation event function (here, `abundanceInit`) can be seen as the starting point of the module.
-Unlike the `init` event, which must always be present, the function itself does not need to exist (see [Scheduling events]) and can have whatever name we want.
+Unlike the `init` event, which must always be present, the function itself does not need to exist (see \[Scheduling events\]) and can have whatever name we want.
 
 Usually, this function will does pre-simulation steps that are only need to be executed once.
 In our dummy example, it creates a template raster and a storage list for our species abundance outputs (which will also be rasters).
 Notice that the only argument to `abundanceInit` is `sim`, a `simList` object that is also its only output.
 
-```{r abund_module_SpaDES, eval = FALSE}
+```{r abund_module_SpaDES}
+#| eval: false
+
 abundanceInit <- function(sim) {
   ## create storage list of species abundance
   sim$abundRasters <- list()
@@ -393,7 +439,9 @@ Notice as well that we use `time(sim)` as the identifier of the list slots where
 
 As before, the sole argument and output to this event function is the `sim` object.
 
-```{r abund_module3, eval = FALSE}
+```{r abund_module3}
+#| eval: false
+
 abundanceSim <- function(sim) {
   ## Generate species abundances - our "simulation"
   sim$abundRasters[[as.character(time(sim))]] <- abundance_model(ras = sim$r)
@@ -409,7 +457,9 @@ The `abundanceSim` function was called `Event1` in the template.
 Finally, we created the `abundancePlot` event function to plot the species abundance rasters that are produced by the `abundanceSim` event function.
 Again, the sole argument and output of this function is `sim`.
 
-```{r abund_module4, eval = FALSE}
+```{r abund_module4}
+#| eval: false
+
 abundancePlot <- function(sim) {
   ## plot abundances
   plotTitle <- paste("Species abundance\nat time",
@@ -440,7 +490,9 @@ For instance, we know that plotting should occur after the generation of species
 
 This is how we configured our `doEvent.speciesAbundance` function:
 
-```{r abund_module5, eval = FALSE}
+```{r abund_module5}
+#| eval: false
+
 doEvent.speciesAbundance = function(sim, eventTime, eventType, debug = FALSE) {
   switch(
     eventType,
@@ -527,7 +579,9 @@ In more complex cases it is a good idea to pass a vector of module names to `sim
 
 Here's an example of how to do this (the commented instructions have been deleted):
 
-```{r abund_model6, eval = FALSE}
+```{r abund_model6}
+#| eval: false
+
 .inputObjects <- function(sim) {
   if (!suppliedElsewhere("r")) {
     ## make template raster if not supplied elsewhere.
@@ -540,7 +594,9 @@ Here's an example of how to do this (the commented instructions have been delete
 If we choose to supply the default `r` in `.inputObjects`, then we need to remove its creation from the `abundanceInit` function and add `r` to the metadata as an input.
 We have done this, so that `abundanceInit` only creates a storage list for the outputs:
 
-```{r abund_model7, eval = FALSE}
+```{r abund_model7}
+#| eval: false
+
 abundanceInit <- function(sim) {
   ## create storage list of species abundance
   sim$abundRasters <- list()
@@ -565,7 +621,9 @@ Scripts with accessory functions like these go into module's `R/` folder.
 Functions should also be accompanied by metadata.
 Here we provide a description of the function, its parameters, returning value and what other package functions it relies on using the `roxygen2` documentation style (indicated by `#'`).
 
-```{r abund_module8, code = readLines(file.path(projDir, "modules", "speciesAbundance", "R", "abundance_model.R")), eval = FALSE}
+```{r abund_module8}
+#| code: !expr 'readLines(file.path(projDir, "modules", "speciesAbundance", "R", "abundance_model.R"))'
+#| eval: false
 ```
 
 ------------------------------------------------------------------------
@@ -587,12 +645,16 @@ This may appear trivial in this example, but it can be extremely useful when inu
 
 This is how we set up the `temperature.R` script looks like:
 
-```{r temp_module, code = readLines(file.path(projDir, "modules", "temperature", "temperature.R")), eval = FALSE}
+```{r temp_module}
+#| code: !expr 'readLines(file.path(projDir, "modules", "temperature", "temperature.R"))'
+#| eval: false
 ```
 
 Again, we added an accessory `temperature_model` function in a separate script `R/temperature_model.R`:
 
-```{r temp_module2, code = readLines(file.path(projDir, "modules", "temperature", "R", "temperature_model.R")), eval = FALSE}
+```{r temp_module2}
+#| code: !expr 'readLines(file.path(projDir, "modules", "temperature", "R", "temperature_model.R"))'
+#| eval: false
 ```
 
 ------------------------------------------------------------------------
@@ -622,12 +684,16 @@ Finally, we draw your attention to a few differences in this module's script bef
 Below is the full module script.
 Notice how the future events where scheduled to `P(sim)$statsTimestep + 0.1`, to force the statistical analyses to occur **after** the abundance and temperature rasters are ready.
 
-```{r stats_module, code = readLines(file.path(projDir, "modules", "speciesTempLM", "speciesTempLM.R")), eval = FALSE}
+```{r stats_module}
+#| code: !expr 'readLines(file.path(projDir, "modules", "speciesTempLM", "speciesTempLM.R"))'
+#| eval: false
 ```
 
 And the script with the accessory functions:
 
-```{r stats_module2, code = readLines(file.path(projDir, "modules", "speciesTempLM", "R",  "linear_model_functions.R")), eval = FALSE}
+```{r stats_module2}
+#| code: !expr 'readLines(file.path(projDir, "modules", "speciesTempLM", "R",  "linear_model_functions.R"))'
+#| eval: false
 ```
 
 ------------------------------------------------------------------------
@@ -653,7 +719,11 @@ The function `simInit` needs a few arguments listing simulation folder directori
 
 -   `paths` contains the folder directory paths that we set earlier.
 
-```{r globalscript2, results=FALSE, warning=FALSE, message=FALSE}
+```{r globalscript2}
+#| results: false
+#| warning: false
+#| message: false
+
 ## list the modules to use
 simModules <- list("speciesAbundance", "temperature", "speciesTempLM")
 
@@ -677,7 +747,11 @@ mySim <- simInit(times = simTimes, params = simParams,
 
 Finally, we highlight that `simInit` also executes all `.inputObjects` functions, and schedules the `init` events, but does not execute them:
 
-```{r scheduled-events, results=FALSE, warning=FALSE, message=FALSE}
+```{r scheduled-events}
+#| results: false
+#| warning: false
+#| message: false
+
 events(mySim)
 ```
 
@@ -687,25 +761,38 @@ Before starting the simulations we should check if the modules were linked corre
 
 **Module diagram**
 
-`moduleDiagram` (Fig. \@ref(fig:moduleDiagram)) is a useful function that shows module inter-dependencies as a network diagram.
+`moduleDiagram` (@fig-moduleDiagram ) is a useful function that shows module inter-dependencies as a network diagram.
 The direction of the arrows indicates an output to input flow.
-You can see that *speciesAbundance* and *temperature* inputs (specifically our \`r\` raster) are supplied by an external source (*_INPUT_*) - the user or `.inputObjects`.
+You can see that *speciesAbundance* and *temperature* inputs (specifically our \`r\` raster) are supplied by an external source (*INPUT*) - the user or `.inputObjects`.
 Whereas the inputs to the *speciesTempLM* module are outputs of the *speciesAbundance* and *temperature* modules.
 
-```{r moduleDiagram, fig.height=6, fig.width=6, message=FALSE, warning=FALSE, fig.cap="Diagram of module connections."}
+```{r fig-moduleDiagram}
+#| fig-height: 6
+#| fig-width: 6
+#| message: false
+#| warning: false
+#| fig-cap: "Diagram of module connections."
+
 moduleDiagram(mySim)
 ```
 
 **Object diagram**
 
-`objectDiagram` (Fig. \@ref(fig:objectDiagram)) provides another way of checking module linkages.
+`objectDiagram` (@fig-objectDiagram) provides another way of checking module linkages.
 It explicitly shows module inter-dependencies by depicting the objects that establish links between modules.
 
-```{r objectDiagramCode, eval=FALSE}
+```{r objectDiagramCode}
+#| eval: false
+
 objectDiagram(mySim)
 ```
 
-```{r objectDiagram, echo = FALSE, fig.align = 'center', fig.cap = "Module diagram showing module inter-dependencies with object names.", fig.width = 10}
+```{r fig-objectDiagram}
+#| echo: false
+#| fig-align: center
+#| fig-cap: "Module diagram showing module inter-dependencies with object names."
+#| fig-width: 10
+
 knitr::include_graphics(normalizePath(file.path(projDir, "figures/Part1_objectDiagram.png"), winslash = "/"),
                         dpi = NA)
 ```
@@ -716,14 +803,23 @@ We run the simulation using the `spades` function, which takes the output of the
 We passed `debug = TRUE` so that `spades` prints the events as they are being executed.
 In case something fails, this helps diagnosing where the issue occurred.
 
-```{r spadesrun, eval = FALSE}
+```{r spadesrun}
+#| eval: false
+
 ## run simulation
 dev() # on Windows and Mac, this opens external device if using Rstudio, it is faster
 clearPlot()
 mySim2 <- spades(mySim, debug = TRUE)
 ```
 
-```{r figSimulationFig, fig.align = 'center', warning = FALSE, message = FALSE, echo = FALSE, fig.cap = "Simulation plots: Final plot of the simulation", out.width="80%"}
+```{r figSimulationFig}
+#| fig-align: center
+#| warning: false
+#| message: false
+#| echo: false
+#| fig-cap: "Simulation plots: Final plot of the simulation"
+#| out-width: 80%
+
 knitr::include_graphics(normalizePath(file.path(projDir, "figures/simul_plot.png"), winslash = "/"))
 ```
 
@@ -735,14 +831,12 @@ The more complex the project gets, the more advantageous it is to use `SpaDES` t
 ### Additional notes
 
 `SpaDES` is an extremely powerful package, whose potential goes well beyond what has been discussed in this dummy example.
-If you want to explore it further, we recommend following Part \@ref(part2) for a more realistic (but still simple) `SpaDES` application.
+If you want to explore it further, we recommend following [Chapter 2](Part2_SDMs.qmd) for a more realistic (but still simple) `SpaDES` application.
 
 Also, do go to the [`SpaDES` webpage](https://spades.predictiveecology.org/) to find further information about the platform, as well as upcoming workshops and publications and to the [Predictive Ecology Github repository](https://github.com/PredictiveEcology/) to see all the `SpaDES` modules and SpaDES-related packages that we maintain at the [Predictive Ecology Lab](https://predictiveecology.org).
 
 ------------------------------------------------------------------------
 
-<center> 
+<center>**Happy SpaDESing!**</center>
 
-**Happy SpaDESing!**
-
-</center>
+[^part1old-1]: The full R script to run this example @sec-scriptPart1 .

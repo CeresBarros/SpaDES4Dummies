@@ -16,7 +16,6 @@ nul
 ## render files
 *_files/
 render*.rds
-!docs/
 
 rsconnect
 
@@ -49,3 +48,5 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+/.quarto/
