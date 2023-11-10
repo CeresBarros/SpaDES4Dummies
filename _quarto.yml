@@ -88,7 +88,7 @@ format:
     lof: yes
     toc: true
     toc-location: right
-    toc-expand: true
+    toc-expand: 1
     toc-depth: 4
     number-sections: true
     code-fold: show
