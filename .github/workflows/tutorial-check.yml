@@ -64,10 +64,10 @@ jobs:
 
       - name: Run tutorials - Part 1
         run: |
-          source("Part1_DummyModel_test.R", echo = TRUE)
+          source("test/Part1_DummyModel_test.R", echo = TRUE)
         shell: Rscript {0}
 
       - name: Run tutorials - Part 2
         run: |
-          source("Part2_SDMs_test.R", echo = TRUE)
+          source("test/Part2_SDMs_test.R", echo = TRUE)
         shell: Rscript {0}
