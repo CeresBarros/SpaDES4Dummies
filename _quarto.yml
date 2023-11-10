@@ -87,8 +87,8 @@ format:
     lot: yes
     lof: yes
     toc: true
-    toc-location: left
-    toc-expand: false
+    toc-location: right
+    toc-expand: true
     toc-depth: 4
     number-sections: true
     code-fold: show
@@ -101,8 +101,6 @@ format:
     lot: true
     lof: true
     toc: true
-    toc-location: left
-    toc-expand: false
     toc-depth: 4
     number-sections: true
     code-fold: show
