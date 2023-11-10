@@ -596,8 +596,9 @@ knitr::include_graphics(normalizePath(file.path(projDir, "outputs/GLM_rep1/figur
 #| warning: false
 #| message: false
 #| fig-align: center
-#| out-width: 50%
+#| out-width: 80%
 #| fig-show: hold
+#| layout-ncol: 2
 #| fig-cap: "Prediction plots. Bioclimatic variables under baseline (year 1) and future conditions."
 #| fig-subcap: ""
 
@@ -613,7 +614,7 @@ The prediction module also outputs the projections for each climate period autom
 #| message: false
 #| fig-align: center
 #| layout-ncol: 2
-#| out-width: 20%
+#| out-width: 80%
 #| fig-show: hold
 #| fig-cap: "Prediction plots: Raw predicted values of species probability of occurence under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt."
 #| fig-subcap: ""
@@ -628,7 +629,7 @@ knitr::include_graphics(normalizePath(figs, winslash = "/"))
 #| message: false
 #| fig-align: center
 #| layout-ncol: 2
-#| out-width: 20%
+#| out-width: 80%
 #| fig-show: hold
 #| fig-cap: "Prediction plots: Predictions of *Picea glauca* presence/absence under (left to right) baseline climate conditions (first year of simulation), 2021-2040, 2041-2060, 2061-2080 and 2081-2100 climate conditions (second to fifth years of simulation) - using MaxEnt."
 #| fig-subcap: ""
@@ -788,7 +789,6 @@ ggsave(file.path(figDir, "MaxEntPredictions.png"), width = 13.5, height = 5.5, u
 #| warning: false
 #| message: false
 #| fig-align: center
-#| layout-ncol: 2
 #| out-width: 80%
 #| fig-show: hold
 #| fig-cap: "Adding a new scenario: Predictions of *Picea glauca* probabilities of presences and presence/absence under (left to right) baseline climate conditions, 2041-2060, and 2081-2100 climate projections under two emission scenarios (SSP 136 and SSP 585, the default) -- showing MaxEnt forecasts only."
