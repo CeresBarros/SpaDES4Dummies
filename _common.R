@@ -1,8 +1,9 @@
 ## not necessary when rendering via GHA
 
 if (!isTRUE(as.logical(Sys.getenv("CI")))) {
-  pkgPath <- file.path("packages", version$platform,
-                       paste0(version$major, ".", strsplit(version$minor, "[.]")[[1]][1]))
+  pkgPath <- normalizePath(file.path("packages", version$platform,
+                                     paste0(version$major, ".", strsplit(version$minor, "[.]")[[1]][1])),
+                           winslash = "/")
   .libPaths(pkgPath)   ## need to include.side = TRUE to use bookdown and rmarkdown
 }
 
