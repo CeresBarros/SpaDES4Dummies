@@ -1,6 +1,7 @@
-## ---------------------------------------------------
-## SPADES4DUMMIES PART 1
-## ---------------------------------------------------
+# Complete R script to Chapter 1 {#sec-scriptPart1}
+
+```{r}
+#| eval: false
 
 options(repos = c("https://predictiveecology.r-universe.dev/", 
                   CRAN = "https://cloud.r-project.org"))
@@ -17,12 +18,9 @@ if (!"remotes" %in% installed.packages(lib.loc = pkgPath))
 
 if (!"Require" %in% installed.packages(lib.loc = pkgPath) ||
     packageVersion("Require", lib.loc = pkgPath) < "0.3.1") {
-  remotes::install_github("PredictiveEcology/Require@55ec169e654214d86be62a0e13e9a2157f1aa966",
+  remotes::install_github("PredictiveEcology/Require@2788b023ad191c29346ef8c64df71b937be307e2",
                           upgrade = FALSE)
 }
-
-## use binary linux packages if on Ubuntu
-Require::setLinuxBinaryRepo()
 
 Require::Require(c("SpaDES", "DiagrammeR"), 
                  require = FALSE, upgrade = FALSE, 
@@ -76,3 +74,6 @@ objectDiagram(mySim)
 dev() # on Windows and Mac, this opens external device if using Rstudio, it is faster
 clearPlot()
 mySim2 <- spades(mySim, debug = TRUE)
+
+```
+

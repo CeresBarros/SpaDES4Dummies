@@ -1,6 +1,7 @@
-## ---------------------------------------------------
-## SPADES4DUMMIES PART 2
-## ---------------------------------------------------
+# Complete R script to Chapter 2 {#sec-scriptPart2}
+
+```{r}
+#| eval: false
 
 options(repos = c("https://predictiveecology.r-universe.dev/", 
                   CRAN = "https://cloud.r-project.org"))
@@ -23,19 +24,21 @@ if (!"remotes" %in% installed.packages(lib.loc = pkgPath))
   install.packages("remotes")
 
 if (!"Require" %in% installed.packages(lib.loc = pkgPath) ||
-    packageVersion("Require", lib.loc = pkgPath) < "0.3.1") {
+    packageVersion("Require", lib.loc = pkgPath) < "0.3.1.9015") {
   remotes::install_github("PredictiveEcology/Require@55ec169e654214d86be62a0e13e9a2157f1aa966",
                           upgrade = FALSE)
 }
-
-## use binary linux packages if on Ubuntu
-Require::setLinuxBinaryRepo()
 
 ## Notes: 
 ## 1) if you are working from RStudio and have an older version of base packages like `Rcpp`, `rlang` 
 ## (and others) installed, you may  need to run the following lines (and code above) directly from R
 ## in order to update these base packages
 ## 2) Please ensure the appropriate Rtools version is installed (see)
+
+## there seems to be a problem with `ragg` and a forced install solves it
+if (!"ragg" %in% installed.packages(lib.loc = pkgPath)) {
+  install.packages("ragg")
+}
 
 Require::Require(c("PredictiveEcology/SpaDES.project@transition (HEAD)", 
                    "PredictiveEcology/SpaDES.core@master (HEAD)",
@@ -46,8 +49,6 @@ Require::Require(c("PredictiveEcology/SpaDES.project@transition (HEAD)",
                  require = FALSE,  ## don't load packages yet 
                  upgrade = FALSE, standAlone = TRUE)
 
-## there seems to be a problem with `ragg` and a forced install solves it
-install.packages("ragg")
 
 Require::Require("SpaDES.core", install = FALSE)  ## load only
 setPaths(cachePath = file.path(mainPath, "cache"),
@@ -266,3 +267,6 @@ plotAll <- ggpubr::ggarrange(plotMaxEnt2 + labs(title = expression(bold("Scenari
                              legend = "right", common.legend = TRUE, labels = c("a)", "b)", "c)", "d)"))
 figDir <- checkPath(file.path(simPaths$outputPath, "generalFigures"), create = TRUE)
 ggsave(file.path(figDir, "MaxEntPredictions.png"), width = 13.5, height = 5.5, units = "in", dpi = 300)
+
+```
+
