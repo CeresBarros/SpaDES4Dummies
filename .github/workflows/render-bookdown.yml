@@ -8,10 +8,10 @@ on:
       - master
       - development
 
-name: Render bookdown website
+name: Render Quarto book
 
 jobs:
-  build-bookdown:
+  render-quarto:
     if: | 
       !contains(github.event.commits[0].message, '[skip-renderbook]')
     
@@ -24,6 +24,16 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      
+      - uses: quarto-dev/quarto-actions/setup@v2
+      
+      - name: Install pandoc
+        run: |
+          DEB=pandoc-2.19.2-1-amd64.deb
+          wget https://github.com/jgm/pandoc/releases/download/2.19.2/$DEB
+          sudo dpkg -i $DEB
+          pandoc --version
+        shell: bash
       
       - uses: PredictiveEcology/actions/install-spatial-deps@main
       
@@ -39,7 +49,6 @@ jobs:
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
           packages: |
-            any::bookdown
             any::cffr
             any::geodata
             any::ggplot2
@@ -52,34 +61,23 @@ jobs:
             any::rsvg
             any::SpaDES.tools
             any::V8
+            any::quarto
       
-      - name: Install TinyTeX
-        uses: r-lib/actions/setup-tinytex@v2
-        env:
-          # install full prebuilt version
-          TINYTEX_INSTALLER: TinyTeX
       
-      - name: Cache bookdown results
-        uses: actions/cache@v3
-        with:
-          path: _bookdown_files
-          key: bookdown-${{ hashFiles('**/*Rmd') }}
-          restore-keys: bookdown-
-        
-      - name: Render Bookdown
-        run: |
-          source("render.R", echo = TRUE)
-        shell: Rscript {0}
+      - name: Render book 🔧
+        run: Rscript render.R
       
-      - name: Deploy to GitHub pages 🚀
-        uses: JamesIves/github-pages-deploy-action@v4
+      
+      - name: Deploy 🚀
+        if: github.event_name != 'pull_request'
+        uses: JamesIves/github-pages-deploy-action@4.1.7
         with:
           clean: false
-          branch: gh-pages
-          folder: docs
-          
+          branch: gh-pages # The branch the action should deploy to.
+          folder: _book # The folder the action should deploy.
+
   update-citation:
-    needs: build-bookdown
+    needs: render-quarto
     
     runs-on: ubuntu-20.04
     
