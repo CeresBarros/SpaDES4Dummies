@@ -63,10 +63,8 @@ jobs:
             any::V8
             any::quarto
       
-      
       - name: Render book 🔧
         run: Rscript render.R
-      
       
       - name: Deploy 🚀
         if: github.event_name != 'pull_request'
