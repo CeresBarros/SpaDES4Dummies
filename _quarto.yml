@@ -45,8 +45,8 @@ book:
     - index.qmd
     # - intro.qmd
     # - ProjectSetup_PkgInstall.qmd
-    - Part1Old.qmd
-    - Part2Old.qmd
+    - Part1_DummyModel.qmd
+    - Part2_SDMs.qmd
     # - Caching.qmd
     # - references.qmd
   appendices:
