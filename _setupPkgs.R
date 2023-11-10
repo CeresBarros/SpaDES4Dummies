@@ -18,7 +18,7 @@ if (!"Require" %in% installed.packages() || packageVersion("Require") < "0.3.1.9
 
 Require::Require(c(
   "htmlwidgets", "geodata", 
-  # "SpaDES",
+  "SpaDES",
   # "PredictiveEcology/SpaDES.experiment@75d917b70b892802fed0bbdb2a5e9f3c6772f0ba",
   "ggpubr", "rmarkdown", "rsvg",
   "formatR"   ## for tidy = TRUE option
