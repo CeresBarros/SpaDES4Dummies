@@ -79,8 +79,8 @@ link-citations: true
 format:
   html:
     theme: 
-      light: flatly
-      dark: darkly
+      light: minty
+      dark: [minty, css/theme-dark.scss]
     code-link: true
     css: css/style.css
     smooth-scroll: true
