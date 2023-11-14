@@ -62,6 +62,7 @@ jobs:
             any::SpaDES.tools
             any::V8
             any::quarto
+            any::rJava
       
       - name: Render book 🔧
         run: Rscript render.R
