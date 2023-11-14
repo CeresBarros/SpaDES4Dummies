@@ -13,7 +13,7 @@ source("_common.R")
 #| include: false
 #| cache: false
 
-projDir <- Sys.getenv("QUARTO_PROJECT_DIR")   ## save this for later
+projDir <- getwd()   ## save this for later
 rmdDir <- "~/SpaDES4Dummies_Part2"   ## same as mainPath below.
 dir.create(rmdDir)
 knitr::opts_knit$set(

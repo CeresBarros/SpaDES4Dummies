@@ -13,7 +13,7 @@ Authors: Ceres Barros, Tati Micheletti
 #| include: false
 #| cache: false
 
-projDir <- Sys.getenv("QUARTO_PROJECT_DIR")   ## save this for later
+projDir <- getwd()   ## save this for later
 rmdDir <- "~/SpaDES4Dummies_Part1"
 dir.create(rmdDir)
 knitr::opts_knit$set(
