@@ -97,7 +97,9 @@ format:
     fontsize: 11pt
 
   pdf:
-    documentclass: scrreprt
+    pdf-engine: xelatex
+    documentclass: book
+    cite-method: biblatex
     lot: true
     lof: true
     toc: true
