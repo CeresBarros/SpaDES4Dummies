@@ -30,11 +30,6 @@ jobs:
         with:
           version: pre-release
           tinytex: true
-          
-      - name: Update TinyTeX
-        run: |
-          quarto update tinytex
-        shell: bash
       
       - name: Install pandoc
         run: |
