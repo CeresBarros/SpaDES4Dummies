@@ -26,6 +26,9 @@ jobs:
       - uses: actions/checkout@v3
       
       - uses: quarto-dev/quarto-actions/setup@v2
+        with:
+          version: pre-release
+          tinytex: true
       
       - name: Install pandoc
         run: |
@@ -63,12 +66,6 @@ jobs:
             any::V8
             any::quarto
             any::rJava
-            
-      - name: Install TinyTeX
-        uses: r-lib/actions/setup-tinytex@v2
-        env:
-          # install full prebuilt version
-          TINYTEX_INSTALLER: TinyTeX
       
       - name: Render book 🔧
         run: Rscript render.R
