@@ -13,12 +13,16 @@ SpaDES4Dummies.*
 
 nul
 
-_bookdown_files
+## render files
+*_files/
+render*.rds
+
 rsconnect
 
 packages/*
 !packages/pkgSnapshot.txt
 citations/*
+!citations/references.bib
 
 inputs/*
 outputs/*
@@ -45,3 +49,5 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+/.quarto/

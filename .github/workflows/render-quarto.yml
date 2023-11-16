@@ -1,0 +1,114 @@
+on:
+  push:
+    branches:
+      - master
+      - development
+  pull_request:
+    branches:
+      - master
+      - development
+
+name: Render Quarto book
+
+jobs:
+  render-quarto:
+    if: | 
+      !contains(github.event.commits[0].message, '[skip-renderbook]')
+    
+    runs-on: ubuntu-20.04
+    
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      # RENV_PATHS_ROOT: ~/.local/share/renv
+      R_LIBS_USER: /home/runner/work/_temp/Library
+
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Install Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+        with:
+          version: pre-release
+          tinytex: true
+      
+      - name: Install pandoc
+        run: |
+          DEB=pandoc-2.19.2-1-amd64.deb
+          wget https://github.com/jgm/pandoc/releases/download/2.19.2/$DEB
+          sudo dpkg -i $DEB
+          pandoc --version
+        shell: bash
+      
+      - uses: PredictiveEcology/actions/install-spatial-deps@main
+      
+      - uses: r-lib/actions/setup-pandoc@v2
+      
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          Ncpus: 2
+          use-public-rspm: false
+          extra-repositories: 'https://predictiveecology.r-universe.dev/'
+      
+      - name: Install package dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: |
+            any::cffr
+            any::geodata
+            any::ggplot2
+            any::ggpubr
+            any::htmlwidgets
+            any::rcmdcheck
+            any::rmarkdown
+            any::png
+            any::raster
+            any::rsvg
+            any::SpaDES.tools
+            any::V8
+            any::quarto
+            any::rJava
+      
+      - name: Render book 🔧
+        run: Rscript render.R
+      
+      - name: Deploy 🚀
+        if: github.event_name != 'pull_request'
+        uses: JamesIves/github-pages-deploy-action@4.1.7
+        with:
+          clean: false
+          branch: gh-pages # The branch the action should deploy to.
+          folder: _book # The folder the action should deploy.
+
+  update-citation:
+    needs: render-quarto
+    
+    runs-on: ubuntu-20.04
+    
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - uses: r-lib/actions/setup-r@v2
+      
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: |
+            any::cffr
+            any::V8
+    
+      - name: Update CITATION.cff
+        run: |
+          cffr::cff_write(dependencies = FALSE, authors_roles = c("aut", "cre", "ctb"))
+        shell: Rscript {0}
+          
+      - name: Commit CITATION.cff update
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CITATION.cff
+          git commit -m 'Update CITATION.cff' || echo "No changes to commit"
+          git push origin || echo "No changes to commit"
+
+  

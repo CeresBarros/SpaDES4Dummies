@@ -5,15 +5,16 @@ defineModule(sim, list(
   name = "temperature",
   description = "Temperature simulator",
   keywords = c("temperature", "gaussian", "spatial"),
-  authors = person("Me", email = "me@example.com", role = c("aut", "cre")),
+  authors = structure(list(list(given = c("Ceres"), family = "Barros", 
+                                role = c("aut", "cre"), email = "ceres.barros@ubc.ca", comment = NULL)), class = "person"),
   childModules = character(0),
-  version = list(speciesAbundanceData = "0.0.0.9000"),
+  version = list(temperature = "1.0.0"),
   timeframe = as.POSIXlt(c(NA, NA)),
   timeunit = "year",
   citation = list("citation.bib"),
   documentation = list("README.txt", "temperature.Rmd"),
-  reqdPkgs = list("PredictiveEcology/SpaDES.core@development (>=1.0.10.9000)",
-                  "raster", "achubaty/NLMR"),
+  reqdPkgs = list("SpaDES.core (>=2.0.2)",
+                  "terra", "ropensci/NLMR"),
    parameters = bindrows(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
     defineParameter("simulationTimeStep", "numeric", 1, NA, NA, 
@@ -25,7 +26,7 @@ defineModule(sim, list(
   ),
   inputObjects = bindrows(
     #expectsInput("objectName", "objectClass", "input object description", sourceURL, ...),
-    expectsInput("r", "RasterLayer", "Template raster")
+    expectsInput("r", "SpatRaster", "Template raster")
   ),
   outputObjects = bindrows(
     #createsOutput("objectName", "objectClass", "output object description", ...),
@@ -59,7 +60,7 @@ doEvent.temperature = function(sim, eventTime, eventType, debug = FALSE) {
     tempPlot = {
       ## do stuff for this event
       sim <- plotting(sim)
-
+      
       ## schedule future event(s)
       sim <- scheduleEvent(sim, eventTime = time(sim) + P(sim)$.plotInterval, moduleName = "temperature", 
                            eventType = "tempPlot", eventPriority = .normal() + 0.5)
@@ -90,7 +91,7 @@ update <- function(sim) {
 plotting <- function(sim) {
   ## plot temperature
   plotTitle <- paste("Temperature\nat time",
-                      names(sim$tempRasters)[length(sim$tempRasters)])
+                     names(sim$tempRasters)[length(sim$tempRasters)])
   tempPlot <- sim$tempRasters[[length(sim$tempRasters)]] 
   Plot(tempPlot, 
        title = plotTitle, 
@@ -102,7 +103,7 @@ plotting <- function(sim) {
 .inputObjects <- function(sim) {
   if (!suppliedElsewhere("r")) {
     ## make template raster if not supplied elsewhere.
-    sim$r <- raster(nrows = 100, ncols = 100, xmn = -50, xmx = 50, ymn = -50, ymx = 50)
+    sim$r <- rast(nrows = 100, ncols = 100, xmin = -50, xmax = 50, ymin = -50, ymax = 50)
   }
   return(invisible(sim))
 }

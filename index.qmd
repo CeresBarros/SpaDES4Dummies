@@ -1,0 +1,101 @@
+# Preface {.unnumbered}
+
+```{r}
+#| echo: false
+#| cache: false
+
+source("_common.R")
+```
+
+```{r setup}
+#| include: false
+#| cache: false
+
+## get citation style
+if (!file.exists("citations/ecology-letters.csl")) {
+  dir.create("citations", showWarnings = FALSE)
+  download.file("https://www.zotero.org/styles/ecology-letters?source=1", destfile = "citations/ecology-letters.csl")
+}
+
+## prevents GitHub from rendering book using Jekyll
+if (!file.exists("docs/.nojekyll")) {
+  file.create("docs/.nojekyll")
+}
+
+options(bookdown.post.latex = function(x) {
+  # substitute nonbreaking spaces in \texttt{} with normal spaces
+  m = gregexpr('\\\\texttt\\{[^}]+}', x)
+  regmatches(x, m) = lapply(regmatches(x, m), function(z) {
+    gsub('\\\\ ', ' ', z)
+  })
+  # only build a skeleton for the online version
+  if (Sys.getenv('BOOKDOWN_FULL_PDF', '') == 'false') return(bookdown:::strip_latex_body(
+    x, '\nThis PDF is only a skeleton. Please either read the free online HTML version, or purchase a hard-copy of this book.\n'
+    ))
+  # fix syntax highlighting:
+  # \FunctionTok{tufte:}\AttributeTok{:tufte_html: default} ->
+  # \FunctionTok{tufte::tufte_html:}\AttributeTok{ default}
+  x = gsub('(\\\\AttributeTok\\{[^:]+:)(})(\\\\FunctionTok\\{)(:[^:]+:)', '\\1\\4\\2\\3', x)
+  if (length(i <- grep('^\\\\begin\\{longtable\\}', x)) == 0) return(x)
+  i1 = bookdown:::next_nearest(i, which(x == '\\toprule'))
+  i2 = bookdown:::next_nearest(i, which(x == '\\endfirsthead'))
+  x[i1 - 1] = paste0(x[i1 - 1], '\n\\begin{tabular}{', gsub('[^lcr]', '', gsub('.*\\[]', '', x[i])), '}')
+  x[i] = '\\begin{table}'
+  x[x == '\\end{longtable}'] = '\\end{tabular}\n\\end{table}'
+  x[x == '\\endhead'] = ''
+  x = x[-unlist(mapply(seq, i1, i2, SIMPLIFY = FALSE))]
+  x
+})
+```
+
+``` {r zenodoBadgePrep}
+#| echo: false
+#| eval: true
+#| cache: false
+
+## try to automatically get the commit URL and the path to the badge image
+dir.create("figures", showWarnings = FALSE)
+if (!file.exists("figures/zenodoBadge.svg")) {
+  download.file(url = "https://zenodo.org/badge/112410440.svg",
+                destfile = "figures/zenodoBadge.svg",
+                mode = 'wb')
+}
+badgeURL <- "https://zenodo.org/badge/latestdoi/112410440"
+
+## read in svg image
+badgePath <- "figures/zenodoBadge.svg"
+rsvgImage <- rsvg::rsvg(badgePath)
+
+## change to png:
+badgePath <- "figures/zenodoBadge.png"  
+png::writePNG(rsvgImage, badgePath, dpi = 144)
+```
+
+``` {r zenodoBadge}
+#| echo: false
+#| cache: false
+#| results: asis
+
+## make string of markdown code to be executed as-is
+cat(paste0("[![zenodoBadge](", badgePath, ")](", badgeURL, ")"))
+```
+
+```{r refs}
+#| include: FALSE
+
+knitr::write_bib(c(
+  .packages(), "quarto", "knitr", "rmarkdown", "htmlwidgets", "webshot", "DT",
+  "miniUI", "tufte", "servr", "citr", "rticles",
+  "SpaDES", "SpaDES.core", "SpaDES.experiment", "reproducible", "Require", "SpaDES.install"
+), "citations/packages.bib")
+```
+
+This guide will take you through how to make and link your own modules using `SpaDES` in two examples. Both examples draw on basic uses of statistical models in ecology, notably the relationships between environmental variables and species abundance and presence. 
+
+[Chapter 1](Part1_DummyModel.qmd) is very minimal, and uses only dummy data. It is meant to introduce you to the different components of a `SpaDES` module.
+
+[Chapter 2](Part2_SDMs.qmd) uses real and freely available data, and provides a deeper look into several useful aspects of `SpaDES`, notably caching and spatial data processing.
+
+Full R scripts to execute SpaDES workflow examples can be found in the Appendices section.
+
+To install `SpaDES`, please have a look at [SpaDES installation](https://github.com/PredictiveEcology/SpaDES/wiki/Installation), or follow steps at the start of [Chapter 2](Part2_SDMs.qmd).

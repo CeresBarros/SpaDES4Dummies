@@ -9,14 +9,15 @@ defineModule(sim, list(
   description = paste("Data module to prepare tree species cover data for species distribution modelling.", 
                       "Defaults to using Canadian National Forest Inventory data."),
   keywords = c("minimal SpaDES example", "species distribution model"),
-  authors = structure(list(list(given = c("Ceres"), family = "Barros", role = c("aut", "cre"), email = "ceres.barros@ubc.ca", comment = NULL)), class = "person"),
+  authors = structure(list(list(given = c("Ceres"), family = "Barros", role = c("aut", "cre"), 
+                                email = "ceres.barros@ubc.ca", comment = NULL)), class = "person"),
   childModules = character(0),
-  version = list(speciesAbundanceData = "0.0.0.9000"),
+  version = list(speciesAbundanceData = "1.0.0"),
   timeframe = as.POSIXlt(c(NA, NA)),
   timeunit = "year",
   citation = list("citation.bib"),
   documentation = list("README.md", "speciesAbundanceData.Rmd"), ## same file
-  reqdPkgs = list("PredictiveEcology/SpaDES.core@development (>=1.0.10.9000)",
+  reqdPkgs = list("SpaDES.core (>=2.0.2)",
                   "httr", "terra", "ggplot2", "rasterVis"),
   parameters = bindrows(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
@@ -25,7 +26,7 @@ defineModule(sim, list(
                            "canada-forests-attributes_attributs-forests-canada/",
                            "2001-attributes_attributs-2001/",
                            "NFI_MODIS250m_2001_kNN_Species_Pice_Gla_v1.tif"), NA, NA,
-                    paste("URL where the first RasterLayer of species abundance resides.",
+                    paste("URL where the first SpatRaster of species abundance resides.",
                           "This will be the abundance data used to fit the species ditribution model.",
                           "Defaults to *Picea glauca* percent cover across Canada, in 2001", 
                           "(from Canadian National Forest Inventory forest attributes)")),
@@ -49,7 +50,7 @@ defineModule(sim, list(
   ),
   inputObjects = bindrows(
     #expectsInput("objectName", "objectClass", "input object description", sourceURL, ...),
-    expectsInput("studyAreaRas", objectClass = "RasterLayer", 
+    expectsInput("studyAreaRas", objectClass = "SpatRaster", 
                  desc = "A binary raster of the study area")
   ),
   outputObjects = bindrows(

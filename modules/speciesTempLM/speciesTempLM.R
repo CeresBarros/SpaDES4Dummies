@@ -5,15 +5,16 @@ defineModule(sim, list(
   name = "speciesTempLM",
   description = "Statistical analysis of species ~ temperature relationships using LM",
   keywords = c("linear model"),
-  authors = person("Me", email = "me@example.com", role = c("aut", "cre")),
+  authors = structure(list(list(given = c("Ceres"), family = "Barros", 
+                                role = c("aut", "cre"), email = "ceres.barros@ubc.ca", comment = NULL)), class = "person"),
   childModules = character(0),
-  version = list(speciesAbundanceData = "0.0.0.9000"),
+  version = list(speciesTempLM = "1.0.0"),
   timeframe = as.POSIXlt(c(NA, NA)),
   timeunit = "year",
   citation = list("citation.bib"),
   documentation = list("README.txt", "speciesTempLM.Rmd"),
-  reqdPkgs = list("PredictiveEcology/SpaDES.core@development (>=1.0.10.9000)",
-                  "raster", "ggplot2", "data.table", "reshape2"),
+  reqdPkgs = list("SpaDES.core (>=2.0.2)",
+                  "terra", "ggplot2", "data.table", "reshape2"),
    parameters = bindrows(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
     defineParameter("statsTimestep", "numeric", 1, NA, NA, "This describes the how often the statitiscal analysis will be done")
@@ -80,17 +81,17 @@ statsInit <- function(sim) {
 ## Statistical analysis event
 statsAnalysis <- function(sim) {
   ## get all species abundances data available
-  abundData <- data.table(getValues(stack(sim$abundRasters)))
+  abundData <- as.data.table(rast(sim$abundRasters))
   abundData[, pixID := 1:nrow(abundData)]
   abundData <- melt.data.table(abundData, id.var = "pixID",
                                variable.name = "year", value.name = "abund")
   abundData[, year := as.numeric(sub("X", "", year))]
   
   ## get all temperature data available
-  tempData <- data.table(getValues(stack(sim$tempRasters)))
+  tempData <- as.data.table(rast(sim$tempRasters))
   tempData[, pixID := 1:nrow(tempData)]
   tempData <- melt.data.table(tempData, id.var = "pixID",
-                               variable.name = "year", value.name = "temp")
+                              variable.name = "year", value.name = "temp")
   tempData[, year := as.numeric(sub("X", "", year))] 
   
   ## merge per year  

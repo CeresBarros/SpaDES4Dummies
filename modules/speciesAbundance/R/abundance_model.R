@@ -1,10 +1,10 @@
 #' Accessory function to speciesAbundance module
 #' 
 #' @param ras a raster layer used as template.
-#' @return a fake abundance raster generated as a Gaussian map with scale = 100 and variance = 0.01
-#' @import NLMR nlm_mpd
+#' @return a fake abundance SpatRaster generated as a Gaussian map with scale = 100 and variance = 0.01
+#' @importFrom NLMR nlm_mpd
+#' @importFrom terra rast
 abundance_model <- function(ras) {
-  # abund_ras <- gaussMap(ras, scale = 100, var = 0.01) ## RandomFields no longer available
   abund_ras <- NLMR::nlm_mpd(
     ncol = ncol(ras),
     nrow = nrow(ras),
@@ -13,6 +13,7 @@ abundance_model <- function(ras) {
     rand_dev = 100,
     rescale = TRUE,
     verbose = FALSE
-  )
+  ) |>
+    rast()
   return(abund_ras)
 }
