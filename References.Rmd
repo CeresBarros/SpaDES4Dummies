@@ -6,7 +6,7 @@
 
 ```{r refs, include = FALSE}
 knitr::write_bib(c(
-  .packages(), "bookdown", "knitr", "rmarkdown", "htmlwidgets", "webshot", "DT",
+  .packages(), "quarto", "knitr", "rmarkdown", "htmlwidgets", "webshot", "DT",
   "miniUI", "tufte", "servr", "citr", "rticles",
   "SpaDES", "SpaDES.core", "SpaDES.experiment", "reproducible", "Require", "SpaDES.install"
 ), "citations/packages.bib")
