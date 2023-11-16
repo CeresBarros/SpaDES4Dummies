@@ -48,7 +48,7 @@ book:
     - Part1_DummyModel.qmd
     - Part2_SDMs.qmd
     # - Caching.qmd
-    - references.qmd
+    - References.qmd
   appendices:
     - appendices/Part1_Rscript.qmd
     - appendices/Part2_Rscript.qmd
