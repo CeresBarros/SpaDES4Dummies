@@ -22,6 +22,7 @@ rsconnect
 packages/*
 !packages/pkgSnapshot.txt
 citations/*
+!citations/references.bib
 
 inputs/*
 outputs/*
