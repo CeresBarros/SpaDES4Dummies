@@ -8,6 +8,6 @@
 knitr::write_bib(c(
   .packages(), "bookdown", "knitr", "rmarkdown", "htmlwidgets", "webshot", "DT",
   "miniUI", "tufte", "servr", "citr", "rticles",
-  "SpaDES", "SpaDES.core", "SpaDES.experiment", "reprocible", "Require", "SpaDES.install"
+  "SpaDES", "SpaDES.core", "SpaDES.experiment", "reproducible", "Require", "SpaDES.install"
 ), "citations/packages.bib")
 ```
