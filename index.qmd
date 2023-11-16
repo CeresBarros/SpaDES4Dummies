@@ -80,6 +80,16 @@ png::writePNG(rsvgImage, badgePath, dpi = 144)
 cat(paste0("[![zenodoBadge](", badgePath, ")](", badgeURL, ")"))
 ```
 
+```{r refs}
+#| include: FALSE
+
+knitr::write_bib(c(
+  .packages(), "quarto", "knitr", "rmarkdown", "htmlwidgets", "webshot", "DT",
+  "miniUI", "tufte", "servr", "citr", "rticles",
+  "SpaDES", "SpaDES.core", "SpaDES.experiment", "reproducible", "Require", "SpaDES.install"
+), "citations/packages.bib")
+```
+
 This guide will take you through how to make and link your own modules using `SpaDES` in two examples. Both examples draw on basic uses of statistical models in ecology, notably the relationships between environmental variables and species abundance and presence. 
 
 [Chapter 1](Part1_DummyModel.qmd) is very minimal, and uses only dummy data. It is meant to introduce you to the different components of a `SpaDES` module.
