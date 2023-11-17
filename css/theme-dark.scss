@@ -1,0 +1,206 @@
+/*-- scss:defaults --*/
+
+// Minty 4.6.2
+// Bootswatch
+
+// copied from https://bootswatch.com/5/minty/bootstrap.css
+
+//
+// Color system
+//
+
+$body-color: #eceeef;
+$body-color-rgb: 236, 238, 239;
+$body-bg: #212529;
+$body-bg-rgb: 33, 37, 41;
+
+$emphasis-color: #fff;
+$emphasis-color-rgb: 255, 255, 255;
+$secondary-color: rgba(236, 238, 239, 0.75);
+$secondary-color-rgb: 236, 238, 239;
+$secondary-bg: #343a40;
+$secondary-bg-rgb: 52, 58, 64;
+$tertiary-color: rgba(236, 238, 239, 0.5);
+$tertiary-color-rgb: 236, 238, 239;
+$tertiary-bg: #2b3035;
+$tertiary-bg-rgb: 43, 48, 53;
+
+$primary-text-emphasis: #aedace;
+$secondary-text-emphasis: #f8c0c2;
+$success-text-emphasis: #9ae0c4;
+$info-text-emphasis: #a7dbe6;
+$warning-text-emphasis: #ffe2a4;
+$danger-text-emphasis: #ffae97;
+$dark-text-emphasis: #eceeef;
+
+$primary-bg-subtle: #182723;
+$secondary-bg-subtle: #311e1f;
+$success-bg-subtle: #11291f;
+$info-bg-subtle: #16272b;
+$warning-bg-subtle: #332915;
+$danger-bg-subtle: #331810;
+$dark-bg-subtle: #1a1d20;
+
+$primary-border-subtle: #487468;
+$secondary-border-subtle: #925a5c;
+$success-border-subtle: #347a5e;
+$info-border-subtle: #417580;
+$warning-border-subtle: #997c3e;
+$danger-border-subtle: #994831;
+$light-border-subtle: #5a5a5a;
+$dark-border-subtle: #343a40;
+
+$box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+$box-shadow-inset: inset 0 1px 2px rgba(0, 0, 0, 0.075);
+
+$heading-color: $body-color;
+
+$link-color: #aedace;
+$link-hover-color: #bee1d8;
+$link-color-rgb: 174, 218, 206;
+$link-hover-color-rgb: 190, 225, 216;
+$code-color: #f18bba;
+$highlight-color: #eceeef;
+$highlight-bg: #665229;
+
+$navbar-color: rgba(255, 255, 255, 0.55);
+$navbar-hover-color: rgba(255, 255, 255, 0.75);
+$navbar-disabled-color: rgba(255, 255, 255, 0.25);
+$navbar-active-color: #fff;
+$navbar-brand-color: #fff;
+$navbar-brand-hover-color: #fff;
+$navbar-toggler-border-color: rgba(255, 255, 255, 0.1);
+$navbar-toggler-icon-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+
+$border-color: #5a5a5a;
+$border-color-translucent: rgba(255, 255, 255, 0.15);
+
+$form-valid-color: #9ae0c4;
+$form-valid-border-color: #9ae0c4;
+$form-invalid-color: #ffae97;
+$form-invalid-border-color: #ffae97;
+
+// Progress (used for code blocks)
+$progress-height: 1rem;
+$progress-font-size: 0.75rem;
+$progress-bg: $secondary-bg;
+$progress-border-radius: $border-radius;
+$progress-box-shadow: $box-shadow-inset;
+$progress-bar-color: #fff;
+$progress-bar-bg: #78c2ad;
+$progress-bar-transition: width 0.6s ease;
+
+$code-block-bg-alpha: -.8;  // uses progress-bg
+
+// Table
+$table-color: #fff;
+$table-bg: #343a40;
+$table-border-color: #5d6166;
+$table-striped-bg: #3e444a;
+$table-striped-color: #fff;
+$table-active-bg: #484e53;
+$table-active-color: #fff;
+$table-hover-bg: #43494e;
+$table-hover-color: #fff;
+
+// BTN (?)
+
+$btn-color: #fff;
+$btn-bg: #343a40;
+$btn-border-color: #343a40;
+$btn-hover-color: #fff;
+$btn-hover-bg: #52585d;
+$btn-hover-border-color: #484e53;
+$btn-focus-shadow-rgb: 82, 88, 93;
+$btn-active-color: #fff;
+$btn-active-bg: #5d6166;
+$btn-active-border-color: #484e53;
+$btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+$btn-disabled-color: #fff;
+$btn-disabled-bg: #343a40;
+$btn-disabled-border-color: #343a40;
+$accordion-btn-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23aedace'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+$accordion-btn-active-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23aedace'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+
+$btn-font-weight: 400;
+$btn-color: $link-color;
+$btn-bg: transparent;
+$btn-border-color: transparent;
+$btn-hover-color: $link-hover-color;
+$btn-hover-border-color: transparent;
+$btn-active-color: $link-hover-color;
+$btn-active-border-color: transparent;
+$btn-disabled-color: #888;
+$btn-disabled-border-color: transparent;
+$btn-box-shadow: 0 0 0 #000;
+$btn-focus-shadow-rgb: 140, 203, 185;
+
+$btn-color: #343a40;
+$btn-border-color: #343a40;
+$btn-hover-color: #fff;
+$btn-hover-bg: #343a40;
+$btn-hover-border-color: #343a40;
+$btn-focus-shadow-rgb: 52, 58, 64;
+$btn-active-color: #fff;
+$btn-active-bg: #343a40;
+$btn-active-border-color: #343a40;
+$btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+$btn-disabled-color: #343a40;
+$btn-disabled-bg: transparent;
+$btn-disabled-border-color: #343a40;
+$gradient: none;
+
+// Menus
+
+$dropdown-color: #eceeef;
+$dropdown-bg: #343a40;
+$dropdown-border-color: $border-color-translucent;
+$dropdown-box-shadow: $box-shadow;
+$dropdown-link-color: #eceeef;
+$dropdown-link-hover-color: #fff;
+$dropdown-divider-bg: $border-color-translucent;
+$dropdown-link-hover-bg: rgba(255, 255, 255, 0.15);
+$dropdown-link-active-color: #fff;
+$dropdown-link-active-bg: #78c2ad;
+$dropdown-link-disabled-color: #aaa;
+$dropdown-header-color: #aaa;
+
+// Alert
+
+$alert-color: $dark-text-emphasis;
+$alert-bg: $dark-bg-subtle;
+$alert-border-color: $dark-border-subtle;
+$alert-link-color: $dark-text-emphasis;
+
+// Lists
+
+$list-group-color: $dark-text-emphasis;
+$list-group-bg: $dark-bg-subtle;
+$list-group-border-color: $dark-border-subtle;
+$list-group-action-hover-color: $emphasis-color;
+$list-group-action-hover-bg: $dark-border-subtle;
+$list-group-action-active-color: $emphasis-color;
+$list-group-action-active-bg: $dark-border-subtle;
+$list-group-active-color: $dark-bg-subtle;
+$list-group-active-bg: $dark-text-emphasis;
+$list-group-active-border-color: $dark-text-emphasis;
+
+// Form
+
+$form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23eceeef' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+$form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba%28255, 255, 255, 0.25%29'/%3e%3c/svg%3e");
+
+/*-- scss:rules --*/
+
+h6, .h6, h5, .h5, h4, .h4, h3, .h3, h2, .h2, h1, .h1 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-family: Montserrat, -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-weight: 500;
+  line-height: 1.2;
+  color: $heading-color;
+}
+
+h1, .h1 {
+  font-size: calc(1.375rem + 1.5vw);
+}

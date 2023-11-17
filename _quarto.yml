@@ -1,0 +1,115 @@
+project:
+  type: book
+  output-dir: docs
+  execute-dir: project
+  pre-render: _setupPkgs.R
+
+book:
+  title: "SpaDES For Dummies"
+  subtitle: "Guide to the SpaDES modelling toolkit in R"
+  reader-mode: true
+  
+  author: 
+    - name: Ceres Barros
+      orcid: 0000-0003-4036-977X
+      email: ceres.barros@gov.bc.ca
+      affiliations:
+        - Future Forest Ecosystems Centre, BC Ministry of Forests, Canada
+        - Department of Forest Resources Management, University of British Columbia, Canada
+        - Département du bois de des sciences de la forêt, Université Laval, Canada
+    - name: Eliot McIntire
+      orcid: 0000-0002-6914-8316
+      email: eliot.mcintire@nrcan-rncan.gc.ca
+      affiliations:
+        - Canadian Forest Service, Natural Resources Canada, Canada
+    - name: Tati Micheletti
+      orcid: 0000-0003-4838-8342
+      email: tati.micheletti@gmail.com
+      affiliations:
+        - University of Dresden, Germany
+    - name: Alex Chubaty
+      orcid: 0000-0001-7146-8135
+      email: achubaty@for-cast.ca
+      affiliations:
+        - FOR-CAST Research & Analytics
+  
+  date: last-modified
+  
+  page-footer:
+    left: |
+      SpaDES For Dummies was written by Ceres Barros, Eliot McIntire, Tati Michelleti and Alex Chubaty.
+    right: |
+      This book was built with <a href="https://quarto.org/">Quarto</a>.
+  
+  chapters:
+    - index.qmd
+    # - intro.qmd
+    # - ProjectSetup_PkgInstall.qmd
+    - Part1_DummyModel.qmd
+    - Part2_SDMs.qmd
+    # - Caching.qmd
+    - References.qmd
+  appendices:
+    - appendices/Part1_Rscript.qmd
+    - appendices/Part2_Rscript.qmd
+  
+  navbar:
+    right:
+      - icon: github
+        href: https://github.com/CeresBarros/SpaDES4Dummies
+        aria-label: GitHub
+    collapse: true
+  
+  sidebar: 
+    search: true
+
+  downloads: "pdf"
+
+  twitter-card: true
+
+# References
+bibliography: 
+  - citations/references.bib
+  - citations/packages.bib
+csl: citations/ecology-letters.csl
+cite-method: biblatex
+biblatexoptions: [citestyle=authoryear]
+link-citations: true
+
+format:
+  html:
+    theme: 
+      light: minty
+      dark: [minty, css/theme-dark.scss]
+    code-link: true
+    css: css/style.css
+    smooth-scroll: true
+    lot: yes
+    lof: yes
+    toc: true
+    toc-location: right
+    toc-expand: 1
+    toc-depth: 4
+    number-sections: true
+    code-fold: show
+    code-overflow: scroll
+    colorlinks: true
+    fontsize: 11pt
+
+  pdf:
+    pdf-engine: xelatex
+    documentclass: book
+    cite-method: biblatex
+    lot: true
+    lof: true
+    toc: true
+    toc-depth: 4
+    number-sections: true
+    code-fold: show
+    code-overflow: scroll
+    colorlinks: true
+    fontsize: 11pt
+
+execute:
+  cache: true
+  cache-rebuild: false
