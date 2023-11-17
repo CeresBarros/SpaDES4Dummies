@@ -10,10 +10,31 @@ Part 1 is very minimal, and uses only randomly generated data (no dowloading nec
 
 Part 2 uses real and freely available data (that is downloaded by the created modules), and provides a deeper look into several useful aspects of `SpaDES`, such as automatically downloading and pre-processing spatial data and caching. This example also covers several good practices in the context of developing and sharing models built with `SpaDES`.
 
-See also:
+## See also:
 
 [SpaDES installation](https://github.com/PredictiveEcology/SpaDES/wiki/Installation)
 
 [caching and debugging](https://spades-workshops.predictiveecology.org/articles/09c-CachingAndDebugging.html)
+
+## News:
+
+**v1.4.0**
+- Transition to Quarto
+- A few minor textual changes
+
+**v1.3.0**
+- Updates for R 4.3 and new packgge versions
+- `raster` to `terra` transition
+- several GitHub-Actions-related fixes
+- automated testing via GitHub Actions implementated
+
+**v1.2.0**
+- Part2 as published in [Barros et al 2023](https://besjournals.onlinelibrary.wiley.com/doi/10.1111/2041-210X.14034) - https://doi.org/10.5281/ZENODO.7154710
+
+**v.1.1.0**
+(Non-existing version)
+
+**v1.0.0**
+- First stable version
 
 **Happy SpaDESing!**
