@@ -18,8 +18,12 @@ if (!file.exists("citations/ecology-letters.csl")) {
 }
 
 ## prevents GitHub from rendering book using Jekyll
-if (!file.exists("docs/.nojekyll")) {
-  file.create("docs/.nojekyll")
+# if (!file.exists("docs/.nojekyll")) {
+#   file.create("docs/.nojekyll")
+# }
+
+if (!file.exists(".nojekyll")) {
+  file.create(".nojekyll")
 }
 
 options(bookdown.post.latex = function(x) {
