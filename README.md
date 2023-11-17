@@ -19,11 +19,11 @@ Part 2 uses real and freely available data (that is downloaded by the created mo
 ## News:
 
 **v1.4.0**
-- Transition to Quarto
-- A few minor textual changes
+- transition to Quarto
+- a few minor textual changes
 
 **v1.3.0**
-- Updates for R 4.3 and new packgge versions
+- Updates for R 4.3 and new package versions
 - `raster` to `terra` transition
 - several GitHub-Actions-related fixes
 - automated testing via GitHub Actions implementated
