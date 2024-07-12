@@ -1,7 +1,8 @@
 # Complete R script to Chapter 1 {#sec-scriptPart1}
 
-```{r}
+```{r oldway}
 #| eval: false
+#| include: false
 
 options(repos = c("https://predictiveecology.r-universe.dev/", 
                   CRAN = "https://cloud.r-project.org"))
@@ -13,14 +14,7 @@ pkgPath <- file.path(mainPath, "packages", version$platform,
 dir.create(pkgPath, recursive = TRUE)
 .libPaths(pkgPath, include.site = FALSE) ## install packages in project library (proj-lib)
 
-if (!"remotes" %in% installed.packages(lib.loc = pkgPath))
-  install.packages("remotes")
-
-if (!"Require" %in% installed.packages(lib.loc = pkgPath) ||
-    packageVersion("Require", lib.loc = pkgPath) < "0.3.1") {
-  remotes::install_github("PredictiveEcology/Require@2788b023ad191c29346ef8c64df71b937be307e2",
-                          upgrade = FALSE)
-}
+install.packages("Require")
 
 Require::Require(c("SpaDES", "DiagrammeR"), 
                  require = FALSE, upgrade = FALSE, 
@@ -74,6 +68,51 @@ objectDiagram(mySim)
 dev() # on Windows and Mac, this opens external device if using Rstudio, it is faster
 clearPlot()
 mySim2 <- spades(mySim, debug = TRUE)
+
+```
+
+
+```{r}
+#| eval: false
+
+## start again from a clean R session
+options(repos = c("https://predictiveecology.r-universe.dev/",
+                  CRAN = "https://cloud.r-project.org"))
+install.packages(c("SpaDES.project"))
+
+library(SpaDES.project)
+
+projPath <- "~/SpaDES4Dummies_Part1"
+
+## Create modules if need be
+if (!dir.exists(file.path(projPath, "speciesAbundance"))) {
+  newModule(name = "speciesAbundance", path = projPath)
+}
+
+if (!dir.exists(file.path(projPath, "temperature"))) {
+  newModule(name = "temperature", path = projPath)
+}
+
+if (!dir.exists(file.path(projPath, "speciesTempLM"))) {
+  newModule(name = "speciesTempLM", path = projPath)
+}
+
+out <- setupProject(paths = list(projectPath = "~/SpaDES4Dummies_Part1",
+                                 packagePath = "packages"),
+                    overwrite = FALSE,
+                    modules = c("speciesAbundance",
+                                "temperature",
+                                "speciesTempLM"),
+                    params = list(speciesAbundance = list(simulationTimeStep = 1,
+                                                          .plotInitialTime = 1),
+                                  temperature = list(simulationTimeStep = 1,
+                                                     .plotInitialTime = 1),
+                                  speciesTempLM = list(statsTimestep = 5)),
+                    times = list(start = 1, end = 10, timeunit = "year"))
+
+simInitOut <- SpaDES.core::simInit2(out)
+
+simOut <- SpaDES.core::spades(simInitOut)
 
 ```
 

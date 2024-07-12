@@ -196,11 +196,16 @@ ggarrange(plotlist = lmPlots)
 
 ### The control script
 
-Let us now solve the same problem using the `SpaDES` approach.[^part1old-1]
+Let us now solve the same problem using the `SpaDES` approach [^part1old-1].
 We start by creating an *.R* script (it can have any name) that sets up and runs the `SpaDES` model.
 The control script for this example is located on the root of the *SpaDES4Dummies* GitHub repository under the name `Part1_DummyModel.R`. Note that Markdown (`.Rmd`) scripts can also be used instead of \`.R\` scripts.
 
-We start by making sure all `SpaDES` packages and their dependencies are installed (and that the installation is *scripted*) using the `Require` package.
+We start by installing `SpaDES.project` which we will use to create the full project structure,
+install packages and their dependencies are installed, and create the necessary 
+inputs to initialise the workflow.
+
+We also install `SpaDES.core` so that we can used it to create module *template*
+files.
 
 ```{r globalscriptPart1}
 #| eval: false
@@ -212,37 +217,16 @@ We start by making sure all `SpaDES` packages and their dependencies are install
 options(repos = c("https://predictiveecology.r-universe.dev/", 
                   CRAN = "https://cloud.r-project.org"))
 
-## decide where you're working
-mainPath <- "~/SpaDES4Dummies_Part1"
-pkgPath <- file.path(mainPath, "packages", version$platform,
-                     paste0(version$major, ".", strsplit(version$minor, "[.]")[[1]][1]))
-dir.create(pkgPath, recursive = TRUE)
-.libPaths(pkgPath, include.site = FALSE) ## install packages in project library (proj-lib)
-
-if (!"remotes" %in% installed.packages(lib.loc = pkgPath))
-  install.packages("remotes")
-
-if (!"Require" %in% installed.packages(lib.loc = pkgPath) ||
-    packageVersion("Require", lib.loc = pkgPath) < "0.3.1.9015") {
-  remotes::install_github("PredictiveEcology/Require@2788b023ad191c29346ef8c64df71b937be307e2",
-                          upgrade = FALSE)
-}
+install.packages(c("SpaDES.project", "SpaDES.core"))
 
 Require::Require(c("SpaDES", "DiagrammeR"), require = FALSE, upgrade = FALSE, 
                  dependencies = TRUE, standAlone = TRUE) ## automatically downloads all packages in the SpaDES family and their dependencies
 
-library(SpaDES)
-
-setPaths(cachePath = file.path(mainPath, "cache"),
-         inputPath = file.path(mainPath, "inputs"),
-         modulePath = file.path(mainPath, "modules"),
-         outputPath = file.path(mainPath, "outputs"))
-
-getPaths() ## check that this is what you wanted
+projPath <- "~/SpaDES4Dummies_Part1"
 
 ## Let's create a self-contained module that will simulate the species' abundance for any given period of time and frequency.
-if (!dir.exists(file.path(getPaths()$modulePath, "speciesAbundance"))) {
-  newModule(name = "speciesAbundance", path = getPaths()$modulePath)
+if (!dir.exists(file.path(projPath, "modules", "speciesAbundance"))) {
+  SpaDES.core::newModule(name = "speciesAbundance", path = file.path(projPath, "modules"))
 }
 ```
 
@@ -250,45 +234,18 @@ if (!dir.exists(file.path(getPaths()$modulePath, "speciesAbundance"))) {
 #| include: false
 #| cache: false
 
-## for faster rendering use all .libPaths to avoid installing all packages.
 options(repos = c("https://predictiveecology.r-universe.dev/", 
                   CRAN = "https://cloud.r-project.org"))
+install.packages(c("SpaDES.project", "SpaDES.core"))
 
-mainPath <- "~/SpaDES4Dummies_Part1"
-pkgPath <- file.path(mainPath, "packages", version$platform,
-                     paste0(version$major, ".", strsplit(version$minor, "[.]")[[1]][1]))
-dir.create(pkgPath, recursive = TRUE)
-.libPaths(pkgPath)
+library(SpaDES.project)
 
-if (!"remotes" %in% installed.packages(lib.loc = pkgPath))
-  install.packages("remotes")
+setupModules(paths = list(projectPath = "~/SpaDES4Dummies_Part1",
+                          modulePath = "modules"),
+             modules = c("CeresBarros/SpaDES4Dummies@master/modules/speciesAbundance",
+                         "CeresBarros/SpaDES4Dummies@master/modules/temperature",
+                         "CeresBarros/SpaDES4Dummies@master/modules/speciesTempLM"))
 
-if (!"Require" %in% installed.packages(lib.loc = pkgPath) ||
-    packageVersion("Require", lib.loc = pkgPath) < "0.3.1.9015") {
-  remotes::install_github("PredictiveEcology/Require@2788b023ad191c29346ef8c64df71b937be307e2",
-                          upgrade = FALSE)
-}
-
-Require::Require(c("SpaDES", "DiagrammeR"), require = FALSE, upgrade = FALSE, 
-                 dependencies = TRUE)
-
-library(SpaDES)
-
-setPaths(cachePath = file.path(mainPath, "cache"),
-         inputPath = file.path(mainPath, "inputs"),
-         modulePath = file.path(mainPath, "modules"),
-         outputPath = file.path(mainPath, "outputs"))
-
-mods <- list.files(file.path(projDir, "modules"), full.names = TRUE)
-mods <- mods[basename(mods) %in% c("speciesAbundance", "temperature", "speciesTempLM")]
-
-sapply(mods, function(mod, to) {
-  to <- file.path(to, basename(mod))
-  dir.create(to, showWarnings = FALSE)
-  ff <- list.files(mod, full.names = TRUE) ## don't recurse into dirs to preserve structure
-  file.copy(ff, to, recursive = TRUE, overwrite = TRUE)  ## now recurse to copy files in dirs
-}, to = getPaths()$modulePath)
-rm(mods)
 ```
 
 We then create modules using `newModule`.
@@ -719,33 +676,69 @@ The function `simInit` needs a few arguments listing simulation folder directori
 
 -   `paths` contains the folder directory paths that we set earlier.
 
+`setupProject` can be used to create all of these while also making sure all package
+dependencies are installed.
+
 ```{r globalscript2}
 #| results: false
 #| warning: false
 #| message: false
 
-## list the modules to use
-simModules <- list("speciesAbundance", "temperature", "speciesTempLM")
-
-## Set simulation and module parameters
-simTimes <- list(start = 1, end = 10, timeunit = "year")
-simParams <- list(
-  speciesAbundance = list(simulationTimeStep = 1, 
-                          .plotInitialTime = 1),
-  temperature = list(simulationTimeStep = 1, 
-                     .plotInitialTime = 1),
-  speciesTempLM = list(statsTimestep = 5)
-)
-
-## make a list of directory paths
-simPaths <- getPaths()
-
-## Simulation setup
-mySim <- simInit(times = simTimes, params = simParams, 
-                 modules = simModules, paths = simPaths)
+out <- setupProject(paths = list(projectPath = "~/SpaDES4Dummies_Part1",
+                                 packagePath = "packages"),
+                    overwrite = FALSE,
+                    modules = c("speciesAbundance",
+                                "temperature",
+                                "speciesTempLM"),
+                    params = list(speciesAbundance = list(simulationTimeStep = 1,
+                                                          .plotInitialTime = 1),
+                                  temperature = list(simulationTimeStep = 1,
+                                                     .plotInitialTime = 1),
+                                  speciesTempLM = list(statsTimestep = 5)),
+                    times = list(start = 1, end = 10, timeunit = "year"))
 ```
 
-Finally, we highlight that `simInit` also executes all `.inputObjects` functions, and schedules the `init` events, but does not execute them:
+Checkout the contents of `out` and see how they correspond to the arguments of 
+`simInit()`
+
+```{r}
+#| results: false
+#| warning: false
+#| message: false
+#| eval: false
+
+out$paths
+out$params
+out$times
+out$modules
+
+formalArgs(SpaDES.core::simInit)
+
+?SpaDES.core::simInit
+```
+
+
+We can pass `out` entries to `simInit()` arguments via wrapper function called `simInit2()`
+
+```{r}
+#| results: false
+#| warning: false
+#| message: false
+## create simList (initialise the workflow)
+mySim <- SpaDES.core::simInit2(out)
+```
+
+or in a more verbose way:
+```{r}
+## create simList (initialise the workflow)
+mySim <- SpaDES.core::simInit(paths = out$paths,
+                              modules = out$modules,
+                              times = out$times,
+                              params = out$params)
+```
+
+
+`simInit` also executes all `.inputObjects` functions, and schedules the `init` events, but does not execute them:
 
 ```{r scheduled-events}
 #| results: false
