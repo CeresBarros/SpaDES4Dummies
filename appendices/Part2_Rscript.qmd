@@ -6,6 +6,10 @@
 options(repos = c("https://predictiveecology.r-universe.dev/", 
                   CRAN = "https://cloud.r-project.org"))
 
+```{r oldway}
+#| eval: false
+#| include: false
+
 if (getRversion() < "4.2.1") {
   warning(paste("dismo::maxent may create a fatal error",
                 "when using R version < v4.2.1 and from RStudio.\n", 
@@ -264,4 +268,3 @@ figDir <- checkPath(file.path(simPaths$outputPath, "generalFigures"), create = T
 ggsave(file.path(figDir, "MaxEntPredictions.png"), width = 13.5, height = 5.5, units = "in", dpi = 300)
 
 ```
-
