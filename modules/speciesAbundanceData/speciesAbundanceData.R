@@ -18,7 +18,8 @@ defineModule(sim, list(
   citation = list("citation.bib"),
   documentation = list("README.md", "speciesAbundanceData.Rmd"), ## same file
   reqdPkgs = list("SpaDES.core (>=2.0.2)",
-                  "httr", "terra", "ggplot2", "rasterVis"),
+                  "reproducible",
+                  "ggplot2", "httr", "rasterVis", "terra"),
   parameters = bindrows(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
     defineParameter("sppAbundURL", "character", 

@@ -17,7 +17,8 @@ defineModule(sim, list(
   citation = list("citation.bib"),
   documentation = list("README.md", "climateData.Rmd"), ## same file
   reqdPkgs = list("SpaDES.core (>=2.0.2)",
-                  "ggplot2", "rasterVis", "terra", "data.table"),
+                  "reproducible",
+                  "data.table", "ggplot2", "rasterVis", "terra"),
   parameters = bindrows(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
     defineParameter(".plots", "character", "screen", NA, NA,
