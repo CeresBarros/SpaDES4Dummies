@@ -13,21 +13,16 @@ if (getRversion() < "4.2.1") {
                 "See https://github.com/rspatial/dismo/issues/13"))
 }
 
+options(repos = c("https://predictiveecology.r-universe.dev/", 
+                  CRAN = "https://cloud.r-project.org"))
+install.packages("Require", "SpaDES.core")
+
 ## decide where you're working
 projPath <- file.path("~/SpaDES4Dummies_Part2")
 pkgPath <- file.path(projPath, "packages", version$platform,
                      paste0(version$major, ".", strsplit(version$minor, "[.]")[[1]][1]))
 dir.create(pkgPath, recursive = TRUE)
 .libPaths(pkgPath, include.site = FALSE) ## install packages in project library (proj-lib)
-
-if (!"remotes" %in% installed.packages(lib.loc = pkgPath))
-  install.packages("remotes")
-
-if (!"Require" %in% installed.packages(lib.loc = pkgPath) ||
-    packageVersion("Require", lib.loc = pkgPath) < "0.3.1.9015") {
-  remotes::install_github("PredictiveEcology/Require@55ec169e654214d86be62a0e13e9a2157f1aa966",
-                          upgrade = FALSE)
-}
 
 ## Notes: 
 ## 1) if you are working from RStudio and have an older version of base packages like `Rcpp`, `rlang` 
