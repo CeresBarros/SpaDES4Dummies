@@ -1,5 +1,49 @@
 # Complete R script to Chapter 1 {#sec-scriptPart1}
 
+```{r}
+#| eval: false
+
+## start again from a clean R session
+options(repos = c("https://predictiveecology.r-universe.dev/",
+                  CRAN = "https://cloud.r-project.org"))
+install.packages(c("SpaDES.project"))
+
+library(SpaDES.project)
+
+projPath <- "~/SpaDES4Dummies_Part1"
+
+## Create modules if need be
+if (!dir.exists(file.path(projPath, "modules", "speciesAbundance"))) {
+  newModule(name = "speciesAbundance", path = file.path(projPath, "modules"))
+}
+
+if (!dir.exists(file.path(projPath, "temperature"))) {
+  newModule(name = "temperature", path = file.path(projPath, "modules"))
+}
+
+if (!dir.exists(file.path(projPath, "speciesTempLM"))) {
+  newModule(name = "speciesTempLM", path = file.path(projPath, "modules"))
+}
+
+out <- setupProject(paths = list(projectPath = "~/SpaDES4Dummies_Part1",
+                                 packagePath = "packages"),
+                    overwrite = FALSE,
+                    modules = c("speciesAbundance",
+                                "temperature",
+                                "speciesTempLM"),
+                    params = list(speciesAbundance = list(simulationTimeStep = 1,
+                                                          .plotInitialTime = 1),
+                                  temperature = list(simulationTimeStep = 1,
+                                                     .plotInitialTime = 1),
+                                  speciesTempLM = list(statsTimestep = 5)),
+                    times = list(start = 1, end = 10, timeunit = "year"))
+
+simInitOut <- SpaDES.core::simInit2(out)
+
+simOut <- SpaDES.core::spades(simInitOut)
+
+```
+
 ```{r oldway}
 #| eval: false
 #| include: false
@@ -70,49 +114,3 @@ clearPlot()
 mySim2 <- spades(mySim, debug = TRUE)
 
 ```
-
-
-```{r}
-#| eval: false
-
-## start again from a clean R session
-options(repos = c("https://predictiveecology.r-universe.dev/",
-                  CRAN = "https://cloud.r-project.org"))
-install.packages(c("SpaDES.project"))
-
-library(SpaDES.project)
-
-projPath <- "~/SpaDES4Dummies_Part1"
-
-## Create modules if need be
-if (!dir.exists(file.path(projPath, "speciesAbundance"))) {
-  newModule(name = "speciesAbundance", path = projPath)
-}
-
-if (!dir.exists(file.path(projPath, "temperature"))) {
-  newModule(name = "temperature", path = projPath)
-}
-
-if (!dir.exists(file.path(projPath, "speciesTempLM"))) {
-  newModule(name = "speciesTempLM", path = projPath)
-}
-
-out <- setupProject(paths = list(projectPath = "~/SpaDES4Dummies_Part1",
-                                 packagePath = "packages"),
-                    overwrite = FALSE,
-                    modules = c("speciesAbundance",
-                                "temperature",
-                                "speciesTempLM"),
-                    params = list(speciesAbundance = list(simulationTimeStep = 1,
-                                                          .plotInitialTime = 1),
-                                  temperature = list(simulationTimeStep = 1,
-                                                     .plotInitialTime = 1),
-                                  speciesTempLM = list(statsTimestep = 5)),
-                    times = list(start = 1, end = 10, timeunit = "year"))
-
-simInitOut <- SpaDES.core::simInit2(out)
-
-simOut <- SpaDES.core::spades(simInitOut)
-
-```
-
