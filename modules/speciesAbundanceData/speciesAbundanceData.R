@@ -12,10 +12,11 @@ defineModule(sim, list(
   authors = structure(list(list(given = c("Ceres"), family = "Barros", role = c("aut", "cre"), 
                                 email = "ceres.barros@ubc.ca", comment = NULL)), class = "person"),
   childModules = character(0),
-  version = list(speciesAbundanceData = "1.0.0"),
+  version = list(speciesAbundanceData = "1.0.1"),
   timeframe = as.POSIXlt(c(NA, NA)),
   timeunit = "year",
   citation = list("citation.bib"),
+  loadOrder = list(before = "projectSpeciesDist"),
   documentation = list("README.md", "speciesAbundanceData.Rmd"), ## same file
   reqdPkgs = list("SpaDES.core (>=2.0.2)",
                   "reproducible",

@@ -6,15 +6,18 @@
 ## If exact location is required, functions will be: `sim$.mods$<moduleName>$FunctionName`.
 defineModule(sim, list(
   name = "projectSpeciesDist",
-  description = "",
-  keywords = "",
+  description = paste("Prediction module that uses species distribution models to project",
+                      "tree species presence/absence as a function of changes in climate predictors.", 
+                      "Depends on modules 'speciesAbundanceData' and 'climateData' for inputs."),
+  keywords = c("minimal SpaDES example", "species distribution model"),
   authors = structure(list(list(given = c("Ceres"), family = "Barros", 
                                 role = c("aut", "cre"), email = "ceres.barros@ubc.ca", comment = NULL)), class = "person"),
   childModules = character(0),
-  version = list(projectSpeciesDist = "1.0.0"),
+  version = list(projectSpeciesDist = "1.0.1"),
   timeframe = as.POSIXlt(c(NA, NA)),
   timeunit = "year",
   citation = list("citation.bib"),
+  loadOrder = list(after = "speciesAbundanceData", "climateData"),
   documentation = list("README.md", "projectSpeciesDist.Rmd"), ## same file
   reqdPkgs = list("SpaDES.core (>=2.0.2)",
                   "caret", "data.table", "dismo",
