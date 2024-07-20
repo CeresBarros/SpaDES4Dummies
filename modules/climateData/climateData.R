@@ -257,8 +257,8 @@ climatePlot <- function(sim) {
               "https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_5m_bio.zip",
               "https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_5m_bio.zip",
               "https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_5m_bio.zip"),
-      targetFile = c("wc2.1_2.5m_bio_1.tif", "wc2.1_2.5m_bio_4.tif", 
-                     "wc2.1_2.5m_bio_12.tif", "wc2.1_2.5m_bio_15.tif"),
+      targetFile = c("wc2.1_5m_bio_1.tif", "wc2.1_5m_bio_4.tif", 
+                     "wc2.1_5m_bio_12.tif", "wc2.1_5m_bio_15.tif"),
       year = rep(1L, 4)
     )
   }
