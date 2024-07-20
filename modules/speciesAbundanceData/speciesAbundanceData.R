@@ -101,28 +101,14 @@ doEvent.speciesAbundanceData = function(sim, eventTime, eventType, debug = FALSE
 abundanceInit <- function(sim) {
   ## download data - prepInputs does all the heavy-lifting of dowloading and pre-processing the layer and caches.
   ## there seems to be an issue masking this particular raster with `terra` and `GDAL`, so we'll not use them here.
-  opts <- options("reproducible.useTerra" = FALSE,
-                  "reproducible.useGDAL" = FALSE)   
-  on.exit(options(opts), add = TRUE)
-
   httr::with_config(config = httr::config(ssl_verifypeer = 0L), {
     sppAbundanceRas <- prepInputs(targetFile = "NFI_MODIS250m_2001_kNN_Species_Pice_Gla_v1.tif",
                                   url = P(sim)$sppAbundURL,
-                                  # fun = "terra::rast",
-                                  # projectTo = sim$studyAreaRas,
-                                  # cropTo = sim$studyAreaRas,
-                                  # maskTo = sim$studyAreaRas,
-                                  rasterToMatch = raster::raster(sim$studyAreaRas),
-                                  maskWithRTM = TRUE,
-                                  overwrite = TRUE,
-                                  cacheRepo = cachePath(sim))
+                                  to = sim$studyAreaRas,
+                                  overwrite = TRUE)
   })
   
   options(opts)
-  
-  if (is(sppAbundanceRas, "RasterLayer")) {
-    sppAbundanceRas <- terra::rast(sppAbundanceRas)
-  }
   
   names(sppAbundanceRas) <- paste("year", time(sim), sep = "_")
   sppAbundanceDT <- as.data.table(as.data.frame(sppAbundanceRas, xy = TRUE, cells = TRUE))

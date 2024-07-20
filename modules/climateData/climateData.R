@@ -124,14 +124,9 @@ climateInit <- function(sim) {
                               targetFile = sim$baselineClimateURLs$targetFile,
                               archive = archiveFiles,
                               MoreArgs = list(
-                                fun = "terra::rast",
                                 overwrite = TRUE,
-                                projectTo = sim$studyAreaRas,
-                                cropTo = sim$studyAreaRas,
-                                maskTo = sim$studyAreaRas,
-                                rasterToMatch = sim$studyAreaRas,
-                                cacheRepo = cachePath(sim)),
-                              cacheRepo = cachePath(sim))
+                                to = sim$studyAreaRas
+                              ))
   
   names(baselineClimateRas) <- paste0(sim$baselineClimateURLs$vars, "_year", sim$baselineClimateURLs$year)
   
@@ -162,13 +157,8 @@ climateInit <- function(sim) {
                           archive = archiveFiles,
                           MoreArgs = list(
                             overwrite = TRUE,
-                            fun = "raster::stack",
-                            projectTo = sim$studyAreaRas,
-                            cropTo = sim$studyAreaRas,
-                            maskTo = sim$studyAreaRas,
-                            rasterToMatch = sim$studyAreaRas,
-                            cacheRepo = cachePath(sim)),
-                          cacheRepo = cachePath(sim))
+                            to = sim$studyAreaRas
+                          ))
   if (any(sapply(projClimateRas, function(x) is(x, "RasterLayer") | is(x, "RasterStack")))){
     projClimateRas <- lapply(projClimateRas, terra::rast)
   }
