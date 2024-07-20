@@ -263,10 +263,10 @@ climatePlot <- function(sim) {
   if (!suppliedElsewhere(sim$baselineClimateURLs)) {
     sim$baselineClimateURLs <- data.table(
       vars = c("BIO1", "BIO4", "BIO12", "BIO15"),
-      URL = c("https://biogeo.ucdavis.edu/data/worldclim/v2.1/base/wc2.1_2.5m_bio.zip",
-              "https://biogeo.ucdavis.edu/data/worldclim/v2.1/base/wc2.1_2.5m_bio.zip",
-              "https://biogeo.ucdavis.edu/data/worldclim/v2.1/base/wc2.1_2.5m_bio.zip",
-              "https://biogeo.ucdavis.edu/data/worldclim/v2.1/base/wc2.1_2.5m_bio.zip"),
+      URL = c("https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_5m_bio.zip",
+              "https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_5m_bio.zip",
+              "https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_5m_bio.zip",
+              "https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_5m_bio.zip"),
       targetFile = c("wc2.1_2.5m_bio_1.tif", "wc2.1_2.5m_bio_4.tif", 
                      "wc2.1_2.5m_bio_12.tif", "wc2.1_2.5m_bio_15.tif"),
       year = rep(1L, 4)
@@ -276,15 +276,15 @@ climatePlot <- function(sim) {
   if (!suppliedElsewhere(sim$projClimateURLs)) {
     sim$projClimateURLs <- data.table(
       vars = rep(c("BIO1", "BIO4", "BIO12", "BIO15"), times = 4),
-      URL = rep(c("https://geodata.ucdavis.edu/cmip6/2.5m/CanESM5/ssp585/wc2.1_2.5m_bioc_CanESM5_ssp585_2021-2040.tif",
-                  "https://geodata.ucdavis.edu/cmip6/2.5m/CanESM5/ssp585/wc2.1_2.5m_bioc_CanESM5_ssp585_2041-2060.tif",
-                  "https://geodata.ucdavis.edu/cmip6/2.5m/CanESM5/ssp585/wc2.1_2.5m_bioc_CanESM5_ssp585_2061-2080.tif",
-                  "https://geodata.ucdavis.edu/cmip6/2.5m/CanESM5/ssp585/wc2.1_2.5m_bioc_CanESM5_ssp585_2081-2100.tif"),
+      URL = rep(c("https://geodata.ucdavis.edu/cmip6/5m/ACCESS-CM2/ssp585/wc2.1_5m_bioc_CanESM5_ssp585_2021-2040.tif",
+                  "https://geodata.ucdavis.edu/cmip6/5m/ACCESS-CM2/ssp585/wc2.1_5m_bioc_CanESM5_ssp585_2041-2060.tif",
+                  "https://geodata.ucdavis.edu/cmip6/5m/ACCESS-CM2/ssp585/wc2.1_5m_bioc_CanESM5_ssp585_2061-2080.tif",
+                  "https://geodata.ucdavis.edu/cmip6/5m/ACCESS-CM2/ssp585/wc2.1_5m_bioc_CanESM5_ssp585_2081-2100.tif"),
                 each = 4),
-      targetFile = rep(c("wc2.1_2.5m_bioc_CanESM5_ssp585_2021-2040.tif",
-                         "wc2.1_2.5m_bioc_CanESM5_ssp585_2041-2060.tif",
-                         "wc2.1_2.5m_bioc_CanESM5_ssp585_2061-2080.tif",
-                         "wc2.1_2.5m_bioc_CanESM5_ssp585_2081-2100.tif"),
+      targetFile = rep(c("wc2.1_5m_bioc_CanESM5_ssp585_2021-2040.tif",
+                         "wc2.1_5m_bioc_CanESM5_ssp585_2041-2060.tif",
+                         "wc2.1_5m_bioc_CanESM5_ssp585_2061-2080.tif",
+                         "wc2.1_5m_bioc_CanESM5_ssp585_2081-2100.tif"),
                        each = 4),
       year = rep(2L:5L, each = 4)
     )
