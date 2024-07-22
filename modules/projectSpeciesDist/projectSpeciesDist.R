@@ -248,7 +248,7 @@ projSDMEvent <- function(sim) {
 
 plotProjEvent <- function(sim) {
   # ! ----- EDIT BELOW ----- ! #
-  checkPath(file.path(outputPath(sim), "figures"), create = TRUE)
+  checkPath(figurePath(sim), create = TRUE)
   
   if (any(!is.na(P(sim)$.plots))) {
     
@@ -261,7 +261,7 @@ plotProjEvent <- function(sim) {
     if (any(notScreen != "png")) {
       warning(paste(currentModule(sim), "only saves to PNG at the moment."))
     }
-    png(file.path(outputPath(sim), "figures", paste0("SDMresponsePlot_", fileSuffix)))
+    png(file.path(figurePath(sim), paste0("SDMresponsePlot_", fileSuffix)))
     response(sim$sdmOut)
     dev.off()
     
@@ -270,13 +270,13 @@ plotProjEvent <- function(sim) {
     clearPlot()
     rawValsPlot <- sim$sppDistProj[[paste0("year", time(sim))]]
     Plots(rawValsPlot, fn = plotSpatRaster, types = P(sim)$.plots,
-          usePlot = TRUE, filename = file.path(outputPath(sim), "figures", paste0("projRawVals_", fileSuffix)),
+          usePlot = TRUE, filename = paste0("projRawVals_", fileSuffix),
           plotTitle = paste("Projected raw values -", "year", time(sim)),
           xlab = "Longitude", ylab = "Latitude")
     
     PAsPlot <- terra::as.int(sim$sppDistProj[[paste0("year", time(sim))]] > sim$thresh)
     Plots(PAsPlot, fn = plotSpatRaster, types = P(sim)$.plots,
-          usePlot = TRUE, filename = file.path(outputPath(sim), "figures", paste0("projPA_", fileSuffix)),
+          usePlot = TRUE, filename = paste0("projPA_", fileSuffix),
           plotTitle = paste("Projected presence/absence -", "year", time(sim)),
           xlab = "Longitude", ylab = "Latitude")
   }

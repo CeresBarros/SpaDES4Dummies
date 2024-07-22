@@ -221,6 +221,8 @@ climateInit <- function(sim) {
 
 ## Plotting event function 
 climatePlot <- function(sim) {
+  checkPath(figurePath(sim), create = TRUE)
+  
   ## plot climate rasters 
   allRasters <- rast(list(sim$baselineClimateRas, sim$projClimateRas))
   lapply(sim$baselineClimateURLs$vars, function(var, allRasters) {
@@ -231,7 +233,7 @@ climatePlot <- function(sim) {
     Plots(allRasters[[lrs]],
           fn = plotSpatRasterStk, types = P(sim)$.plots,
           usePlot = FALSE,
-          filename = file.path(outputPath(sim), "figures", file_name),
+          filename = file_name,
           xlab = "Longitude", ylab = "Latitude")
   }, allRasters = allRasters)
   
