@@ -108,8 +108,6 @@ abundanceInit <- function(sim) {
                                   overwrite = TRUE)
   })
   
-  options(opts)
-  
   names(sppAbundanceRas) <- paste("year", time(sim), sep = "_")
   sppAbundanceDT <- as.data.table(as.data.frame(sppAbundanceRas, xy = TRUE, cells = TRUE))
   sppAbundanceDT[, year := as.integer(sub("year_", "", names(sppAbundanceRas)))]
