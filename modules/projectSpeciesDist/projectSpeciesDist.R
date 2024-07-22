@@ -24,7 +24,7 @@ defineModule(sim, list(
                   "ggplot2", "rJava", "rasterVis"),
   parameters = bindrows(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
-    defineParameter("predVars", "character", c("BIO1", "BIO4", "BIO12", "BIO15"), NA, NA,
+    defineParameter("predVars", "character", c("BIO01", "BIO04", "BIO12", "BIO15"), NA, NA,
                     "Predictors used in statistical model."),
     defineParameter("presThresh", "numeric", 10, 0, NA,
                     paste("Minimum threshold for the species to be considered present, when",
