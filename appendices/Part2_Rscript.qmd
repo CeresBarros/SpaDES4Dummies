@@ -10,9 +10,9 @@ if (getRversion() < "4.2.1") {
                 "See https://github.com/rspatial/dismo/issues/13"))
 }
 
-options(repos = c("https://predictiveecology.r-universe.dev/", 
-                  CRAN = "https://cloud.r-project.org"))
-install.packages("SpaDES.project", "SpaDES.core")
+repos <- c("https://predictiveecology.r-universe.dev/", 
+           CRAN = "https://cloud.r-project.org")
+install.packages(c("SpaDES.project", "SpaDES.core"), repos = repos)
 
 ## decide where you're working
 projPath <- file.path("~/SpaDES4Dummies_Part2")
@@ -31,37 +31,40 @@ if (!dir.exists(modPath, "projectSpeciesDist"))) {
   SpaDES.core::newModule(name = "projectSpeciesDist", path = modPath)
 }
 
-## now, assuming you've created your modules and each sources a series of other packages
+## assuming you've created your modules and each sources a series of other packages
 ## we will use setupProject to install and prepare all inputs to initialise the workflow 
 library(SpaDES.project)
 
 mySimMaxEnt <- setupProject(paths = list("packagePath" = "packages/",
-                                         "projectPath" = mainPath),
-                            Restart = TRUE,
-                            overwrite = FALSE,
+                                         "projectPath" = projPath),
+                            Restart = TRUE,  ## RStudio will restart. You have to run the code above and this call again
                             modules = c("speciesAbundanceData", "climateData", "projectSpeciesDist"),
-                            packages = c("reproducible",
-                                         # "SpaDES.core", ## not needed it's in the module already
-                                         ## the following packages are needed outside the modules
-                                         "SpaDES.experiment",
-                                         "ggpubr",
-                                         "geodata",
-                                         "SpaDES.tools"#,
-                                         # "PredictiveEcology/SpaDES.experiment@75d917b70b892802fed0bbdb2a5e9f3c6772f0ba" -- we already have SpaDES.experiment above and will get it from "https://predictiveecology.r-universe.dev/"
-                                         ),
+                            options = list(reproducible.useCache = TRUE,
+                                           reproducible.cachePath = paths$cachePath,  ## <------ you can use "paths" which is the first argument (and become an internal object). See ?setupProject
+                                           reproducible.destinationPath = paths$inputPath, ## all downloaded and pre-processed layers go here
+                                           spades.moduleCodeChecks = FALSE,
+                                           spades.useRequire = FALSE,
+                                           repos = repos),
+                            packages = c(## the following packages are needed outside the modules
+                              "DiagrammeR",
+                              "ggpubr",
+                              "geodata",
+                              "SpaDES.experiment",
+                              "SpaDES.tools"
+                            ),
                             params = list(
                               "speciesAbundanceData" = list(
                                 ".plots" = c("png"),
-                                ".useCache" = FALSE
+                                ".useCache" = c(".inputObjects", "init") 
                               ),
                               "climateData" = list(
                                 ".plots" = c("png"),
-                                ".useCache" = FALSE
+                                ".useCache" = c(".inputObjects", "init")
                               ),
                               "projectSpeciesDist" = list(
                                 "statModel" = "MaxEnt",
                                 ".plots" = c("png"),
-                                ".useCache" = FALSE
+                                ".useCache" = c(".inputObjects", "init")
                               )
                             ),
                             times = list(start = 1, end = 5, timeunit = "year"),
@@ -72,12 +75,6 @@ mySimMaxEnt <- setupProject(paths = list("packagePath" = "packages/",
                                                            crs = terra::crs(studyArea, proj = TRUE),
                                                            resolution = 1000))
                             },
-                            options = list(reproducible.useCache = TRUE,
-                                           reproducible.cachePath = paths$cachePath,  ## <------ you can use "paths" which is the first argument (and become an internal object). See ?setupProject
-                                           reproducible.destinationPath = paths$inputPath, ## all downloaded and pre-processed layers go here
-                                           reproducible.useTerra = TRUE, ## we want to use the terra R package
-                                           spades.moduleCodeChecks = FALSE,
-                                           spades.useRequire = FALSE),
                             sideEffects = {
                               ## dismo needs a few tweaks
                               out <- reproducible::preProcess(targetFile = "maxent.jar",
@@ -94,8 +91,6 @@ mySimMaxEnt <- setupProject(paths = list("packagePath" = "packages/",
 if (!require(rJava, quietly = TRUE)) {
   stop(paste("Your Java installation may have problems, please check.\n", 
              "See https://www.java.com/en/download/manual.jsp for Java installation"))
-  message("If you need to install Java without admin priviledges, see:",
-          "\n  https://stackoverflow.com/a/13355764/11969696")
 }
 
 ## the GLM alternative only needs one parameter to be changed, so we can avoid 
@@ -116,9 +111,9 @@ quickPlot::clearPlot(force = TRUE)   ## this forces wiping the graphics device a
 
 ## This runs one simulation and stores outputs in the main 'outputs' folder 
 ## - not what we want, but good for testing
-# mySimOut <- spades(simInitMaxEnt, debug = TRUE)  
+# mySimOut <- SpaDES.core::spades(simInitMaxEnt, debug = TRUE)  
 
-## Better to use when spades runs error-free on the simLists
+## Better to use after checking that spades() runs error-free on both simLists
 myExperiment <- SpaDES.experiment::experiment2(MaxEnt = simInitMaxEnt, 
                                                GLM = simInitGLM, 
                                                debug = TRUE, 
@@ -128,35 +123,37 @@ myExperiment <- SpaDES.experiment::experiment2(MaxEnt = simInitMaxEnt,
 ## save outputs -- both simLists have the same output path, so we can use the first one
 qs::qsave(myExperiment, file.path(SpaDES.core::outputPath(simInitMaxEnt), paste0("myExperiment", ".qs")))
 
-## check models
+## easily check models
 tryCatch(myExperiment$MaxEnt_rep1$sdmOut)   ## this links to an html page
-sets <- par(mfrow = c(2,2))
 plot(myExperiment$MaxEnt_rep1$sdmOut)
+
+sets <- par(mfrow = c(2,2))
+plot(myExperiment$GLM_rep1$sdmOut)
 par(sets)
 
-## check validation results for the two models
+## easily check validation results for the two models
 myExperiment$MaxEnt_rep1$evalOut
 myExperiment$GLM_rep1$evalOut
 
 
-## Run with another climate scenario - the most contrasting scenario to SSP 585
-## get the original table from one of the simulations and replace the climate scenario
+## Run with another climate scenario - the most contrasting scenario to SSP 585.
+## Make copies of the outputs of setupProject, then get the original table from 
+## one of the simulations, and replace the climate scenario. 
 mySimMaxEnt2 <- mySimMaxEnt
 mySimGLM2 <- mySimGLM
-projClimateURLsNew <- copy(simInitMaxEnt2$projClimateURLs)
+projClimateURLsNew <- copy(myExperiment$MaxEnt_rep1$projClimateURLs)
 projClimateURLsNew[, `:=`(URL = gsub("ssp585", "ssp126", URL),
-                       targetFile = gsub("ssp585", "ssp126", targetFile))]
+                          targetFile = gsub("ssp585", "ssp126", targetFile))]
 
-## we simply replace the projClimateURLs and run simInit2() again
-## to change the climate layers
 mySimMaxEnt2$projClimateURLs <- projClimateURLsNew
 mySimGLM2$projClimateURLs <- projClimateURLsNew
 
+## now initialise the new simulations/workflows with the new scenarios
 simInitMaxEnt2 <- SpaDES.core::simInit2(mySimMaxEnt2)
 simInitGLM2 <-  SpaDES.core::simInit2(mySimGLM2)
 
-myExperiment2 <- experiment2(MaxEnt = simInitMaxEnt2, 
-                             GLM = simInitGLM2, 
+myExperiment2 <- experiment2(MaxEnt2 = simInitMaxEnt2, 
+                             GLM2 = simInitGLM2, 
                              debug = TRUE, 
                              replicates = 1,
                              clearSimEnv = FALSE)
@@ -167,17 +164,18 @@ qs::qsave(myExperiment2, file.path(SpaDES.core::outputPath(mySimMaxEnt2), paste0
 ## combine plots from two distinct simulations in a single figure
 ## (the same can be done to compare MaxEnt and GLM, or plot all projections)
 
-## fetch the internal plotting function instead of repeating code here
-plotFun <- myExperiment$GLM_rep1@.envir$.mods$climateData$plotSpatRasterStk
+## fetch the internal plotting function rom any of the two simulations,
+## instead of repeating code here
+plotFun <- myExperiment$MaxEnt_rep1@.envir$.mods$climateData$plotSpatRasterStk
 
 ## raw predictions exported by the module
 sppDistProjMaxEnt <- myExperiment$MaxEnt_rep1$sppDistProj
-sppDistProjMaxEnt2 <- myExperiment2$MaxEnt_rep1$sppDistProj
+sppDistProjMaxEnt2 <- myExperiment2$MaxEnt2_rep1$sppDistProj
 
 ## we convert the raw predictions into presence absence
 ## using exported threshold
 sppDistProjMaxEnt_PA <- as.int(myExperiment$MaxEnt_rep1$sppDistProj > myExperiment$MaxEnt_rep1$thresh)
-sppDistProjMaxEnt2_PA <- as.int(myExperiment2$MaxEnt_rep1$sppDistProj > myExperiment2$MaxEnt_rep1$thresh)
+sppDistProjMaxEnt2_PA <- as.int(myExperiment2$MaxEnt2_rep1$sppDistProj > myExperiment2$MaxEnt2_rep1$thresh)
 
 ## rename layers from plotting
 names(sppDistProjMaxEnt) <- names(sppDistProjMaxEnt2) <- c("2001", "2021-2040", "2041-2060", "2061-2080", "2081-2100")
@@ -218,7 +216,7 @@ plotAll <- ggpubr::ggarrange(plotMaxEnt2 + labs(title = expression(bold("Scenari
                                                   y = expression(atop(bold(""), ""))) +
                                theme(plot.margin = margin(0,0,0,0)), 
                              legend = "right", common.legend = TRUE, labels = c("a)", "b)", "c)", "d)"))
-figDir <- checkPath(file.path(simPaths$outputPath, "generalFigures"), create = TRUE)
+figDir <- checkPath(file.path(mySimGLM$paths$outputPath, "generalFigures"), create = TRUE)
 ggsave(file.path(figDir, "MaxEntPredictions.png"), width = 13.5, height = 5.5, units = "in", dpi = 300)
 
 ```
