@@ -48,7 +48,6 @@ mySimMaxEnt <- setupProject(paths = list("packagePath" = "packages/",
                             packages = c(## the following packages are needed outside the modules
                               "DiagrammeR",
                               "ggpubr",
-                              "geodata",
                               "SpaDES.experiment",
                               "SpaDES.tools"
                             ),
@@ -92,6 +91,9 @@ if (!require(rJava, quietly = TRUE)) {
   stop(paste("Your Java installation may have problems, please check.\n", 
              "See https://www.java.com/en/download/manual.jsp for Java installation"))
 }
+
+## check study area:
+terra::plot(mySimMaxEnt$studyAreaRas)
 
 ## the GLM alternative only needs one parameter to be changed, so we can avoid 
 ## repeating the `setupProject()` call
@@ -216,7 +218,7 @@ plotAll <- ggpubr::ggarrange(plotMaxEnt2 + labs(title = expression(bold("Scenari
                                                   y = expression(atop(bold(""), ""))) +
                                theme(plot.margin = margin(0,0,0,0)), 
                              legend = "right", common.legend = TRUE, labels = c("a)", "b)", "c)", "d)"))
-figDir <- checkPath(file.path(mySimGLM$paths$outputPath, "generalFigures"), create = TRUE)
+figDir <- checkPath(file.path(mySimMaxEnt2$paths$outputPath, "generalFigures"), create = TRUE)
 ggsave(file.path(figDir, "MaxEntPredictions.png"), width = 13.5, height = 5.5, units = "in", dpi = 300)
 
 ```
