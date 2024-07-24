@@ -2,7 +2,6 @@
 author:
   - Ceres Barros
   - Tati Alex M. Chubaty
-date: last-updated
 editor_options:
   markdown:
     wrap: 72

@@ -2,7 +2,6 @@
 author:
   - Ceres Barros
   - Tati Micheletti
-date: last-updated
 execute: 
   eval: false
 editor_options:
