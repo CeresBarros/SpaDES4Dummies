@@ -441,7 +441,7 @@ needs to initialise the workflow/simulation:
 
 -   `times`: the start and end of the workflow;
 
--   `parameters`: the parameters passed to each module;
+-   `params`: the parameters passed to each module;
 
 -   `objects`/`inputs`/`...`: and user-provided ("external") input
     objects, like the study area (`studyAreaRas`).
