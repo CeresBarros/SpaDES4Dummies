@@ -14,15 +14,15 @@ projPath <- file.path("~/SpaDES4Dummies_Part2")
 modPath <- file.path(projPath, "modules")
 
 ## Let's create a self-contained module that will simulate the species' abundance for any given period of time and frequency.
-if (!dir.exists(modPath, "speciesAbundanceData"))) {
+if (!dir.exists(file.path(modPath, "speciesAbundanceData"))) {
   SpaDES.core::newModule(name = "speciesAbundanceData", path = modPath)
 }
 
-if (!dir.exists(modPath,"climateData"))) {
+if (!dir.exists(file.path(modPath,"climateData"))) {
   SpaDES.core::newModule(name = "climateData", path = modPath)
 }
 
-if (!dir.exists(modPath, "projectSpeciesDist"))) {
+if (!dir.exists(file.path(modPath, "projectSpeciesDist"))) {
   SpaDES.core::newModule(name = "projectSpeciesDist", path = modPath)
 }
 
