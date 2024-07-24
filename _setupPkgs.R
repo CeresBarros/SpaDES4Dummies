@@ -23,8 +23,6 @@ Require::Require(c(
   "quickPlot",
   "reshape2",  ## not sure why this is needed but part 1 fails to load some pkg without it
   "rmarkdown",
-  "rnaturalearth",
-  "ropensci/rnaturalearthhires", 
   "ropensci/NLMR",
   "rsvg",
   "SpaDES",

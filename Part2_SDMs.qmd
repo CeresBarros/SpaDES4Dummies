@@ -31,7 +31,12 @@ options("knitr.graphics.rel_path" = FALSE,
         "repos" = c("https://predictiveecology.r-universe.dev/", 
                   CRAN = "https://cloud.r-project.org"))
 
-knitLib <- .libPaths()[1]
+Require::Require(c(
+  "rnaturalearth",
+  "ropensci/rnaturalearthhires"
+), 
+upgrade = FALSE,   ## don't upgrade dependencies
+standAlone = ifelse(isTRUE(as.logical(Sys.getenv("CI"))), FALSE, TRUE))  
 ```
 
 In [Chapter 1](Part1_DummyModel.qmd) of this guide, we described how to
@@ -562,8 +567,6 @@ section.
 #| echo: false
 #| fig-align: center
 #| fig-cap: "Study area within Canada."
-
-library(rnaturalearth, lib.loc = knitLib)
 
 can1 <- ne_states(c("canada")) |>
   terra::vect()
