@@ -54,19 +54,18 @@ jobs:
         with:
           packages: |
             any::cffr
-            any::geodata
             any::ggplot2
             any::ggpubr
             any::htmlwidgets
-            any::rcmdcheck
-            any::rmarkdown
             any::png
-            any::raster
-            any::rsvg
-            any::SpaDES.tools
-            any::V8
             any::quarto
+            any::rcmdcheck
             any::rJava
+            any::rmarkdown
+            any::rnaturalearth
+            any::rsvg
+            any::terra
+            any::V8
       
       - name: Render book 🔧
         run: Rscript render.R
