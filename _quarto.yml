@@ -79,7 +79,8 @@ format:
       light: minty
       dark: [minty, css/theme-dark.scss]
     code-link: true
-    css: css/style.css
+    code-fold: true
+    code-overflow: scroll
     smooth-scroll: true
     lot: yes
     lof: yes
@@ -88,8 +89,6 @@ format:
     toc-expand: 1
     toc-depth: 4
     number-sections: true
-    code-fold: show
-    code-overflow: scroll
     colorlinks: true
     fontsize: 11pt
 

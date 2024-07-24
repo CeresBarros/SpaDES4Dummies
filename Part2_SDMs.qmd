@@ -121,8 +121,8 @@ download and prepare climate and species abundance data.
 #| message: false
 #| warning: false
 #| results: hide
-#| code-fold: true
 #| cache: false
+#| code-fold: show
 
 if (getRversion() < "4.2.1") {
   warning(paste("dismo::maxent may create a fatal error",
@@ -466,6 +466,7 @@ for more information.
 #| warning: false
 #| message: false
 #| cache: false
+#| code-fold: show
 
 library(SpaDES.project)
 
@@ -583,6 +584,7 @@ change a parameter value:
 ```{r simulationSetupGLM}
 #| warning: false
 #| message: false
+#| code-fold: show
 
 mySimGLM <- mySimMaxEnt
 mySimGLM$params$projectSpeciesDist$statModel <- "GLM"
@@ -601,6 +603,7 @@ by `setupProject`.
 ```{r simInits}
 #| warning: false
 #| message: false
+#| code-fold: show
 
 simInitMaxEnt <- SpaDES.core::simInit2(mySimMaxEnt)
 simInitGLM <- SpaDES.core::simInit2(mySimGLM)
@@ -676,6 +679,7 @@ particular cache calls are activated.
 
 ```{r runSimulation}
 #| eval: false
+#| code-fold: show
 
 ## run simulation
 quickPlot::clearPlot(force = TRUE)   ## wipe the graphics device and open a new graphics window
@@ -774,6 +778,7 @@ results will be a good first step to diagnosing the problem.
 
 ```{r evalOutSim}
 #| eval: false
+#| code-fold: show
 
 tryCatch(myExperiment$MaxEnt_rep1$sdmOut)   ## this links to an html page
 plot(myExperiment$MaxEnt_rep1$sdmOut)
@@ -807,6 +812,7 @@ fitting event (`fitSDM`) by passing the `.seed` parameter to the
 
 ```{r newScenarios}
 #| eval: false
+#| code-fold: show
 
 ## Run with another climate scenario - the most contrasting scenario to SSP 585.
 ## Make copies of the outputs of setupProject, then get the original table from 

@@ -89,7 +89,7 @@ script with loading the packages:
 #| message: false
 #| warning: false
 #| results: "hide"
-#| code-fold: true
+#| code-fold: show
 
 ## please start from a clean R session
 remotes::install_github("ropensci/NLMR")  ## you will need this ;)
@@ -119,7 +119,7 @@ You then create or load a study area raster (ours is a raster template):
 #| eval: true
 #| message: false
 #| warning: false
-#| code-fold: true
+#| code-fold: show
 
 r <- rast(nrows = 100, ncols = 100, xmin = -50, xmax = 50, ymin = -50, ymax = 50)
 ```
@@ -131,7 +131,7 @@ generates species abundance rasters that follow a Gaussian distribution:
 
 ```{r the_r_way_simulation_function_AB}
 #| eval: true
-#| code-fold: true
+#| code-fold: show
 
 abundance_model <- function(ras, Time) {
   abund_outputs <- list()
@@ -156,7 +156,7 @@ Set the number of model iterations, run it and plot results (all ABUNDANCE plots
 ```{r the_r_way_simulation_length}
 #| eval: true
 #| message: false
-#| code-fold: true
+#| code-fold: show
 
 Time <- 10
 abundance <- abundance_model(ras = r, Time = Time)
@@ -171,7 +171,7 @@ remember this is a dummy example.
 
 ```{r the_r_way_simulation_function_TMP}
 #| eval: true
-#| code-fold: true
+#| code-fold: show
 
 temperature_model <- function(ras, Time) {
   temp_outputs <- list()
@@ -195,7 +195,7 @@ Run the model and plot results (all temperature plots together)
 
 ```{r the_r_way_plot_results_TMP}
 #| eval: true
-#| code-fold: true
+#| code-fold: show
 
 temperature <- temperature_model(ras = r, Time = Time)
 plot(rast(temperature))
@@ -209,7 +209,7 @@ First, we create the data analysis function (a simple linear model):
 
 ```{r data_analysis_model}
 #| eval: true
-#| code-fold: true
+#| code-fold: show
 
 stats_analysis <- function(Data) {
   if (all(c("abund", "temp") %in% colnames(Data))) {
@@ -231,7 +231,7 @@ Then we create a loop to analyse each plot of our time-series:
 
 ```{r data_analysis}
 #| eval: true
-#| code-fold: true
+#| code-fold: show
 
 lmPlots <- list()
 for (t in 1:Time) {
@@ -279,6 +279,7 @@ scripts. We will not be using either of them in this example.
 #| message: false
 #| warning: false
 #| results: hide
+#| code-fold: show
 
 ## start again from a clean R session
 options(repos = c("https://predictiveecology.r-universe.dev/", 
@@ -489,6 +490,8 @@ rasters). Notice that the only argument to `abundanceInit` is `sim`, a
 `simList` object that is also its only output.
 
 ```{r abund_module_SpaDES}
+#| code-fold: show
+
 abundanceInit <- function(sim) {
   ## create storage list of species abundance
   sim$abundRasters <- list()
@@ -511,6 +514,8 @@ As before, the sole argument and output to this event function is the
 `sim` object.
 
 ```{r abund_module3}
+#| code-fold: show
+
 abundanceSim <- function(sim) {
   ## Generate species abundances - our "simulation"
   sim$abundRasters[[as.character(time(sim))]] <- abundance_model(ras = sim$r)
@@ -528,6 +533,8 @@ species abundance rasters that are produced by the `abundanceSim` event
 function. Again, the sole argument and output of this function is `sim`.
 
 ```{r abund_module4}
+#| code-fold: show
+
 abundancePlot <- function(sim) {
   ## plot abundances
   plotTitle <- paste("Species abundance\nat time",
@@ -697,6 +704,8 @@ Here's an example of how to do this (the commented instructions have
 been deleted):
 
 ```{r abund_model6}
+#| code-fold: show
+
 .inputObjects <- function(sim) {
   if (!suppliedElsewhere("r")) {
     ## make template raster if not supplied elsewhere.
@@ -712,6 +721,8 @@ the metadata as an input. We have done this, so that `abundanceInit`
 only creates a storage list for the outputs:
 
 ```{r abund_model7}
+#| code-fold: show
+
 abundanceInit <- function(sim) {
   ## create storage list of species abundance
   sim$abundRasters <- list()
@@ -906,6 +917,7 @@ any objects)[^part1_dummymodel-2].
 #| results: false
 #| warning: false
 #| message: false
+#| code-fold: show
 
 out <- setupProject(
   paths = list(projectPath = "~/SpaDES4Dummies_Part1",
@@ -930,6 +942,7 @@ arguments of `simInit()`:
 #| results: false
 #| warning: false
 #| message: false
+#| code-fold: show
 
 out$paths
 out$params
@@ -944,6 +957,8 @@ formalArgs(SpaDES.core::simInit)
 We now pass the `out` list entries to `simInit()` arguments 
 
 ```{r}
+#| code-fold: show
+
 ## create simList (initialise the workflow)
 mySim <- SpaDES.core::simInit(paths = out$paths,
                               modules = out$modules,
@@ -958,6 +973,7 @@ or, more simply, use the wrapper function `simInit2()`
 #| results: false
 #| warning: false
 #| message: false
+#| code-fold: show
 
 ## create simList (initialise the workflow)
 mySim <- SpaDES.core::simInit2(out)
@@ -971,6 +987,7 @@ mySim <- SpaDES.core::simInit2(out)
 #| results: false
 #| warning: false
 #| message: false
+#| code-fold: show
 
 SpaDES.core::events(mySim)
 SpaDES.core::completed(mySim)
@@ -998,6 +1015,7 @@ outputs of the *speciesAbundance* and *temperature* modules.
 #| fig-height: 6
 #| fig-width: 6
 #| fig-cap: "Diagram of module connections."
+#| code-fold: show
 
 SpaDES.core::moduleDiagram(mySim)
 ```
@@ -1009,6 +1027,8 @@ module linkages. It explicitly shows module inter-dependencies by
 depicting the objects that establish links between modules.
 
 ```{r objectDiagramCode}
+#| code-fold: show
+
 SpaDES.core::objectDiagram(mySim)
 ```
 
@@ -1035,6 +1055,8 @@ We use `debug = TRUE` so that `spades` prints the events as they are being execu
 In case something fails, this helps diagnosing where the issue occurred.
 
 ```{r spadesrun}
+#| code-fold: show
+
 ## run workflow
 dev() # on Windows and Mac, this opens external device if using Rstudio, it is faster
 clearPlot()
