@@ -1,5 +1,8 @@
 ## Setup - packages
 
+options(repos = c("https://predictiveecology.r-universe.dev/", 
+                  CRAN = "https://cloud.r-project.org"))
+
 if (!isTRUE(as.logical(Sys.getenv("CI")))) {
   pkgPath <- normalizePath(file.path("packages", version$platform,
                                      paste0(version$major, ".", strsplit(version$minor, "[.]")[[1]][1])),
@@ -8,21 +11,24 @@ if (!isTRUE(as.logical(Sys.getenv("CI")))) {
   .libPaths(pkgPath, include.site = FALSE)
 }
 
-if (!"remotes" %in% installed.packages())
-  install.packages("remotes")
+install.packages("Require")
 
-if (!"Require" %in% installed.packages() || packageVersion("Require") < "0.3.1.9015") {
-  remotes::install_github("PredictiveEcology/Require@2788b023ad191c29346ef8c64df71b937be307e2",
-                          upgrade = FALSE)
-}
+Require::setLinuxBinaryRepo()
 
 Require::Require(c(
-  "htmlwidgets", "geodata", 
+  "ggpubr", 
+  "ggplot2",
+  "ggpubr",
+  "htmlwidgets",
+  "quickPlot",
+  "reshape2",  ## not sure why this is needed but part 1 fails to load some pkg without it
+  "rmarkdown",
+  "rnaturalearth",
+  "ropensci/rnaturalearthhires", 
   "ropensci/NLMR",
+  "rsvg",
   "SpaDES",
-  # "PredictiveEcology/SpaDES.experiment@75d917b70b892802fed0bbdb2a5e9f3c6772f0ba",
-  "ggpubr", "rmarkdown", "rsvg",
-  "formatR"   ## for tidy = TRUE option
+  "terra"
 ), 
 require = FALSE,   ## don't load packages
 upgrade = FALSE, ## don't upgrade dependencies
