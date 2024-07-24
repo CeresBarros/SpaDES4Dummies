@@ -61,6 +61,7 @@ jobs:
           cache-version: 2
           packages: |
             any::rJava
+            any::withr
 
       - name: Run tutorials - Part 1
         run: |
