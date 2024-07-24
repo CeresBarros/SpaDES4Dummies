@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.489">
+<meta name="generator" content="quarto-1.4.553">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>SpaDES For Dummies - Appendix A — Complete R script to Chapter 1</title>
 <style>
@@ -93,12 +93,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
     "search-submit-button-title": "Submit",
     "search-label": "Search"
   }
 }</script><style>html{ scroll-behavior: smooth; }</style>
-<link rel="stylesheet" href="../css/style.css">
 <meta name="twitter:title" content="SpaDES For Dummies - Appendix A — Complete R script to Chapter 1">
 <meta name="twitter:card" content="summary">
 </head>
@@ -224,78 +224,45 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   
 
 
-</header><div class="cell" data-hash="Part1_Rscript_cache/html/unnamed-chunk-1_3e52cd1ebed7a5b53dd17089d816e098">
-<details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span>repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"https://predictiveecology.r-universe.dev/"</span>, </span>
+</header><div class="cell">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## start again from a clean R session</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span>repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"https://predictiveecology.r-universe.dev/"</span>,</span>
 <span>                  CRAN <span class="op">=</span> <span class="st">"https://cloud.r-project.org"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SpaDES.project"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">## decide where you're working</span></span>
-<span><span class="va">mainPath</span> <span class="op">&lt;-</span> <span class="st">"~/SpaDES4Dummies_Part1"</span></span>
-<span><span class="va">pkgPath</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">mainPath</span>, <span class="st">"packages"</span>, <span class="va">version</span><span class="op">$</span><span class="va">platform</span>,</span>
-<span>                     <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="va">version</span><span class="op">$</span><span class="va">major</span>, <span class="st">"."</span>, <span class="fu"><a href="https://rdrr.io/r/base/strsplit.html">strsplit</a></span><span class="op">(</span><span class="va">version</span><span class="op">$</span><span class="va">minor</span>, <span class="st">"[.]"</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/files2.html">dir.create</a></span><span class="op">(</span><span class="va">pkgPath</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/libPaths.html">.libPaths</a></span><span class="op">(</span><span class="va">pkgPath</span>, include.site <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="co">## install packages in project library (proj-lib)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://spades-project.predictiveecology.org/">SpaDES.project</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="st">"remotes"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/installed.packages.html">installed.packages</a></span><span class="op">(</span>lib.loc <span class="op">=</span> <span class="va">pkgPath</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
+<span><span class="va">projPath</span> <span class="op">&lt;-</span> <span class="st">"~/SpaDES4Dummies_Part1"</span></span>
 <span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="st">"Require"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/installed.packages.html">installed.packages</a></span><span class="op">(</span>lib.loc <span class="op">=</span> <span class="va">pkgPath</span><span class="op">)</span> <span class="op">||</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span><span class="op">(</span><span class="st">"Require"</span>, lib.loc <span class="op">=</span> <span class="va">pkgPath</span><span class="op">)</span> <span class="op">&lt;</span> <span class="st">"0.3.1"</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"PredictiveEcology/Require@2788b023ad191c29346ef8c64df71b937be307e2"</span>,</span>
-<span>                          upgrade <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="co">## Create modules if need be</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/files2.html">dir.exists</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">projPath</span>, <span class="st">"modules"</span>, <span class="st">"speciesAbundance"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu">newModule</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"speciesAbundance"</span>, path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">projPath</span>, <span class="st">"modules"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="fu">Require</span><span class="fu">::</span><span class="fu"><a href="https://Require.predictiveecology.org/reference/Require.html">Require</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SpaDES"</span>, <span class="st">"DiagrammeR"</span><span class="op">)</span>, </span>
-<span>                 require <span class="op">=</span> <span class="cn">FALSE</span>, upgrade <span class="op">=</span> <span class="cn">FALSE</span>, </span>
-<span>                 dependencies <span class="op">=</span> <span class="cn">TRUE</span>, standAlone <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="co">## automatically downloads all packages in the SpaDES family and their dependencies</span></span>
-<span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://spades.predictiveecology.org">SpaDES</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">setPaths</span><span class="op">(</span>cachePath <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">mainPath</span>, <span class="st">"cache"</span><span class="op">)</span>,</span>
-<span>         inputPath <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">mainPath</span>, <span class="st">"inputs"</span><span class="op">)</span>,</span>
-<span>         modulePath <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">mainPath</span>, <span class="st">"modules"</span><span class="op">)</span>,</span>
-<span>         outputPath <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">mainPath</span>, <span class="st">"outputs"</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">## make a list of directory paths and check paths are ok</span></span>
-<span><span class="va">simPaths</span> <span class="op">&lt;-</span> <span class="fu">getPaths</span><span class="op">(</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">## Let's create a self-contained module that will simulate the species' abundance for any given period of time and frequency.</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/files2.html">dir.exists</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">simPaths</span><span class="op">$</span><span class="va">modulePath</span>, <span class="st">"speciesAbundance"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu">newModule</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"speciesAbundance"</span>, path <span class="op">=</span> <span class="va">simPaths</span><span class="op">$</span><span class="va">modulePath</span><span class="op">)</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/files2.html">dir.exists</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">projPath</span>, <span class="st">"temperature"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu">newModule</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"temperature"</span>, path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">projPath</span>, <span class="st">"modules"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/files2.html">dir.exists</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">simPaths</span><span class="op">$</span><span class="va">modulePath</span>, <span class="st">"temperature"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu">newModule</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"temperature"</span>, path <span class="op">=</span> <span class="va">simPaths</span><span class="op">$</span><span class="va">modulePath</span><span class="op">)</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/files2.html">dir.exists</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">projPath</span>, <span class="st">"speciesTempLM"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu">newModule</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"speciesTempLM"</span>, path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">projPath</span>, <span class="st">"modules"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/files2.html">dir.exists</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">simPaths</span><span class="op">$</span><span class="va">modulePath</span>, <span class="st">"speciesTempLM"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu">newModule</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"speciesTempLM"</span>, path <span class="op">=</span> <span class="va">simPaths</span><span class="op">$</span><span class="va">modulePath</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
+<span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="http://spades-project.predictiveecology.org/reference/setupProject.html">setupProject</a></span><span class="op">(</span>paths <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>projectPath <span class="op">=</span> <span class="st">"~/SpaDES4Dummies_Part1"</span>,</span>
+<span>                                 packagePath <span class="op">=</span> <span class="st">"packages"</span><span class="op">)</span>,</span>
+<span>                    overwrite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>                    modules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"speciesAbundance"</span>,</span>
+<span>                                <span class="st">"temperature"</span>,</span>
+<span>                                <span class="st">"speciesTempLM"</span><span class="op">)</span>,</span>
+<span>                    params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>speciesAbundance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>simulationTimeStep <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>                                                          .plotInitialTime <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
+<span>                                  temperature <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>simulationTimeStep <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>                                                     .plotInitialTime <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
+<span>                                  speciesTempLM <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>statsTimestep <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                    times <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>start <span class="op">=</span> <span class="fl">1</span>, end <span class="op">=</span> <span class="fl">10</span>, timeunit <span class="op">=</span> <span class="st">"year"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">## list the modules to use</span></span>
-<span><span class="va">simModules</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">"speciesAbundance"</span>, <span class="st">"temperature"</span>, <span class="st">"speciesTempLM"</span><span class="op">)</span></span>
+<span><span class="va">simInitOut</span> <span class="op">&lt;-</span> <span class="fu">SpaDES.core</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SpaDES.core/man/simInit.html">simInit2</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">## Set simulation and module parameters</span></span>
-<span><span class="va">simTimes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>start <span class="op">=</span> <span class="fl">1</span>, end <span class="op">=</span> <span class="fl">10</span>, timeunit <span class="op">=</span> <span class="st">"year"</span><span class="op">)</span></span>
-<span><span class="va">simParams</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
-<span>  speciesAbundance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>simulationTimeStep <span class="op">=</span> <span class="fl">1</span>, </span>
-<span>                          .plotInitialTime <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
-<span>  temperature <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>simulationTimeStep <span class="op">=</span> <span class="fl">1</span>, </span>
-<span>                     .plotInitialTime <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
-<span>  speciesTempLM <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>statsTimestep <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">## Simulation setup</span></span>
-<span><span class="va">mySim</span> <span class="op">&lt;-</span> <span class="fu">simInit</span><span class="op">(</span>times <span class="op">=</span> <span class="va">simTimes</span>, params <span class="op">=</span> <span class="va">simParams</span>, </span>
-<span>                 modules <span class="op">=</span> <span class="va">simModules</span>, paths <span class="op">=</span> <span class="va">simPaths</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">moduleDiagram</span><span class="op">(</span><span class="va">mySim</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">objectDiagram</span><span class="op">(</span><span class="va">mySim</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">## run simulation</span></span>
-<span><span class="fu">dev</span><span class="op">(</span><span class="op">)</span> <span class="co"># on Windows and Mac, this opens external device if using Rstudio, it is faster</span></span>
-<span><span class="fu">clearPlot</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">mySim2</span> <span class="op">&lt;-</span> <span class="fu">spades</span><span class="op">(</span><span class="va">mySim</span>, debug <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="va">simOut</span> <span class="op">&lt;-</span> <span class="fu">SpaDES.core</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SpaDES.core/man/spades.html">spades</a></span><span class="op">(</span><span class="va">simInitOut</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 
@@ -524,6 +491,24 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
   function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
@@ -558,7 +543,11 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
-      return note.innerHTML;
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
     });
   }
   const xrefs = window.document.querySelectorAll('a.quarto-xref');
@@ -573,38 +562,28 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       }
     }
     stripColumnClz(note)
-    const typesetMath = (el) => {
-      if (window.MathJax) {
-        // MathJax Typeset
-        window.MathJax.typeset([el]);
-      } else if (window.katex) {
-        // KaTeX Render
-        var mathElements = el.getElementsByClassName("math");
-        var macros = [];
-        for (var i = 0; i < mathElements.length; i++) {
-          var texText = mathElements[i].firstChild;
-          if (mathElements[i].tagName == "SPAN") {
-            window.katex.render(texText.data, mathElements[i], {
-              displayMode: mathElements[i].classList.contains('display'),
-              throwOnError: false,
-              macros: macros,
-              fleqn: false
-            });
-          }
-        }
-      }
-    }
     if (id === null || id.startsWith('sec-')) {
       // Special case sections, only their first couple elements
       const container = document.createElement("div");
       if (note.children && note.children.length > 2) {
-        for (let i = 0; i < 2; i++) {
-          container.appendChild(note.children[i].cloneNode(true));
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
         }
-        typesetMath(container);
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
         return container.innerHTML
       } else {
-        typesetMath(note);
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
         return note.innerHTML;
       }
     } else {
@@ -613,8 +592,15 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (anchorLink) {
         anchorLink.remove();
       }
-      typesetMath(note);
-      return note.innerHTML;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
     }
   }
   for (var i=0; i<xrefs.length; i++) {
@@ -835,12 +821,12 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script><nav class="page-navigation"><div class="nav-page nav-page-previous">
-      <a href="../References.html" class="pagination-link  aria-label=" references="">
+      <a href="../References.html" class="pagination-link" aria-label="References">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">References</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../appendices/Part2_Rscript.html" class="pagination-link" aria-label="<span class='chapter-number'>B</span>&nbsp; <span class='chapter-title'>Complete R script to Chapter 2</span>">
+      <a href="../appendices/Part2_Rscript.html" class="pagination-link" aria-label="Complete R script to Chapter 2">
         <span class="nav-page-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Complete R script to Chapter 2</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>

@@ -9,15 +9,18 @@ defineModule(sim, list(
   description = paste("Data module to prepare climate data for species distribution modelling.", 
                       "Defaults to using bioclimatic variables from Worldclim."),
   keywords = c("minimal SpaDES example", "species distribution model"),
-  authors = structure(list(list(given = c("Ceres"), family = "Barros", role = c("aut", "cre"), email = "ceres.barros@ubc.ca", comment = NULL)), class = "person"),
+  authors = structure(list(list(given = c("Ceres"), family = "Barros", role = c("aut", "cre"),
+                                email = "ceres.barros@ubc.ca", comment = NULL)), class = "person"),
   childModules = character(0),
-  version = list(climateData = "1.0.0"),
+  version = list(climateData = "1.0.1"),
   timeframe = as.POSIXlt(c(NA, NA)),
   timeunit = "year",
   citation = list("citation.bib"),
+  loadOrder = list(before = "projectSpeciesDist"),
   documentation = list("README.md", "climateData.Rmd"), ## same file
   reqdPkgs = list("SpaDES.core (>=2.0.2)",
-                  "ggplot2", "rasterVis", "terra", "data.table"),
+                  "reproducible",
+                  "data.table", "ggplot2", "rasterVis", "terra"),
   parameters = bindrows(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
     defineParameter(".plots", "character", "screen", NA, NA,
@@ -45,7 +48,7 @@ defineModule(sim, list(
                               "variable names, URLs and raster file names of each climate covariate",
                               "used in the species distribution models. Year is the first year of the", 
                               "simulation (not the reference climate period). Defaults to Worldclim's",
-                              "'bio1', 'bio4', 'bio12' and 'bio15' bioclimatic variables for the 1970-2000",
+                              "'BIO01', 'BIO04', 'BIO12' and 'BIO15' bioclimatic variables for the 1970-2000",
                               "climate period, at 2.5 minutes.")),
     expectsInput("projClimateURLs", "data.table", 
                  desc = paste("Same as `baselineClimateURLs` but refering to projected climate layers.",
@@ -121,14 +124,9 @@ climateInit <- function(sim) {
                               targetFile = sim$baselineClimateURLs$targetFile,
                               archive = archiveFiles,
                               MoreArgs = list(
-                                fun = "terra::rast",
                                 overwrite = TRUE,
-                                projectTo = sim$studyAreaRas,
-                                cropTo = sim$studyAreaRas,
-                                maskTo = sim$studyAreaRas,
-                                rasterToMatch = sim$studyAreaRas,
-                                cacheRepo = cachePath(sim)),
-                              cacheRepo = cachePath(sim))
+                                to = sim$studyAreaRas
+                              ))
   
   names(baselineClimateRas) <- paste0(sim$baselineClimateURLs$vars, "_year", sim$baselineClimateURLs$year)
   
@@ -159,13 +157,8 @@ climateInit <- function(sim) {
                           archive = archiveFiles,
                           MoreArgs = list(
                             overwrite = TRUE,
-                            fun = "raster::stack",
-                            projectTo = sim$studyAreaRas,
-                            cropTo = sim$studyAreaRas,
-                            maskTo = sim$studyAreaRas,
-                            rasterToMatch = sim$studyAreaRas,
-                            cacheRepo = cachePath(sim)),
-                          cacheRepo = cachePath(sim))
+                            to = sim$studyAreaRas
+                          ))
   if (any(sapply(projClimateRas, function(x) is(x, "RasterLayer") | is(x, "RasterStack")))){
     projClimateRas <- lapply(projClimateRas, terra::rast)
   }
@@ -173,7 +166,10 @@ climateInit <- function(sim) {
   ## these rasters are different. The tif file contains all the variables in different layers
   ## so, for each variable, we need to keep only the layer of interest
   projClimateRas <- mapply(function(stk, var) {
-    lyr <- which(sub(".*_", "BIO", names(projClimateRas[[1]])) == var)
+    var <- tolower(var)
+    lowerNames <- tolower(names(stk))
+    lyr <- which(lowerNames == var)
+    
     return(stk[[lyr]])
   }, stk = projClimateRas, var = sim$projClimateURLs$vars)
   names(projClimateRas) <- paste0(sim$projClimateURLs$vars, "_year", sim$projClimateURLs$year)
@@ -225,15 +221,19 @@ climateInit <- function(sim) {
 
 ## Plotting event function 
 climatePlot <- function(sim) {
+  checkPath(figurePath(sim), create = TRUE)
+  
   ## plot climate rasters 
   allRasters <- rast(list(sim$baselineClimateRas, sim$projClimateRas))
   lapply(sim$baselineClimateURLs$vars, function(var, allRasters) {
-    lrs <- grep(paste0(var, "_"), names(allRasters))
+    lowerVar <- tolower(var)
+    lowerNames <- tolower(names(allRasters))
+    lrs <- grep(paste0("^", lowerVar, "_"), lowerNames)
     file_name <- paste0("climateRas_", var)
     Plots(allRasters[[lrs]],
           fn = plotSpatRasterStk, types = P(sim)$.plots,
           usePlot = FALSE,
-          filename = file.path(outputPath(sim), "figures", file_name),
+          filename = file_name,
           xlab = "Longitude", ylab = "Latitude")
   }, allRasters = allRasters)
   
@@ -259,29 +259,29 @@ climatePlot <- function(sim) {
   
   if (!suppliedElsewhere(sim$baselineClimateURLs)) {
     sim$baselineClimateURLs <- data.table(
-      vars = c("BIO1", "BIO4", "BIO12", "BIO15"),
-      URL = c("https://biogeo.ucdavis.edu/data/worldclim/v2.1/base/wc2.1_2.5m_bio.zip",
-              "https://biogeo.ucdavis.edu/data/worldclim/v2.1/base/wc2.1_2.5m_bio.zip",
-              "https://biogeo.ucdavis.edu/data/worldclim/v2.1/base/wc2.1_2.5m_bio.zip",
-              "https://biogeo.ucdavis.edu/data/worldclim/v2.1/base/wc2.1_2.5m_bio.zip"),
-      targetFile = c("wc2.1_2.5m_bio_1.tif", "wc2.1_2.5m_bio_4.tif", 
-                     "wc2.1_2.5m_bio_12.tif", "wc2.1_2.5m_bio_15.tif"),
+      vars = c("BIO01", "BIO04", "BIO12", "BIO15"),
+      URL = c("https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_5m_bio.zip",
+              "https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_5m_bio.zip",
+              "https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_5m_bio.zip",
+              "https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_5m_bio.zip"),
+      targetFile = c("wc2.1_5m_bio_1.tif", "wc2.1_5m_bio_4.tif", 
+                     "wc2.1_5m_bio_12.tif", "wc2.1_5m_bio_15.tif"),
       year = rep(1L, 4)
     )
   }
   
   if (!suppliedElsewhere(sim$projClimateURLs)) {
     sim$projClimateURLs <- data.table(
-      vars = rep(c("BIO1", "BIO4", "BIO12", "BIO15"), times = 4),
-      URL = rep(c("https://geodata.ucdavis.edu/cmip6/2.5m/CanESM5/ssp585/wc2.1_2.5m_bioc_CanESM5_ssp585_2021-2040.tif",
-                  "https://geodata.ucdavis.edu/cmip6/2.5m/CanESM5/ssp585/wc2.1_2.5m_bioc_CanESM5_ssp585_2041-2060.tif",
-                  "https://geodata.ucdavis.edu/cmip6/2.5m/CanESM5/ssp585/wc2.1_2.5m_bioc_CanESM5_ssp585_2061-2080.tif",
-                  "https://geodata.ucdavis.edu/cmip6/2.5m/CanESM5/ssp585/wc2.1_2.5m_bioc_CanESM5_ssp585_2081-2100.tif"),
+      vars = rep(c("BIO01", "BIO04", "BIO12", "BIO15"), times = 4),
+      URL = rep(c("https://geodata.ucdavis.edu/cmip6/5m/CanESM5/ssp585/wc2.1_5m_bioc_CanESM5_ssp585_2021-2040.tif",
+                  "https://geodata.ucdavis.edu/cmip6/5m/CanESM5/ssp585/wc2.1_5m_bioc_CanESM5_ssp585_2041-2060.tif",
+                  "https://geodata.ucdavis.edu/cmip6/5m/CanESM5/ssp585/wc2.1_5m_bioc_CanESM5_ssp585_2061-2080.tif",
+                  "https://geodata.ucdavis.edu/cmip6/5m/CanESM5/ssp585/wc2.1_5m_bioc_CanESM5_ssp585_2081-2100.tif"),
                 each = 4),
-      targetFile = rep(c("wc2.1_2.5m_bioc_CanESM5_ssp585_2021-2040.tif",
-                         "wc2.1_2.5m_bioc_CanESM5_ssp585_2041-2060.tif",
-                         "wc2.1_2.5m_bioc_CanESM5_ssp585_2061-2080.tif",
-                         "wc2.1_2.5m_bioc_CanESM5_ssp585_2081-2100.tif"),
+      targetFile = rep(c("wc2.1_5m_bioc_CanESM5_ssp585_2021-2040.tif",
+                         "wc2.1_5m_bioc_CanESM5_ssp585_2041-2060.tif",
+                         "wc2.1_5m_bioc_CanESM5_ssp585_2061-2080.tif",
+                         "wc2.1_5m_bioc_CanESM5_ssp585_2081-2100.tif"),
                        each = 4),
       year = rep(2L:5L, each = 4)
     )

@@ -13,8 +13,8 @@ if (getRversion() < "4.2.1") {
 }
 
 ## decide where you're working
-mainPath <- '.'
-pkgPath <- file.path(mainPath, "packages", version$platform,
+projPath <- '.'
+pkgPath <- file.path(projPath, "packages", version$platform,
                      paste0(version$major, ".", strsplit(version$minor, "[.]")[[1]][1]))
 dir.create(pkgPath, recursive = TRUE)
 .libPaths(pkgPath, include.site = FALSE) ## install packages in project library (proj-lib)
@@ -50,10 +50,10 @@ Require::Require(c("PredictiveEcology/SpaDES.project@transition (HEAD)",
 install.packages("ragg")
 
 Require::Require("SpaDES.core", install = FALSE)  ## load only
-setPaths(cachePath = file.path(mainPath, "cache"),
-         inputPath = file.path(mainPath, "inputs"),
-         modulePath = file.path(mainPath, "modules"),
-         outputPath = file.path(mainPath, "outputs"))
+setPaths(cachePath = file.path(projPath, "cache"),
+         inputPath = file.path(projPath, "inputs"),
+         modulePath = file.path(projPath, "modules"),
+         outputPath = file.path(projPath, "outputs"))
 
 simPaths <- getPaths() ## check that this is what you wanted
 
