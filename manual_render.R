@@ -45,12 +45,21 @@ file.create(".nojekyll")
 quarto::quarto_render(output_format = "all", as_job = FALSE)
 
 ## make test scripts for GHA
-rScripts <- c("Part1_DummyModel.R", "Part2_SDMs.R")
+rScripts <- c("appendices/Part1_Rscript.R", "appendices/Part2_Rscript.R")
 for (f in rScripts) {
   scriptLines <- readLines(f)
-  projPathLine <- grep("projPath <-", scriptLines)
-  scriptLines[projPathLine] <- "projPath <- '.'"
-  ff <- sub("\\.R", "_test\\.R", f)
-  writeLines(scriptLines, ff)
+  modulesStart <- grep("modules =", scriptLines)
+  
+  modulesLines <- scriptLines[modulesStart:length(scriptLines)]
+  modulesEnd <- grep("),$", modulesLines)[1]
+  
+  modulesLines <- modulesLines[1:modulesEnd]
+  
+  modulesLines <- gsub("(\")([[:alpha:]]*)(\")", "\\1CeresBarros/SpaDES4Dummies@master/modules/\\2\\3", modulesLines)
+  
+  scriptLines[modulesStart:(modulesStart+modulesEnd-1)] <- modulesLines
+  
+  ff <- sub("\\.R", "_test\\.R", basename(f))
+  writeLines(scriptLines, file.path("test", ff))
 }
 
