@@ -35,7 +35,7 @@ mySimMaxEnt <- setupProject(paths = list("packagePath" = "packages/",
                             Restart = TRUE,  ## RStudio will restart. You have to run the code above and this call again
                             modules = c("speciesAbundanceData", "climateData", "projectSpeciesDist"),
                             options = list(reproducible.useCache = TRUE,
-                                           reproducible.cachePath = paths$cachePath,  ## <------ you can use "paths" which is the first argument (and become an internal object). See ?setupProject
+                                           reproducible.cachePath = paths$cachePath,  ## you can use "paths" which is the first argument (and become an internal object). See ?setupProject
                                            reproducible.destinationPath = paths$inputPath, ## all downloaded and pre-processed layers go here
                                            spades.moduleCodeChecks = FALSE,
                                            repos = repos),
