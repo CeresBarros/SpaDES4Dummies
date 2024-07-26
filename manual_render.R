@@ -80,7 +80,7 @@ for (f in rScripts[2]) {
   
   ## add overwrite = TRUE if not there
   SPcall2 <- SPcall
-  SPcall2 <- sub("(.*)(<-)(.*)", "\\3", SPcall2)
+  SPcall2[1] <- sub("(.*)(<-)(.*)", "\\3", SPcall2[1])
   SPcall2 <- parse(text = SPcall2) |> as.list() |> _[[1]] |> as.call()   ## as.list()[[1]] removes the `expression` part.
   
   overwritexists <- any(names(as.list(SPcall2)) == "overwrite")

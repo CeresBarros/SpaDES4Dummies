@@ -42,11 +42,13 @@ mySimMaxEnt <- setupProject(paths = list(packagePath = "packages/", projectPath 
         .useCache = c(".inputObjects", "init")), projectSpeciesDist = list(statModel = "MaxEnt", 
         .plots = c("png"), .useCache = c(".inputObjects", "init"))), 
     times = list(start = 1, end = 5, timeunit = "year"), studyAreaRas = {
-        SpaDES.tools::randomStudyArea(size = 1e+10, seed = 123)
+        studyArea <- SpaDES.tools::randomStudyArea(size = 1e+10, 
+            seed = 123)
         terra::rasterize(studyArea, terra::rast(extent = terra::ext(studyArea), 
             crs = terra::crs(studyArea, proj = TRUE), resolution = 1000))
     }, sideEffects = {
-        reproducible::preProcess(targetFile = "maxent.jar", url = "https://github.com/mrmaxent/Maxent/blob/master/ArchivedReleases/3.4.4/maxent.jar?raw=true", 
+        out <- reproducible::preProcess(targetFile = "maxent.jar", 
+            url = "https://github.com/mrmaxent/Maxent/blob/master/ArchivedReleases/3.4.4/maxent.jar?raw=true", 
             destinationPath = paths$inputPath, fun = NA)
         file.copy(out$targetFilePath, file.path(system.file("java", 
             package = "dismo"), "maxent.jar"), overwrite = TRUE)
