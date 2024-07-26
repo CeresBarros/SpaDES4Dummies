@@ -46,7 +46,7 @@ quarto::quarto_render(output_format = "all", as_job = FALSE)
 
 ## make test scripts for GHA
 rScripts <- c("appendices/Part1_Rscript.R", "appendices/Part2_Rscript.R")
-for (f in rScripts[2]) {
+for (f in rScripts) {
   if (!requireNamespace("functionMap")) {
     remotes::install_github("MangoTheCat/functionMap")
     requireNamespace("functionMap")
