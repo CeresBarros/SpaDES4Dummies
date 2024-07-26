@@ -23,7 +23,7 @@ jobs:
       R_LIBS_USER: /home/runner/work/_temp/Library
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       
       - name: Install Quarto
         uses: quarto-dev/quarto-actions/setup@v2
@@ -72,7 +72,7 @@ jobs:
       
       - name: Deploy 🚀
         if: github.event_name != 'pull_request'
-        uses: JamesIves/github-pages-deploy-action@4.1.7
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
           clean: false
           branch: gh-pages # The branch the action should deploy to.
