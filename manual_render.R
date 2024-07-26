@@ -51,6 +51,7 @@ for (f in rScripts) {
     remotes::install_github("MangoTheCat/functionMap")
     requireNamespace("functionMap")
   }
+
   scriptLines <- readLines(f)
   
   fCalls <- functionMap:::parse_r_script(f)[[1]]
@@ -100,10 +101,9 @@ for (f in rScripts) {
   ## add assignment
   assignBit <- sub("(.*)(<-)(.*)", "\\1\\2", SPcall[1])
   SPcall2[1] <- paste(assignBit, SPcall2[1])
-  
   beforeSP <- scriptLines[1:(startSP-1)]
-  afterSP <- scriptLines[endSP:length(scriptLines)]
-  scriptLines <- c(beforeSP, SPcall2, afterSP)
+  afterSP <- scriptLines[(endSP+1):length(scriptLines)]
+  scriptLines <- c(beforeSP, "", SPcall2, "", afterSP)
   
   ff <- sub("\\.R", "_test\\.R", basename(f))
   writeLines(scriptLines, file.path("test", ff))

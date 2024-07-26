@@ -30,6 +30,7 @@ if (!dir.exists(file.path(modPath, "projectSpeciesDist"))) {
 ## we will use setupProject to install and prepare all inputs to initialise the workflow 
 library(SpaDES.project)
 
+
 mySimMaxEnt <- setupProject(paths = list(packagePath = "packages/", projectPath = projPath), 
     Restart = TRUE, modules = c("CeresBarros/SpaDES4Dummies@master/modules/speciesAbundanceData", 
         "CeresBarros/SpaDES4Dummies@master/modules/climateData", 
@@ -53,7 +54,7 @@ mySimMaxEnt <- setupProject(paths = list(packagePath = "packages/", projectPath 
         file.copy(out$targetFilePath, file.path(system.file("java", 
             package = "dismo"), "maxent.jar"), overwrite = TRUE)
     }, overwrite = TRUE)
-## check that rJava can be loaded.
+
 if (!require(rJava, quietly = TRUE)) {
   stop(paste("Your Java installation may have problems, please check.\n", 
              "See https://www.java.com/en/download/manual.jsp for Java installation"))
