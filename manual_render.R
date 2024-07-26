@@ -46,18 +46,64 @@ quarto::quarto_render(output_format = "all", as_job = FALSE)
 
 ## make test scripts for GHA
 rScripts <- c("appendices/Part1_Rscript.R", "appendices/Part2_Rscript.R")
-for (f in rScripts) {
+for (f in rScripts[2]) {
+  if (!requireNamespace("functionMap")) {
+    remotes::install_github("MangoTheCat/functionMap")
+    requireNamespace("functionMap")
+  }
   scriptLines <- readLines(f)
-  modulesStart <- grep("modules =", scriptLines)
   
-  modulesLines <- scriptLines[modulesStart:length(scriptLines)]
+  fCalls <- functionMap:::parse_r_script(f)[[1]]
+  startSP <- fCalls[fCalls$to == "setupProject",]$line
+  
+  endSP <- startSP + 1  
+  
+  allFuns <- functionMap:::get_funcs_from_r_script(f)
+  SPcall <- sapply(allFuns, function(x) {
+    attributes(x)$src$line1[1] == startSP}
+  )
+  SPcall <- allFuns[[which(SPcall)]]
+  endSP <- tail(attr(SPcall, "src")$line1, 1)
+  
+  ## replace
+  SPcall <- scriptLines[startSP:endSP]
+  
+  modulesStart <- grep("modules =", SPcall)
+  
+  modulesLines <- SPcall[modulesStart:length(SPcall)]
   modulesEnd <- grep("),$", modulesLines)[1]
-  
   modulesLines <- modulesLines[1:modulesEnd]
   
   modulesLines <- gsub("(\")([[:alpha:]]*)(\")", "\\1CeresBarros/SpaDES4Dummies@master/modules/\\2\\3", modulesLines)
   
-  scriptLines[modulesStart:(modulesStart+modulesEnd-1)] <- modulesLines
+  SPcall[modulesStart:(modulesStart+modulesEnd-1)] <- modulesLines
+  
+  ## add overwrite = TRUE if not there
+  SPcall2 <- SPcall
+  SPcall2 <- sub("(.*)(<-)(.*)", "\\3", SPcall2)
+  SPcall2 <- parse(text = SPcall2) |> as.list() |> _[[1]] |> as.call()   ## as.list()[[1]] removes the `expression` part.
+  
+  overwritexists <- any(names(as.list(SPcall2)) == "overwrite")
+  
+  if (overwritexists) {
+    SPcall2list <- as.list(SPcall2)
+    if (isFALSE(SPcall2list$overwrite)) {
+      SPcall2list$overwrite <- TRUE
+      SPcall2 <- as.call(SPcall2list) |>
+        deparse()
+    }
+  } else {
+    SPcall2 <- as.call(append(as.list(SPcall2), list("overwrite" = TRUE))) |> 
+      deparse()
+  }
+  
+  ## add assignment
+  assignBit <- sub("(.*)(<-)(.*)", "\\1\\2", SPcall[1])
+  SPcall2[1] <- paste(assignBit, SPcall2[1])
+  
+  beforeSP <- scriptLines[1:(startSP-1)]
+  afterSP <- scriptLines[endSP:length(scriptLines)]
+  scriptLines <- c(beforeSP, SPcall2, afterSP)
   
   ff <- sub("\\.R", "_test\\.R", basename(f))
   writeLines(scriptLines, file.path("test", ff))

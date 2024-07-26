@@ -30,56 +30,27 @@ if (!dir.exists(file.path(modPath, "projectSpeciesDist"))) {
 ## we will use setupProject to install and prepare all inputs to initialise the workflow 
 library(SpaDES.project)
 
-mySimMaxEnt <- setupProject(paths = list("packagePath" = "packages/",
-                                         "projectPath" = projPath),
-                            Restart = TRUE,  ## RStudio will restart. You have to run the code above and this call again
-                            modules = c("CeresBarros/SpaDES4Dummies@master/modules/speciesAbundanceData", "CeresBarros/SpaDES4Dummies@master/modules/climateData", "CeresBarros/SpaDES4Dummies@master/modules/projectSpeciesDist"),
-                            options = list(reproducible.useCache = TRUE,
-                                           reproducible.cachePath = paths$cachePath,  ## <------ you can use "paths" which is the first argument (and become an internal object). See ?setupProject
-                                           reproducible.destinationPath = paths$inputPath, ## all downloaded and pre-processed layers go here
-                                           spades.moduleCodeChecks = FALSE,
-                                           repos = repos),
-                            packages = c(## the following packages are needed outside the modules
-                              "DiagrammeR",
-                              "ggpubr",
-                              "SpaDES.experiment",
-                              "SpaDES.tools"
-                            ),
-                            params = list(
-                              "speciesAbundanceData" = list(
-                                ".plots" = c("png"),
-                                ".useCache" = c(".inputObjects", "init") 
-                              ),
-                              "climateData" = list(
-                                ".plots" = c("png"),
-                                ".useCache" = c(".inputObjects", "init")
-                              ),
-                              "projectSpeciesDist" = list(
-                                "statModel" = "MaxEnt",
-                                ".plots" = c("png"),
-                                ".useCache" = c(".inputObjects", "init")
-                              )
-                            ),
-                            times = list(start = 1, end = 5, timeunit = "year"),
-                            studyAreaRas = {
-                              studyArea <- SpaDES.tools::randomStudyArea(size = 1e10, seed = 123)
-                              terra::rasterize(studyArea,
-                                               terra::rast(extent = terra::ext(studyArea),
-                                                           crs = terra::crs(studyArea, proj = TRUE),
-                                                           resolution = 1000))
-                            },
-                            sideEffects = {
-                              ## dismo needs a few tweaks
-                              out <- reproducible::preProcess(targetFile = "maxent.jar",
-                                                              url = "https://github.com/mrmaxent/Maxent/blob/master/ArchivedReleases/3.4.4/maxent.jar?raw=true",
-                                                              destinationPath = paths$inputPath,
-                                                              fun = NA)
-                              file.copy(out$targetFilePath, 
-                                        file.path(system.file("java", package = "dismo"), "maxent.jar"),
-                                        overwrite = TRUE)
-                            }
-)
-
+mySimMaxEnt <- setupProject(paths = list(packagePath = "packages/", projectPath = projPath), 
+    Restart = TRUE, modules = c("CeresBarros/SpaDES4Dummies@master/modules/speciesAbundanceData", 
+        "CeresBarros/SpaDES4Dummies@master/modules/climateData", 
+        "CeresBarros/SpaDES4Dummies@master/modules/projectSpeciesDist"), 
+    options = list(reproducible.useCache = TRUE, reproducible.cachePath = paths$cachePath, 
+        reproducible.destinationPath = paths$inputPath, spades.moduleCodeChecks = FALSE, 
+        repos = repos), packages = c("DiagrammeR", "ggpubr", 
+        "SpaDES.experiment", "SpaDES.tools"), params = list(speciesAbundanceData = list(.plots = c("png"), 
+        .useCache = c(".inputObjects", "init")), climateData = list(.plots = c("png"), 
+        .useCache = c(".inputObjects", "init")), projectSpeciesDist = list(statModel = "MaxEnt", 
+        .plots = c("png"), .useCache = c(".inputObjects", "init"))), 
+    times = list(start = 1, end = 5, timeunit = "year"), studyAreaRas = {
+        SpaDES.tools::randomStudyArea(size = 1e+10, seed = 123)
+        terra::rasterize(studyArea, terra::rast(extent = terra::ext(studyArea), 
+            crs = terra::crs(studyArea, proj = TRUE), resolution = 1000))
+    }, sideEffects = {
+        reproducible::preProcess(targetFile = "maxent.jar", url = "https://github.com/mrmaxent/Maxent/blob/master/ArchivedReleases/3.4.4/maxent.jar?raw=true", 
+            destinationPath = paths$inputPath, fun = NA)
+        file.copy(out$targetFilePath, file.path(system.file("java", 
+            package = "dismo"), "maxent.jar"), overwrite = TRUE)
+    }, overwrite = TRUE)
 ## check that rJava can be loaded.
 if (!require(rJava, quietly = TRUE)) {
   stop(paste("Your Java installation may have problems, please check.\n", 
