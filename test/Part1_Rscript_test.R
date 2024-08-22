@@ -1,6 +1,7 @@
 ## start from a clean R session
 options(repos = c("https://predictiveecology.r-universe.dev/",
-                  CRAN = "https://cloud.r-project.org"))
+                  "https://cloud.r-project.org", 
+                  getOption("repos")))
 install.packages(c("SpaDES.project", "SpaDES.core"))
 
 library(SpaDES.project)

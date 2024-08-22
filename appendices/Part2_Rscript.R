@@ -5,8 +5,9 @@ if (getRversion() < "4.2.1") {
                 "See https://github.com/rspatial/dismo/issues/13"))
 }
 
-repos <- c("https://predictiveecology.r-universe.dev/", 
-           CRAN = "https://cloud.r-project.org")
+repos <- c("https://predictiveecology.r-universe.dev/",
+           "https://cloud.r-project.org",
+           getOption("repos"))
 install.packages(c("SpaDES.project", "SpaDES.core"), repos = repos)
 
 ## decide where you're working

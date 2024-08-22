@@ -5,8 +5,9 @@ if (getRversion() < "4.2.1") {
                 "See https://github.com/rspatial/dismo/issues/13"))
 }
 
-repos <- c("https://predictiveecology.r-universe.dev/", 
-           CRAN = "https://cloud.r-project.org")
+repos <- c("https://predictiveecology.r-universe.dev/",
+           "https://cloud.r-project.org",
+           getOption("repos"))
 install.packages(c("SpaDES.project", "SpaDES.core"), repos = repos)
 
 ## decide where you're working
@@ -32,28 +33,28 @@ library(SpaDES.project)
 
 
 mySimMaxEnt <- setupProject(paths = list(packagePath = "packages/", projectPath = projPath), 
-                            Restart = TRUE, modules = c("CeresBarros/SpaDES4Dummies@master/modules/speciesAbundanceData", 
-                                                        "CeresBarros/SpaDES4Dummies@master/modules/climateData", 
-                                                        "CeresBarros/SpaDES4Dummies@master/modules/projectSpeciesDist"), 
-                            options = list(reproducible.useCache = TRUE, reproducible.cachePath = paths$cachePath, 
-                                           reproducible.destinationPath = paths$inputPath, spades.moduleCodeChecks = FALSE, 
-                                           repos = repos), packages = c("DiagrammeR", "ggpubr", 
-                                                                        "SpaDES.experiment", "SpaDES.tools"), params = list(speciesAbundanceData = list(.plots = c("png"), 
-                                                                                                                                                        .useCache = c(".inputObjects", "init")), climateData = list(.plots = c("png"), 
-                                                                                                                                                                                                                    .useCache = c(".inputObjects", "init")), projectSpeciesDist = list(statModel = "MaxEnt", 
-                                                                                                                                                                                                                                                                                       .plots = c("png"), .useCache = c(".inputObjects", "init"))), 
-                            times = list(start = 1, end = 5, timeunit = "year"), studyAreaRas = {
-                              studyArea <- SpaDES.tools::randomStudyArea(size = 1e+10, 
-                                                                         seed = 123)
-                              terra::rasterize(studyArea, terra::rast(extent = terra::ext(studyArea), 
-                                                                      crs = terra::crs(studyArea, proj = TRUE), resolution = 1000))
-                            }, sideEffects = {
-                              out <- reproducible::preProcess(targetFile = "maxent.jar", 
-                                                              url = "https://github.com/mrmaxent/Maxent/blob/master/ArchivedReleases/3.4.4/maxent.jar?raw=true", 
-                                                              destinationPath = paths$inputPath, fun = NA)
-                              file.copy(out$targetFilePath, file.path(system.file("java", 
-                                                                                  package = "dismo"), "maxent.jar"), overwrite = TRUE)
-                            }, overwrite = TRUE)
+    Restart = TRUE, modules = c("CeresBarros/SpaDES4Dummies@master/modules/speciesAbundanceData", 
+        "CeresBarros/SpaDES4Dummies@master/modules/climateData", 
+        "CeresBarros/SpaDES4Dummies@master/modules/projectSpeciesDist"), 
+    options = list(reproducible.useCache = TRUE, reproducible.cachePath = paths$cachePath, 
+        reproducible.destinationPath = paths$inputPath, spades.moduleCodeChecks = FALSE, 
+        repos = repos), packages = c("DiagrammeR", "ggpubr", 
+        "SpaDES.experiment", "SpaDES.tools"), params = list(speciesAbundanceData = list(.plots = c("png"), 
+        .useCache = c(".inputObjects", "init")), climateData = list(.plots = c("png"), 
+        .useCache = c(".inputObjects", "init")), projectSpeciesDist = list(statModel = "MaxEnt", 
+        .plots = c("png"), .useCache = c(".inputObjects", "init"))), 
+    times = list(start = 1, end = 5, timeunit = "year"), studyAreaRas = {
+        studyArea <- SpaDES.tools::randomStudyArea(size = 1e+10, 
+            seed = 123)
+        terra::rasterize(studyArea, terra::rast(extent = terra::ext(studyArea), 
+            crs = terra::crs(studyArea, proj = TRUE), resolution = 1000))
+    }, sideEffects = {
+        out <- reproducible::preProcess(targetFile = "maxent.jar", 
+            url = "https://github.com/mrmaxent/Maxent/blob/master/ArchivedReleases/3.4.4/maxent.jar?raw=true", 
+            destinationPath = paths$inputPath, fun = NA)
+        file.copy(out$targetFilePath, file.path(system.file("java", 
+            package = "dismo"), "maxent.jar"), overwrite = TRUE)
+    }, overwrite = TRUE)
 
 if (!require(rJava, quietly = TRUE)) {
   stop(paste("Your Java installation may have problems, please check.\n", 
