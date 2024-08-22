@@ -50,6 +50,8 @@ jobs:
           Ncpus: 2
           r-version: ${{ matrix.config.r }}
           use-public-rspm: false
+          extra-repositories: 'https://cran-archive.r-project.org/'           
+
           
       - name: Install package dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
