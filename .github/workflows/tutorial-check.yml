@@ -61,6 +61,7 @@ jobs:
           packages: |
             any::rJava
             any::withr
+            any::SpaDES.tools
 
       - name: Run tutorials - Part 1
         run: |
