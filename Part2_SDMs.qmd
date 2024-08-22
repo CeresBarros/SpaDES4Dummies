@@ -162,7 +162,8 @@ setupProject(paths = list(projectPath = "~/SpaDES4Dummies_Part2",
                           packagePath = "~/SpaDES4Dummies_Part2/packages"),
              modules = c("CeresBarros/SpaDES4Dummies@master/modules/speciesAbundanceData",
                          "CeresBarros/SpaDES4Dummies@master/modules/climateData", 
-                         "CeresBarros/SpaDES4Dummies@master/modules/projectSpeciesDist")
+                         "CeresBarros/SpaDES4Dummies@master/modules/projectSpeciesDist"),
+             overwrite = TRUE
 )
 ```
 
