@@ -52,6 +52,8 @@ jobs:
       - name: Install package dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
+          cache: "always"
+          cache-version: 1
           packages: |
             any::cffr
             any::ggplot2
