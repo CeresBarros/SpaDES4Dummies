@@ -68,6 +68,7 @@ jobs:
             any::rsvg
             any::terra
             any::V8
+            ropensci/NLMR
       
       - name: Render book 🔧
         run: Rscript render.R
