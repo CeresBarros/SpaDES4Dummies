@@ -6,22 +6,25 @@
 ## If exact location is required, functions will be: `sim$.mods$<moduleName>$FunctionName`.
 defineModule(sim, list(
   name = "projectSpeciesDist",
-  description = "",
-  keywords = "",
+  description = paste("Prediction module that uses species distribution models to project",
+                      "tree species presence/absence as a function of changes in climate predictors.", 
+                      "Depends on modules 'speciesAbundanceData' and 'climateData' for inputs."),
+  keywords = c("minimal SpaDES example", "species distribution model"),
   authors = structure(list(list(given = c("Ceres"), family = "Barros", 
                                 role = c("aut", "cre"), email = "ceres.barros@ubc.ca", comment = NULL)), class = "person"),
   childModules = character(0),
-  version = list(projectSpeciesDist = "1.0.0"),
+  version = list(projectSpeciesDist = "1.0.1"),
   timeframe = as.POSIXlt(c(NA, NA)),
   timeunit = "year",
   citation = list("citation.bib"),
+  loadOrder = list(after = "speciesAbundanceData", "climateData"),
   documentation = list("README.md", "projectSpeciesDist.Rmd"), ## same file
   reqdPkgs = list("SpaDES.core (>=2.0.2)",
                   "caret", "data.table", "dismo",
                   "ggplot2", "rJava", "rasterVis"),
   parameters = bindrows(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
-    defineParameter("predVars", "character", c("BIO1", "BIO4", "BIO12", "BIO15"), NA, NA,
+    defineParameter("predVars", "character", c("BIO01", "BIO04", "BIO12", "BIO15"), NA, NA,
                     "Predictors used in statistical model."),
     defineParameter("presThresh", "numeric", 10, 0, NA,
                     paste("Minimum threshold for the species to be considered present, when",
@@ -245,7 +248,7 @@ projSDMEvent <- function(sim) {
 
 plotProjEvent <- function(sim) {
   # ! ----- EDIT BELOW ----- ! #
-  checkPath(file.path(outputPath(sim), "figures"), create = TRUE)
+  checkPath(figurePath(sim), create = TRUE)
   
   if (any(!is.na(P(sim)$.plots))) {
     
@@ -258,7 +261,7 @@ plotProjEvent <- function(sim) {
     if (any(notScreen != "png")) {
       warning(paste(currentModule(sim), "only saves to PNG at the moment."))
     }
-    png(file.path(outputPath(sim), "figures", paste0("SDMresponsePlot_", fileSuffix)))
+    png(file.path(figurePath(sim), paste0("SDMresponsePlot_", fileSuffix)))
     response(sim$sdmOut)
     dev.off()
     
@@ -267,13 +270,13 @@ plotProjEvent <- function(sim) {
     clearPlot()
     rawValsPlot <- sim$sppDistProj[[paste0("year", time(sim))]]
     Plots(rawValsPlot, fn = plotSpatRaster, types = P(sim)$.plots,
-          usePlot = TRUE, filename = file.path(outputPath(sim), "figures", paste0("projRawVals_", fileSuffix)),
+          usePlot = TRUE, filename = paste0("projRawVals_", fileSuffix),
           plotTitle = paste("Projected raw values -", "year", time(sim)),
           xlab = "Longitude", ylab = "Latitude")
     
     PAsPlot <- terra::as.int(sim$sppDistProj[[paste0("year", time(sim))]] > sim$thresh)
     Plots(PAsPlot, fn = plotSpatRaster, types = P(sim)$.plots,
-          usePlot = TRUE, filename = file.path(outputPath(sim), "figures", paste0("projPA_", fileSuffix)),
+          usePlot = TRUE, filename = paste0("projPA_", fileSuffix),
           plotTitle = paste("Projected presence/absence -", "year", time(sim)),
           xlab = "Longitude", ylab = "Latitude")
   }

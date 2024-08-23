@@ -2,8 +2,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.489">
+<meta name="generator" content="quarto-1.4.553">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="author" content="Ceres Barros">
+<meta name="author" content="Tati Micheletti">
 <title>SpaDES For Dummies - 1&nbsp; Introducing SpaDES with a dummy ecological model</title>
 <style>
 code{white-space: pre-wrap;}
@@ -93,12 +95,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
     "search-submit-button-title": "Submit",
     "search-label": "Search"
   }
 }</script><style>html{ scroll-behavior: smooth; }</style>
-<link rel="stylesheet" href="css/style.css">
 <meta name="twitter:title" content="SpaDES For Dummies - 1&nbsp; Introducing SpaDES with a dummy ecological model">
 <meta name="twitter:description" content="">
 <meta name="twitter:card" content="summary">
@@ -139,7 +141,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./Part1_DummyModel.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introducing `SpaDES` with a dummy ecological model</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./Part1_DummyModel.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introducing <code>SpaDES</code> with a dummy ecological model</span></a></li></ol></nav>
         <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -214,8 +216,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <a href="#before-spades" id="toc-before-spades" class="nav-link active" data-scroll-target="#before-spades"><span class="header-section-number">1.1</span> BEFORE <code>SpaDES</code></a>
   <ul>
 <li><a href="#setup" id="toc-setup" class="nav-link" data-scroll-target="#setup"><span class="header-section-number">1.1.1</span> Setup</a></li>
-  <li><a href="#species-abundance-simulations" id="toc-species-abundance-simulations" class="nav-link" data-scroll-target="#species-abundance-simulations"><span class="header-section-number">1.1.2</span> Species abundance “simulations”</a></li>
-  <li><a href="#temperature-simulations" id="toc-temperature-simulations" class="nav-link" data-scroll-target="#temperature-simulations"><span class="header-section-number">1.1.3</span> Temperature “simulations”</a></li>
+  <li><a href="#species-abundance-data-generator" id="toc-species-abundance-data-generator" class="nav-link" data-scroll-target="#species-abundance-data-generator"><span class="header-section-number">1.1.2</span> Species abundance data generator</a></li>
+  <li><a href="#temperature-data-generator" id="toc-temperature-data-generator" class="nav-link" data-scroll-target="#temperature-data-generator"><span class="header-section-number">1.1.3</span> Temperature data generator</a></li>
   <li><a href="#data-analysis" id="toc-data-analysis" class="nav-link" data-scroll-target="#data-analysis"><span class="header-section-number">1.1.4</span> Data analysis</a></li>
   </ul>
 </li>
@@ -236,11 +238,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#creating-and-adding-additional-modules-the-temperature-module" id="toc-creating-and-adding-additional-modules-the-temperature-module" class="nav-link" data-scroll-target="#creating-and-adding-additional-modules-the-temperature-module"><span class="header-section-number">1.2.3</span> Creating and adding additional modules: the <em>temperature</em> module</a></li>
   <li><a href="#modules-that-depend-on-other-modules-the-speciestemplm-module" id="toc-modules-that-depend-on-other-modules-the-speciestemplm-module" class="nav-link" data-scroll-target="#modules-that-depend-on-other-modules-the-speciestemplm-module"><span class="header-section-number">1.2.4</span> Modules that depend on other modules: the <em>speciesTempLM</em> module</a></li>
   <li>
-<a href="#simulation" id="toc-simulation" class="nav-link" data-scroll-target="#simulation"><span class="header-section-number">1.2.5</span> Simulation</a>
+<a href="#the-workflow" id="toc-the-workflow" class="nav-link" data-scroll-target="#the-workflow"><span class="header-section-number">1.2.5</span> The workflow</a>
   <ul class="collapse">
-<li><a href="#simulation-setup-in-a-global-script" id="toc-simulation-setup-in-a-global-script" class="nav-link" data-scroll-target="#simulation-setup-in-a-global-script"><span class="header-section-number">1.2.5.1</span> Simulation setup in a “global” script</a></li>
-  <li><a href="#checking-the-simulation-setup" id="toc-checking-the-simulation-setup" class="nav-link" data-scroll-target="#checking-the-simulation-setup"><span class="header-section-number">1.2.5.2</span> Checking the simulation setup</a></li>
-  <li><a href="#running-spades" id="toc-running-spades" class="nav-link" data-scroll-target="#running-spades"><span class="header-section-number">1.2.5.3</span> Running <code>SpaDES</code></a></li>
+<li><a href="#sec-setup" id="toc-sec-setup" class="nav-link" data-scroll-target="#sec-setup"><span class="header-section-number">1.2.5.1</span> Workflow setup in a “global” script</a></li>
+  <li><a href="#checking-the-workflow-setup" id="toc-checking-the-workflow-setup" class="nav-link" data-scroll-target="#checking-the-workflow-setup"><span class="header-section-number">1.2.5.2</span> Checking the workflow setup</a></li>
+  <li><a href="#running-the-workflow" id="toc-running-the-workflow" class="nav-link" data-scroll-target="#running-the-workflow"><span class="header-section-number">1.2.5.3</span> Running the workflow</a></li>
   </ul>
 </li>
   <li><a href="#additional-notes" id="toc-additional-notes" class="nav-link" data-scroll-target="#additional-notes"><span class="header-section-number">1.2.6</span> Additional notes</a></li>
@@ -257,6 +259,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Authors</div>
+    <div class="quarto-title-meta-contents">
+             <p>Ceres Barros </p>
+             <p>Tati Micheletti </p>
+          </div>
+  </div>
     
   
     
@@ -264,18 +273,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   
 
 
-</header><p>Authors: Ceres Barros, Tati Micheletti</p>
-<p>Let’s imagine we want to explore how the relationship between a species’ abundance and temperature changes over time. Both the abundance data and the temperature data are being constantly updated by a simulation model, and we want to analyse the relationship between the two iteratively, without needing to manually run a script to account for the newly generated data inputs.</p>
+</header><p>Let’s imagine we want to explore how the relationship between a species’ abundance and temperature changes over time. Both the abundance data and the temperature data are being constantly updated by other models, and we want to analyse the relationship between the two iteratively, without needing to manually run a script to account for the newly generated data inputs.</p>
 <section id="before-spades" class="level2" data-number="1.1"><h2 data-number="1.1" class="anchored" data-anchor-id="before-spades">
 <span class="header-section-number">1.1</span> BEFORE <code>SpaDES</code>
 </h2>
-<p>If we use R to develop our species abundance and temperature simulation models in the ‘conventional way’, we’ll probably have i) (the worst case scenario) several scripts that run simulations and data treatment/analysis separately and have to be executed manually, or ii) a long script where everything happens - the simulations and data analysis -, iii) a main script that sources others that do the simulation and analyses. Option i) is more common when different software are used for different parts of the process (e.g., a simulation model in <em>C++</em> generates data that is then analysed in R). Option ii) is inconvenient because very long scripts make changes and updates to the script - debugging can also be more tiresome. Option iii), is similar to the <code>SpaDES</code> way of thinking. The difference is that <code>SpaDES</code> defines a standard way of writing different components of a model, or of a modelling framework. This makes changing, updating and sharing code - or modules - easier, as well as swapping and adding modules in a modelling framework.</p>
+<p>If we use R to develop our species abundance and temperature models in the ‘conventional way’, we’ll probably have i) (the worst case scenario) several scripts that run predictions and data treatment/analysis separately and have to be executed manually, or ii) a long script where everything happens - the predictions and data analysis -, iii) a main script that sources others that do the predictions and analyses.</p>
+<p>Option i) is more common when different software are used for different parts of the process (e.g., a model in <em>C++</em> generates data that is then analysed in R).</p>
+<p>Option ii) is inconvenient because very long scripts make changes and updates to the script - debugging can also be more tiresome.</p>
+<p>Option iii) is similar to the <code>SpaDES</code> way of thinking. The difference is that <code>SpaDES</code> defines a standard way of writing different components of a model, or of a modelling framework. This makes changing, updating and sharing code - or modules - easier, as well as swapping and adding modules in a modelling framework.</p>
 <p>The example below is so minimal that it is unlikely to show the full benefits of using <code>SpaDES</code> - the same could be accomplished with a fairly short script. However, it introduces the different parts of a module and how to link modules.</p>
-<p><a href="./Part2_SDMs.html">Chapter 2</a> goes a step further and uses real datasets to project species presences across a landscape in Canada. In <a href="./Part2_SDMs.html">Chapter 2</a>, we introduce <code>SpaDES</code> features that we most commonly use in our work (e.g., caching and spatial data processing) and provide some coding best practices that we use ourselves (e.g., code assertions).</p>
+<p><a href="./Part2_SDMs.html">Chapter 2</a> goes a step further and uses real datasets to project a tree species distribution across a landscape in Canada. In <a href="./Part2_SDMs.html">Chapter 2</a>, we also introduce <code>SpaDES</code> features that we most commonly use in our work (e.g., caching and spatial data processing) and talk about coding best practices (e.g., code assertions).</p>
 <section id="setup" class="level3" data-number="1.1.1"><h3 data-number="1.1.1" class="anchored" data-anchor-id="setup">
 <span class="header-section-number">1.1.1</span> Setup</h3>
-<p>This is what you’d normally do… Install all the packages in some way that you probably didn’t record in your scripts and then start your script with loading the packages:</p>
-<div class="cell" data-hash="Part1_DummyModel_cache/html/loadPkgs_8ad437f53e0aa7d54e30f8db4ddf7b69">
+<p>This is what you’d normally do… Install all the packages in some way that you probably didn’t write in your scripts and then start your script with loading the packages:</p>
+<div class="cell">
 <details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## please start from a clean R session</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"ropensci/NLMR"</span><span class="op">)</span>  <span class="co">## you will need this ;)</span></span>
 <span></span>
@@ -285,97 +296,116 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rpkgs.datanovia.com/ggpubr/">ggpubr</a></span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p>And now create a raster template:</p>
-<div class="cell" data-hash="Part1_DummyModel_cache/html/the_r_way_raster_d4197c9eec7a5fb3d459ed75234b0691">
-<details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/rast.html">rast</a></span><span class="op">(</span>nrows <span class="op">=</span> <span class="fl">100</span>, ncols <span class="op">=</span> <span class="fl">100</span>, xmin <span class="op">=</span> <span class="op">-</span><span class="fl">50</span>, xmax <span class="op">=</span> <span class="fl">50</span>, ymin <span class="op">=</span> <span class="op">-</span><span class="fl">50</span>,</span>
-<span>    ymax <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>You then create or load a study area raster (ours is a raster template):</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html">rast</a></span><span class="op">(</span>nrows <span class="op">=</span> <span class="fl">100</span>, ncols <span class="op">=</span> <span class="fl">100</span>, xmin <span class="op">=</span> <span class="op">-</span><span class="fl">50</span>, xmax <span class="op">=</span> <span class="fl">50</span>, ymin <span class="op">=</span> <span class="op">-</span><span class="fl">50</span>, ymax <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-</section><section id="species-abundance-simulations" class="level3" data-number="1.1.2"><h3 data-number="1.1.2" class="anchored" data-anchor-id="species-abundance-simulations">
-<span class="header-section-number">1.1.2</span> Species abundance “simulations”</h3>
-<p>Our VERY simple “simulation” model (in form of a function) generates rasters that follow a Gaussian distribution</p>
-<div class="cell" data-hash="Part1_DummyModel_cache/html/the_r_way_simulation_function_AB_411843871118ca18efb90d884f6e74a5">
+</section><section id="species-abundance-data-generator" class="level3" data-number="1.1.2"><h3 data-number="1.1.2" class="anchored" data-anchor-id="species-abundance-data-generator">
+<span class="header-section-number">1.1.2</span> Species abundance data generator</h3>
+<p>Our VERY simple species abundance model (in form of a function) generates species abundance rasters that follow a Gaussian distribution:</p>
+<div class="cell">
 <details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">abundance_model</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">ras</span>, <span class="va">Time</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="va">abund_outputs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="op">)</span></span>
-<span>    <span class="kw">for</span> <span class="op">(</span><span class="va">t</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">Time</span><span class="op">)</span> <span class="op">{</span></span>
-<span>        <span class="va">abund_outputs</span><span class="op">[[</span><span class="va">t</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu">NLMR</span><span class="fu">::</span><span class="fu"><a href="https://ropensci.github.io/NLMR/reference/nlm_mpd.html">nlm_mpd</a></span><span class="op">(</span>ncol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html">ncol</a></span><span class="op">(</span><span class="va">ras</span><span class="op">)</span>,</span>
-<span>            nrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html">nrow</a></span><span class="op">(</span><span class="va">ras</span><span class="op">)</span>, resolution <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/unique.html">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html">res</a></span><span class="op">(</span><span class="va">ras</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>            roughness <span class="op">=</span> <span class="fl">0.5</span>, rand_dev <span class="op">=</span> <span class="fl">100</span>, rescale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>            verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>            <span class="fu"><a href="https://rdrr.io/pkg/terra/man/rast.html">rast</a></span><span class="op">(</span><span class="op">)</span></span>
-<span>    <span class="op">}</span></span>
-<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">abund_outputs</span><span class="op">)</span></span>
+<span>  <span class="va">abund_outputs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">t</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">Time</span><span class="op">)</span> <span class="op">{</span> </span>
+<span>    <span class="va">abund_outputs</span><span class="op">[[</span><span class="va">t</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu">NLMR</span><span class="fu">::</span><span class="fu"><a href="https://ropensci.github.io/NLMR/reference/nlm_mpd.html">nlm_mpd</a></span><span class="op">(</span></span>
+<span>      ncol <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html">ncol</a></span><span class="op">(</span><span class="va">ras</span><span class="op">)</span>,</span>
+<span>      nrow <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html">nrow</a></span><span class="op">(</span><span class="va">ras</span><span class="op">)</span>,</span>
+<span>      resolution <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/unique.html">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html">res</a></span><span class="op">(</span><span class="va">ras</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>      roughness <span class="op">=</span> <span class="fl">0.5</span>, </span>
+<span>      rand_dev <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>      rescale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>      verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>      <span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html">rast</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">abund_outputs</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p>Set the length of the simulation (or simply the number of model iterations), run it and plot results (all ABUNDANCE plots together):</p>
-<div class="cell" data-hash="Part1_DummyModel_cache/html/the_r_way_simulation_length_292a1b23b49c181c86abbb868d72b5d3">
+<p>Set the number of model iterations, run it and plot results (all ABUNDANCE plots together):</p>
+<div class="cell">
 <details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">Time</span> <span class="op">&lt;-</span> <span class="fl">10</span></span>
 <span><span class="va">abundance</span> <span class="op">&lt;-</span> <span class="fu">abundance_model</span><span class="op">(</span>ras <span class="op">=</span> <span class="va">r</span>, Time <span class="op">=</span> <span class="va">Time</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://quickplot.predictiveecology.org/reference/dev.html">dev</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/rast.html">rast</a></span><span class="op">(</span><span class="va">abundance</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html">rast</a></span><span class="op">(</span><span class="va">abundance</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details><div class="cell-output-display">
-<p><img src="Part1_DummyModel_files/figure-html/the_r_way_simulation_length-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure"><p><img src="Part1_DummyModel_files/figure-html/the_r_way_simulation_length-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
 </div>
 </div>
-</section><section id="temperature-simulations" class="level3" data-number="1.1.3"><h3 data-number="1.1.3" class="anchored" data-anchor-id="temperature-simulations">
-<span class="header-section-number">1.1.3</span> Temperature “simulations”</h3>
-<p>The temperature simulation model will be similar to the vegetation one - remember this is a dummy example.</p>
-<div class="cell" data-hash="Part1_DummyModel_cache/html/the_r_way_simulation_function_TMP_d940d49e308d503f2666d2ea01e07a00">
+</div>
+</section><section id="temperature-data-generator" class="level3" data-number="1.1.3"><h3 data-number="1.1.3" class="anchored" data-anchor-id="temperature-data-generator">
+<span class="header-section-number">1.1.3</span> Temperature data generator</h3>
+<p>The temperature generator model will be similar to the vegetation one - remember this is a dummy example.</p>
+<div class="cell">
 <details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">temperature_model</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">ras</span>, <span class="va">Time</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="va">temp_outputs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="op">)</span></span>
-<span>    <span class="kw">for</span> <span class="op">(</span><span class="va">t</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">Time</span><span class="op">)</span> <span class="op">{</span></span>
-<span>        <span class="va">temp_outputs</span><span class="op">[[</span><span class="va">t</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu">NLMR</span><span class="fu">::</span><span class="fu"><a href="https://ropensci.github.io/NLMR/reference/nlm_mpd.html">nlm_mpd</a></span><span class="op">(</span>ncol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html">ncol</a></span><span class="op">(</span><span class="va">ras</span><span class="op">)</span>,</span>
-<span>            nrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html">nrow</a></span><span class="op">(</span><span class="va">ras</span><span class="op">)</span>, resolution <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/unique.html">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html">res</a></span><span class="op">(</span><span class="va">ras</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>            roughness <span class="op">=</span> <span class="fl">0.5</span>, rand_dev <span class="op">=</span> <span class="fl">10</span>, rescale <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>            verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>            <span class="fu"><a href="https://rdrr.io/pkg/terra/man/rast.html">rast</a></span><span class="op">(</span><span class="op">)</span></span>
-<span>    <span class="op">}</span></span>
-<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">temp_outputs</span><span class="op">)</span></span>
+<span>  <span class="va">temp_outputs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">t</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">Time</span><span class="op">)</span> <span class="op">{</span> </span>
+<span>    <span class="va">temp_outputs</span><span class="op">[[</span><span class="va">t</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu">NLMR</span><span class="fu">::</span><span class="fu"><a href="https://ropensci.github.io/NLMR/reference/nlm_mpd.html">nlm_mpd</a></span><span class="op">(</span></span>
+<span>      ncol <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html">ncol</a></span><span class="op">(</span><span class="va">ras</span><span class="op">)</span>,</span>
+<span>      nrow <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html">nrow</a></span><span class="op">(</span><span class="va">ras</span><span class="op">)</span>,</span>
+<span>      resolution <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/unique.html">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html">res</a></span><span class="op">(</span><span class="va">ras</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>      roughness <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>      rand_dev <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>      rescale <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>      verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>      <span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html">rast</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">temp_outputs</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>Run the model and plot results (all temperature plots together)</p>
-<div class="cell" data-hash="Part1_DummyModel_cache/html/the_r_way_plot_results_TMP_a07889c765b7994ef38e20c78df3ad1c">
+<div class="cell">
 <details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">temperature</span> <span class="op">&lt;-</span> <span class="fu">temperature_model</span><span class="op">(</span>ras <span class="op">=</span> <span class="va">r</span>, Time <span class="op">=</span> <span class="va">Time</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/rast.html">rast</a></span><span class="op">(</span><span class="va">temperature</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html">rast</a></span><span class="op">(</span><span class="va">temperature</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details><div class="cell-output-display">
-<p><img src="Part1_DummyModel_files/figure-html/the_r_way_plot_results_TMP-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure"><p><img src="Part1_DummyModel_files/figure-html/the_r_way_plot_results_TMP-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 </section><section id="data-analysis" class="level3" data-number="1.1.4"><h3 data-number="1.1.4" class="anchored" data-anchor-id="data-analysis">
 <span class="header-section-number">1.1.4</span> Data analysis</h3>
-<p>Now we analyse if species abundance and temperature are correlated.<br></p>
+<p>Now we analyse if species abundance and temperature are correlated.</p>
 <p>First, we create the data analysis function (a simple linear model):</p>
-<div class="cell" data-hash="Part1_DummyModel_cache/html/data_analysis_model_d2254a9186f3851a74812f05a0fe4675">
+<div class="cell">
 <details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">stats_analysis</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">Data</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/all.html">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"abund"</span>, <span class="st">"temp"</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/pkg/terra/man/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">Data</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>        <span class="va">lm1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">abund</span> <span class="op">~</span> <span class="va">temp</span>, data <span class="op">=</span> <span class="va">Data</span><span class="op">)</span></span>
-<span>        <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">Data</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">temp</span>, y <span class="op">=</span> <span class="va">abund</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>            <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_abline</a></span><span class="op">(</span>intercept <span class="op">=</span> <span class="va">lm1</span><span class="op">$</span><span class="va">coefficients</span><span class="op">[</span><span class="st">"(Intercept)"</span><span class="op">]</span>,</span>
-<span>                slope <span class="op">=</span> <span class="va">lm1</span><span class="op">$</span><span class="va">coefficients</span><span class="op">[</span><span class="st">"temp"</span><span class="op">]</span>, size <span class="op">=</span> <span class="fl">2</span>, col <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>            <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Temp."</span>, y <span class="op">=</span> <span class="st">"Species abundance"</span><span class="op">)</span></span>
-<span></span>
-<span>    <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
-<span>        <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="st">"Data must contain 'abund' and 'temp' columns"</span><span class="op">)</span></span>
-<span>    <span class="op">}</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/all.html">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"abund"</span>, <span class="st">"temp"</span><span class="op">)</span> <span class="op"><a href="https://rspatial.github.io/terra/reference/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">Data</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">lm1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">abund</span> <span class="op">~</span> <span class="va">temp</span>, data <span class="op">=</span> <span class="va">Data</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">Data</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>      <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">temp</span>, y <span class="op">=</span> <span class="va">abund</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>      <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_abline</a></span><span class="op">(</span>intercept <span class="op">=</span> <span class="va">lm1</span><span class="op">$</span><span class="va">coefficients</span><span class="op">[</span><span class="st">"(Intercept)"</span><span class="op">]</span>, </span>
+<span>                  slope <span class="op">=</span> <span class="va">lm1</span><span class="op">$</span><span class="va">coefficients</span><span class="op">[</span><span class="st">"temp"</span><span class="op">]</span>, size <span class="op">=</span> <span class="fl">2</span>, col <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>      <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>      <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Temp."</span>, y <span class="op">=</span> <span class="st">"Species abundance"</span><span class="op">)</span></span>
+<span>    </span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="st">"Data must contain 'abund' and 'temp' columns"</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
 <span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>Then we create a loop to analyse each plot of our time-series:</p>
-<div class="cell" data-hash="Part1_DummyModel_cache/html/data_analysis_6ceae61afe50a523cc206f982e73239d">
+<div class="cell">
 <details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">lmPlots</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">t</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">Time</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="va">outputdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>abund <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span><span class="op">(</span><span class="va">abundance</span><span class="op">[[</span><span class="va">t</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="op">]</span><span class="op">)</span>,</span>
-<span>        temp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span><span class="op">(</span><span class="va">temperature</span><span class="op">[[</span><span class="va">t</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
-<span>    <span class="va">lmPlots</span><span class="op">[[</span><span class="va">t</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu">stats_analysis</span><span class="op">(</span>Data <span class="op">=</span> <span class="va">outputdata</span><span class="op">)</span></span>
+<span>  <span class="va">outputdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>abund <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span><span class="op">(</span><span class="va">abundance</span><span class="op">[[</span><span class="va">t</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="op">]</span><span class="op">)</span>, temp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span><span class="op">(</span><span class="va">temperature</span><span class="op">[[</span><span class="va">t</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">lmPlots</span><span class="op">[[</span><span class="va">t</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu">stats_analysis</span><span class="op">(</span>Data <span class="op">=</span> <span class="va">outputdata</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span><span class="co">## Warning: Using `size` aesthetic for lines was deprecated in ggplot2</span></span>
 <span><span class="co">## 3.4.0.</span></span>
 <span><span class="co">## ℹ Please use `linewidth` instead.</span></span>
 <span><span class="fu"><a href="https://rpkgs.datanovia.com/ggpubr/reference/ggarrange.html">ggarrange</a></span><span class="op">(</span>plotlist <span class="op">=</span> <span class="va">lmPlots</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details><div class="cell-output-display">
-<p><img src="Part1_DummyModel_files/figure-html/data_analysis-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure"><p><img src="Part1_DummyModel_files/figure-html/data_analysis-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 </section></section><section id="after-spades" class="level2" data-number="1.2"><h2 data-number="1.2" class="anchored" data-anchor-id="after-spades">
@@ -383,59 +413,48 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </h2>
 <section id="the-control-script" class="level3" data-number="1.2.1"><h3 data-number="1.2.1" class="anchored" data-anchor-id="the-control-script">
 <span class="header-section-number">1.2.1</span> The control script</h3>
-<p>Let us now solve the same problem using the <code>SpaDES</code> approach.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> We start by creating an <em>.R</em> script (it can have any name) that sets up and runs the <code>SpaDES</code> model. The control script for this example is located on the root of the <em>SpaDES4Dummies</em> GitHub repository under the name <code>Part1_DummyModel.R</code>. Note that Markdown (<code>.Rmd</code>) scripts can also be used instead of `.R` scripts.</p>
-<p>We start by making sure all <code>SpaDES</code> packages and their dependencies are installed (and that the installation is <em>scripted</em>) using the <code>Require</code> package.</p>
-<div class="cell" data-hash="Part1_DummyModel_cache/html/globalscriptPart1_b6a1ee0dad56703dc45fcc985876f874">
+<p>Let us now solve the same problem using the <code>SpaDES</code> approach<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. We start by creating an <code>.R</code> script (it can have any name) that sets up and runs the <code>SpaDES</code> workflow.</p>
+<p><strong>The full R script used to run the example can be found in <a href="appendices/Part1_Rscript.html" class="quarto-xref"><span>Appendix A</span></a>.</strong></p>
+<p>We start by installing <code>SpaDES.project</code> which we will use to create the full project structure, install packages and their dependencies are installed, and create the necessary inputs to initialise the workflow.</p>
+<p>We also install <code>SpaDES.core</code> so that we can used it to create module <em>template</em> files.</p>
+<p>We then create modules using <code>newModule</code>. <code>newModule</code> creates a module folder (<em>speciesAbundance</em>) inside <code>/modules</code> that contains both the module <code>.R</code> script template, as well as the documentation template (the <code>.Rmd</code> file). Although we will not be discussing the <code>.Rmd</code> file, please bear in mind that this is a <strong>fundamental</strong> part of creating a reproducible and transparent module - check out the <a href="https://www.britishecologicalsociety.org/wp-content/uploads/2017/12/guide-to-reproducible-code.pdf">Guide to Reproducible Code in Ecology and Evolution</a> from the British Ecological Society). The documentation should contain a the description of the module, its input, parameters and outputs, and potentially a reproducible examples of how the module is executed.</p>
+<p><code>newModule</code> also created the folder <code>/data</code> where data necessary to the module can be put in, and the folder <code>/tests</code> that may contain testing scripts. We will not be using either of them in this example.</p>
+<div class="cell">
 <details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## start again from a clean R session</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span>repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"https://predictiveecology.r-universe.dev/"</span>,</span>
-<span>    CRAN <span class="op">=</span> <span class="st">"https://cloud.r-project.org"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span>repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"https://predictiveecology.r-universe.dev/"</span>, </span>
+<span>                  CRAN <span class="op">=</span> <span class="st">"https://cloud.r-project.org"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">## decide where you're working</span></span>
-<span><span class="va">mainPath</span> <span class="op">&lt;-</span> <span class="st">"~/SpaDES4Dummies_Part1"</span></span>
-<span><span class="va">pkgPath</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">mainPath</span>, <span class="st">"packages"</span>, <span class="va">version</span><span class="op">$</span><span class="va">platform</span>,</span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="va">version</span><span class="op">$</span><span class="va">major</span>, <span class="st">"."</span>, <span class="fu"><a href="https://rdrr.io/r/base/strsplit.html">strsplit</a></span><span class="op">(</span><span class="va">version</span><span class="op">$</span><span class="va">minor</span>, <span class="st">"[.]"</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/files2.html">dir.create</a></span><span class="op">(</span><span class="va">pkgPath</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/libPaths.html">.libPaths</a></span><span class="op">(</span><span class="va">pkgPath</span>, include.site <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>  <span class="co">## install packages in project library (proj-lib)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SpaDES.project"</span>, <span class="st">"SpaDES.core"</span>, <span class="st">"DiagrammeR"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="st">"remotes"</span> <span class="op"><a href="https://rdrr.io/pkg/terra/man/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/installed.packages.html">installed.packages</a></span><span class="op">(</span>lib.loc <span class="op">=</span> <span class="va">pkgPath</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
+<span><span class="va">projPath</span> <span class="op">&lt;-</span> <span class="st">"~/SpaDES4Dummies_Part1"</span></span>
 <span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="st">"Require"</span> <span class="op"><a href="https://rdrr.io/pkg/terra/man/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/installed.packages.html">installed.packages</a></span><span class="op">(</span>lib.loc <span class="op">=</span> <span class="va">pkgPath</span><span class="op">)</span> <span class="op">||</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span><span class="op">(</span><span class="st">"Require"</span>, lib.loc <span class="op">=</span> <span class="va">pkgPath</span><span class="op">)</span> <span class="op">&lt;</span> <span class="st">"0.3.1.9015"</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"PredictiveEcology/Require@2788b023ad191c29346ef8c64df71b937be307e2"</span>,</span>
-<span>        upgrade <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="fu">Require</span><span class="fu">::</span><span class="fu"><a href="https://Require.predictiveecology.org/reference/Require.html">Require</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SpaDES"</span>, <span class="st">"DiagrammeR"</span><span class="op">)</span>, require <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>    upgrade <span class="op">=</span> <span class="cn">FALSE</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span>, standAlone <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>  <span class="co">## automatically downloads all packages in the SpaDES family and their dependencies</span></span>
-<span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://spades.predictiveecology.org">SpaDES</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">setPaths</span><span class="op">(</span>cachePath <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">mainPath</span>, <span class="st">"cache"</span><span class="op">)</span>, inputPath <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">mainPath</span>,</span>
-<span>    <span class="st">"inputs"</span><span class="op">)</span>, modulePath <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">mainPath</span>, <span class="st">"modules"</span><span class="op">)</span>, outputPath <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">mainPath</span>,</span>
-<span>    <span class="st">"outputs"</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">getPaths</span><span class="op">(</span><span class="op">)</span>  <span class="co">## check that this is what you wanted</span></span>
-<span></span>
-<span><span class="co">## Let's create a self-contained module that will simulate</span></span>
-<span><span class="co">## the species' abundance for any given period of time and</span></span>
-<span><span class="co">## frequency.</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/files2.html">dir.exists</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="fu">getPaths</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">modulePath</span>, <span class="st">"speciesAbundance"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="fu">newModule</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"speciesAbundance"</span>, path <span class="op">=</span> <span class="fu">getPaths</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">modulePath</span><span class="op">)</span></span>
+<span><span class="co">## create a module template for the species' abundance generator</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/files2.html">dir.exists</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">projPath</span>, <span class="st">"modules"</span>, <span class="st">"speciesAbundance"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu">SpaDES.core</span><span class="fu">::</span><span class="fu"><a href="https://spades-core.predictiveecology.org/reference/newModule.html">newModule</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"speciesAbundance"</span>, path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">projPath</span>, <span class="st">"modules"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p>We then create modules using <code>newModule</code>. <code>newModule</code> creates a module folder (<em>speciesAbundance</em>) inside <code>/modules</code> that contains both the module <code>.R</code> script template, as well as the documentation template (the <code>.Rmd</code> file). Although we will not be discussing the <code>.Rmd</code> file, please bear in mind that this is a <strong>fundamental</strong> part of creating a reproducible and transparent module - check out the <a href="https://www.britishecologicalsociety.org/wp-content/uploads/2017/12/guide-to-reproducible-code.pdf">Guide to Reproducible Code in Ecology and Evolution</a> from the British Ecological Society). The documentation should contain a the description of the module, its input, parameters and outputs, and potentially a reproducible examples of how the module is executed.</p>
-<p><code>newModule</code> also created the folder <code>/data</code> where data necessary to the module can be put in, and the folder <code>/tests</code> that may contain testing scripts. We will not be using either of them in this example.</p>
-<p><strong>/!\ ATTENTION /!\</strong></p>
-<p><em><code>newModule</code> should only be run once, otherwise it will replace all edits and contents of the module folder with the templates - this is why it is wrapped in an <code>if</code> statement above.</em></p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>newModule</code> should only be run once, otherwise it will replace all edits and contents of the module folder with the templates - this is why it is wrapped in an <code>if</code> statement above.</p>
+</div>
+</div>
 <p>Now go ahead, open the <code>speciesAbundance.R</code> script and have a look at it.</p>
 <hr></section><section id="general-module-structure-speciesabundance-module" class="level3" data-number="1.2.2"><h3 data-number="1.2.2" class="anchored" data-anchor-id="general-module-structure-speciesabundance-module">
 <span class="header-section-number">1.2.2</span> General module structure: <em>speciesAbundance</em> module</h3>
 <p>The module template contains all the essential components of a module, with examples, and may seem overwhelming at first. We’ll go through it step by step (although not necessarily following the order of the script). The module script can be divided into 4 parts:</p>
-<p><a href="#defining-the-module"><strong>Defining the module</strong></a>: this is where the module is <strong>defined</strong>, i.e., the module’s metadata (e.g.&nbsp;module author(s), time units, basic parameters, general inputs and outputs, etc.);</p>
+<p>i.e., the module’s metadata (e.g.&nbsp;module author(s), time units, basic parameters, general inputs and outputs, etc.);</p>
 <p><a href="#events-and-event-functions"><strong>Events and event functions</strong></a>: these are the “actions” (or events) executed in the module (i.e.&nbsp;species reproduction, plotting, saving parameters) - simply put, <strong>WHAT</strong> the module does;</p>
-<p><a href="#scheduling-events"><strong>Scheduling events</strong></a>: this is how <code>SpaDES</code> schedules when each event is going to happen - in which order (e.g.&nbsp;during the simulation, when will <code>SpaDES</code> plot a graph) - simply put, <strong>WHEN</strong> the module does it;</p>
-<p><a href="#additional-module-functions"><strong>Additional module functions</strong></a>: any additional functions needed (e.g.&nbsp;this is used to keep the coding of your module as clear and straightforward as possible);</p>
+<p>is going to happen (e.g.&nbsp;during the workflow, when will a plot be generated) - simply put, <strong>WHEN</strong> the module does it;</p>
+<p><a href="#additional-module-functions"><strong>Additional module functions</strong></a>: any additional functions needed (e.g. this is used to keep the coding of your module as clear and straightforward as possible);</p>
 <p>The first thing to note is that <strong>the user does not need to manually run</strong> any of the code inside a module’s <code>.R</code> script. The function <code>simInit()</code> will do so when it sets up the simulation. We will see this see this later in detail.</p>
 <section id="defining-the-module" class="level4" data-number="1.2.2.1"><h4 data-number="1.2.2.1" class="anchored" data-anchor-id="defining-the-module">
 <span class="header-section-number">1.2.2.1</span> <strong>Defining the module</strong>
@@ -444,13 +463,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Although this dummy module example requires no true input data, we will define the template raster `r` as an “input” in the <code>expectsInput</code> function, and provide a default object in <code>.inputObjects</code> (see below). As for the outputs, it produces a list of abundance rasters (produced during the <code>abundanceSim</code> event). So we define it as an output in the<code>createsOutput</code> function.</p>
 <p>Note that we removed several parameters that come with the template created by the <code>newModule</code> function, as they are not needed for this example.</p>
 <p>To distinguish what input and output objects are in the context of a module, a good rule of thumb is that inputs are all the <code>sim$...</code> objects that appear for the first time (in the module events) on the <strong>right-hand side</strong> of a <code>&lt;-</code>, whereas output parameters are the <code>sim$...</code> objects that appear for the first time to the <strong>left-hand side</strong> of a <code>&lt;-</code>. Another way of explaining it for objects is illustrated in <a href="#fig-inOutObj" class="quarto-xref">Figure&nbsp;<span>1.1</span></a> :</p>
-<div class="cell" data-layout-align="center" data-hash="Part1_DummyModel_cache/html/fig-inOutObj_a58e364761e395b142a65422aaf35553">
+<div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<div id="fig-inOutObj" class="quarto-figure quarto-figure-center anchored" data-fig-align="center" width="80%">
+<div id="fig-inOutObj" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-inOutObj-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="D:/GitHub/SpaDES4Dummies/figures/obj.png" class="img-fluid quarto-figure-center figure-img" style="width:80.0%">
+<img src="C:/Users/cbarros/GitHub/SpaDES4Dummies/figures/obj.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%">
 </div>
-<figcaption class="figure quarto-float-caption quarto-float-fig" id="fig-inOutObj-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-inOutObj-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;1.1: Inputs and outputs in SpaDES: Object A comes from outside of the module (e.g.&nbsp;from an internet URL, from data you have, or from <code>.inputObjects</code>), while Module Z produces object C. Both objects serve as an inputs for Module Y, which in return produce as outputs objects B and D, respectivelly from objects A and C. As Module Z uses a simple function <em>internally</em> to create object C, it doesn’t have any inputs, such as our dummy example.
 </figcaption></figure>
 </div>
@@ -458,8 +477,8 @@ Figure&nbsp;1.1: Inputs and outputs in SpaDES: Object A comes from outside of th
 </div>
 <p>The default input objects created by the <code>.inputObjects</code> function (see [.inputObjects function]) during the <code>simInit</code> call are exceptions to this rule.</p>
 <p>Here is how we defined the <em>speciesAbundance</em> module:</p>
-<div class="cell" data-hash="Part1_DummyModel_cache/html/abund_module_a345369f6a433195b094dc569f93e590">
-<details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">defineModule</span><span class="op">(</span><span class="va">sim</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
+<div class="cell">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">defineModule</span><span class="op">(</span><span class="va">sim</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
 <span>  name <span class="op">=</span> <span class="st">"speciesAbundance"</span>,</span>
 <span>  description <span class="op">=</span> <span class="st">""</span>,</span>
 <span>  keywords <span class="op">=</span> <span class="st">""</span>,</span>
@@ -494,26 +513,49 @@ Figure&nbsp;1.1: Inputs and outputs in SpaDES: Object A comes from outside of th
 </div>
 <p>Note that the package versions that you define will depend on the ones that are installed on your computer. So take care to change them accordingly. The <code>SpaDES</code> package version suggested by the template reflects the version on your computer.</p>
 <p>The rest of the script defines the events and their sequences for this module - remember <code>SpaDES</code> = Spatial Discrete Event Simulator - and the events themselves.</p>
-<p><strong>/!\ ATTENTION /!\</strong></p>
-<p><em><code>defineModule()</code> is not intended to be run directly by the user – it is run internally during a <code>simInit()</code> call (see <a href="#simulation-setup-in-a-global-script">Simulation setup in a “global” script</a>). In other words, you don’t run any part of a module’s code directly in your session; you run <code>simInit()</code> with that module listed in the modules argument.</em></p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><em><code>defineModule()</code> is not intended to be run directly by the user</em> – it is run internally by the <code>simInit()</code> function (see <a href="#sec-setup" class="quarto-xref"><span>Section 1.2.5.1</span></a>).</p>
+<p>In other words, <em>you don’t run any part of a module’s code directly</em> in your session; you run <code>simInit()</code> with that module listed in the <code>modules</code> argument.</p>
+</div>
+</div>
 </section><section id="events-and-event-functions" class="level4" data-number="1.2.2.2"><h4 data-number="1.2.2.2" class="anchored" data-anchor-id="events-and-event-functions">
 <span class="header-section-number">1.2.2.2</span> <strong>Events and event functions</strong>
 </h4>
 <p>Module events are defined and scheduled in the <code>doEvent.&lt;module name&gt;</code> function (in this example, <code>doEvent.speciesAbundance</code> function; see [Scheduling events]. Since we are only interested in simulating and plotting species abundances, we removed unnecessary events from the script and kept: the initialisation (<code>init</code>), an abundance simulation event (<code>SimulAbund</code>) and a plotting event (<code>abundPlot</code>). Each of these events can execute one or more functions.</p>
 <p><em>Event functions</em> (actual R functions) mustn’t be confused with <em>event names</em>, which are the names of the events appearing in the <code>doEvent.&lt;module name&gt;</code>.</p>
-<p><strong>/!\ ATTENTION /!\</strong></p>
-<p><em>Event functions take only one argument, <code>sim</code> (the <code><a href="https://spades-core.predictiveecology.org/reference/simList-class.html">SpaDES.core::simList</a></code> object that stores all objects, modules, functions, etc., of a simulation; see <code>?simList</code>) and event functions always (and only) return <code>sim</code> (using <code>return(invisible(sim))</code>).</em></p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><em>Event functions take only one argument, <code>sim</code></em> (the <code>simList</code> object that stores all objects, modules, functions, etc., of a simulation; see <code><a href="https://spades-core.predictiveecology.org/reference/simList-class.html">?SpaDES.core::simList</a></code>) and event functions always (and only) return <code>sim</code> (using <code>return(invisible(sim))</code>).</p>
+</div>
+</div>
 <section id="initialisation-event-function" class="level5" data-number="1.2.2.2.1"><h5 data-number="1.2.2.2.1" class="anchored" data-anchor-id="initialisation-event-function">
 <span class="header-section-number">1.2.2.2.1</span> <em>Initialisation event function</em>
 </h5>
 <p>The initialisation event function (here, <code>abundanceInit</code>) can be seen as the starting point of the module. Unlike the <code>init</code> event, which must always be present, the function itself does not need to exist (see [Scheduling events]) and can have whatever name we want.</p>
 <p>Usually, this function will does pre-simulation steps that are only need to be executed once. In our dummy example, it creates a template raster and a storage list for our species abundance outputs (which will also be rasters). Notice that the only argument to <code>abundanceInit</code> is <code>sim</code>, a <code>simList</code> object that is also its only output.</p>
-<div class="cell" data-hash="Part1_DummyModel_cache/html/abund_module_SpaDES_24979caca4a5a2aeca648773859ba4da">
+<div class="cell">
 <details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">abundanceInit</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="co">## create storage list of species abundance</span></span>
-<span>    <span class="va">sim</span><span class="op">$</span><span class="va">abundRasters</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="op">)</span></span>
-<span></span>
-<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="co">## create storage list of species abundance</span></span>
+<span>  <span class="va">sim</span><span class="op">$</span><span class="va">abundRasters</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
@@ -522,12 +564,12 @@ Figure&nbsp;1.1: Inputs and outputs in SpaDES: Object A comes from outside of th
 </h5>
 <p>The function <code>abundanceSim</code> is the core event function of this module, where species abundances are generated via the event. Notice how instead of a <em>for-loop</em>, <code>abundanceSim</code> runs the <code>abundance_model</code> function (which we define separately below) and stores its outputs in the <code>sim$abundRaster</code> object. Notice as well that we use <code>time(sim)</code> as the identifier of the list slots where outputs are stored (see <code>?SpaDES.core::time</code>).</p>
 <p>As before, the sole argument and output to this event function is the <code>sim</code> object.</p>
-<div class="cell" data-hash="Part1_DummyModel_cache/html/abund_module3_e2db5243df0b8c205d4dd652756c55a0">
+<div class="cell">
 <details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">abundanceSim</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="co">## Generate species abundances - our 'simulation'</span></span>
-<span>    <span class="va">sim</span><span class="op">$</span><span class="va">abundRasters</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/time.html">time</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu">abundance_model</span><span class="op">(</span>ras <span class="op">=</span> <span class="va">sim</span><span class="op">$</span><span class="va">r</span><span class="op">)</span></span>
-<span></span>
-<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="co">## Generate species abundances - our "simulation"</span></span>
+<span>  <span class="va">sim</span><span class="op">$</span><span class="va">abundRasters</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/time.html">time</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu">abundance_model</span><span class="op">(</span>ras <span class="op">=</span> <span class="va">sim</span><span class="op">$</span><span class="va">r</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
@@ -536,14 +578,17 @@ Figure&nbsp;1.1: Inputs and outputs in SpaDES: Object A comes from outside of th
 <span class="header-section-number">1.2.2.2.3</span> <em>Plotting event function</em>
 </h5>
 <p>Finally, we created the <code>abundancePlot</code> event function to plot the species abundance rasters that are produced by the <code>abundanceSim</code> event function. Again, the sole argument and output of this function is <code>sim</code>.</p>
-<div class="cell" data-hash="Part1_DummyModel_cache/html/abund_module4_a313586d0d01488aadd4bf9f70a4a8e4">
+<div class="cell">
 <details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">abundancePlot</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="co">## plot abundances</span></span>
-<span>    <span class="va">plotTitle</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="st">"Species abundance\nat time"</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">sim</span><span class="op">$</span><span class="va">abundRasters</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">sim</span><span class="op">$</span><span class="va">abundRasters</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
-<span>    <span class="va">abundPlot</span> <span class="op">&lt;-</span> <span class="va">sim</span><span class="op">$</span><span class="va">abundRasters</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">sim</span><span class="op">$</span><span class="va">abundRasters</span><span class="op">)</span><span class="op">]</span><span class="op">]</span></span>
-<span>    <span class="fu"><a href="https://quickplot.predictiveecology.org/reference/Plot.html">Plot</a></span><span class="op">(</span><span class="va">abundPlot</span>, title <span class="op">=</span> <span class="va">plotTitle</span>, new <span class="op">=</span> <span class="cn">TRUE</span>, addTo <span class="op">=</span> <span class="st">"abundPlot"</span><span class="op">)</span></span>
-<span></span>
-<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="co">## plot abundances</span></span>
+<span>  <span class="va">plotTitle</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="st">"Species abundance\nat time"</span>,</span>
+<span>                     <span class="fu"><a href="https://rspatial.github.io/terra/reference/names.html">names</a></span><span class="op">(</span><span class="va">sim</span><span class="op">$</span><span class="va">abundRasters</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">sim</span><span class="op">$</span><span class="va">abundRasters</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span>  <span class="va">abundPlot</span> <span class="op">&lt;-</span> <span class="va">sim</span><span class="op">$</span><span class="va">abundRasters</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">sim</span><span class="op">$</span><span class="va">abundRasters</span><span class="op">)</span><span class="op">]</span><span class="op">]</span> </span>
+<span>  <span class="fu"><a href="https://quickplot.predictiveecology.org/reference/Plot.html">Plot</a></span><span class="op">(</span><span class="va">abundPlot</span>, </span>
+<span>       title <span class="op">=</span> <span class="va">plotTitle</span>, </span>
+<span>       new <span class="op">=</span> <span class="cn">TRUE</span>, addTo <span class="op">=</span> <span class="st">"abundPlot"</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
@@ -553,44 +598,47 @@ Figure&nbsp;1.1: Inputs and outputs in SpaDES: Object A comes from outside of th
 </h4>
 <p>The order in which module events are executed is determined by the <code>doEvent.&lt;module name&gt;</code> function. This function also defines the events themselves and what happens in them. The <code>switch</code> function executes each event (here <code>init</code>, <code>SimulAbund</code>, and <code>abundPlot</code>) and the events schedule themselves. Two things are of particular importance:</p>
 <ol type="1">
-<li>The <code>init</code> event is <strong>mandatory</strong>. This is the only event whose <em>name</em> that cannot be changed and that cannot be removed (even if it does not execute any event functions). All other <code>events</code> are optional and can be renamed. <code>SpaDES</code> searches and executes all modules’ <code>init</code> events automatically. Note that the names of event functions executed during <code>init</code> <em>can</em> have any name: here we changed the <code>Init</code> function name (suggested by the template) to <code>abundanceInit</code>.</li>
-<li>
-<strong>Events should only schedule themselves</strong>. The only exception is the <code>init</code>, which schedules the first time all other events are executed (even if a particular event only occurs once at the end of the simulation).</li>
+<li><p>The <code>init</code> event is <strong>mandatory</strong>. This is the only event whose <em>name</em> that cannot be changed and that cannot be removed (even if it does not execute any event functions). All other <code>events</code> are optional and can be renamed. <code>SpaDES</code> searches and executes all modules’ <code>init</code> events automatically. Note that the names of event functions executed during <code>init</code> <em>can</em> have any name: here we changed the <code>Init</code> function name (suggested by the template) to <code>abundanceInit</code>.</p></li>
+<li><p><strong>Events should only schedule themselves</strong>. The only exception is the <code>init</code>, which schedules the first time all other events are executed (even if a particular event only runs once at the end of the simulation).</p></li>
 </ol>
 <p>It is usually easier to fill the <code>doEvent.&lt;module name&gt;</code> function <em>after</em> having defined the event functions (as we did above). For instance, we know that plotting should occur after the generation of species abundances, and so the <code>abundPlot</code> will be scheduled to occur after the <code>SimulAbund</code> event, by changing event priority (see <code>?priority</code>).</p>
 <p>This is how we configured our <code>doEvent.speciesAbundance</code> function:</p>
-<div class="cell" data-hash="Part1_DummyModel_cache/html/abund_module5_148524e3a5c8b6b2fda9cc39d5adc14b">
-<details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">doEvent.speciesAbundance</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">sim</span>, <span class="va">eventTime</span>, <span class="va">eventType</span>,</span>
-<span>    <span class="va">debug</span> <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="kw"><a href="https://rdrr.io/r/base/switch.html">switch</a></span><span class="op">(</span><span class="va">eventType</span>, init <span class="op">=</span> <span class="op">{</span></span>
-<span>        <span class="co">## do stuff for this event</span></span>
-<span>        <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">abundanceInit</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span></span>
-<span></span>
-<span>        <span class="co">## schedule future event(s)</span></span>
-<span>        <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">scheduleEvent</span><span class="op">(</span><span class="va">sim</span>, eventTime <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/start.html">start</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span>, moduleName <span class="op">=</span> <span class="st">"speciesAbundance"</span>,</span>
-<span>            eventType <span class="op">=</span> <span class="st">"SimulAbund"</span><span class="op">)</span></span>
-<span>        <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">scheduleEvent</span><span class="op">(</span><span class="va">sim</span>, eventTime <span class="op">=</span> <span class="fu">P</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">$</span><span class="va">.plotInitialTime</span>,</span>
-<span>            moduleName <span class="op">=</span> <span class="st">"speciesAbundance"</span>, eventType <span class="op">=</span> <span class="st">"abundPlot"</span>,</span>
-<span>            eventPriority <span class="op">=</span> <span class="fu">.normal</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0.5</span><span class="op">)</span></span>
-<span>    <span class="op">}</span>, SimulAbund <span class="op">=</span> <span class="op">{</span></span>
-<span>        <span class="co">## do stuff for this event</span></span>
-<span>        <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">abundanceSim</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span></span>
-<span></span>
-<span>        <span class="co">## schedule future event(s)</span></span>
-<span>        <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">scheduleEvent</span><span class="op">(</span><span class="va">sim</span>, eventTime <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/time.html">time</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">+</span> <span class="fu">P</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">$</span><span class="va">simulationTimeStep</span>,</span>
-<span>            moduleName <span class="op">=</span> <span class="st">"speciesAbundance"</span>, eventType <span class="op">=</span> <span class="st">"SimulAbund"</span><span class="op">)</span></span>
-<span>    <span class="op">}</span>, abundPlot <span class="op">=</span> <span class="op">{</span></span>
-<span>        <span class="co">## do stuff for this event</span></span>
-<span>        <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">abundancePlot</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span></span>
-<span></span>
-<span>        <span class="co">## schedule future event(s)</span></span>
-<span>        <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">scheduleEvent</span><span class="op">(</span><span class="va">sim</span>, eventTime <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/time.html">time</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">+</span> <span class="fu">P</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">$</span><span class="va">.plotInterval</span>,</span>
-<span>            moduleName <span class="op">=</span> <span class="st">"speciesAbundance"</span>, eventType <span class="op">=</span> <span class="st">"abundPlot"</span>,</span>
-<span>            eventPriority <span class="op">=</span> <span class="fu">.normal</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0.5</span><span class="op">)</span></span>
-<span>    <span class="op">}</span>, <span class="kw"><a href="https://rdrr.io/r/base/warning.html">warning</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="st">"Undefined event type: '"</span>, <span class="fu">current</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>,</span>
-<span>        <span class="st">"eventType"</span>, with <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>, <span class="st">"' in module '"</span>, <span class="fu">current</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>,</span>
-<span>        <span class="st">"moduleName"</span>, with <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>, <span class="st">"'"</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">)</span></span>
+<div class="cell">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">doEvent.speciesAbundance</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">sim</span>, <span class="va">eventTime</span>, <span class="va">eventType</span>, <span class="va">debug</span> <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/switch.html">switch</a></span><span class="op">(</span></span>
+<span>    <span class="va">eventType</span>,</span>
+<span>    init <span class="op">=</span> <span class="op">{</span></span>
+<span>      <span class="co">## do stuff for this event</span></span>
+<span>      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">abundanceInit</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span></span>
+<span>      </span>
+<span>      <span class="co">## schedule future event(s)</span></span>
+<span>      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">scheduleEvent</span><span class="op">(</span><span class="va">sim</span>, eventTime <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/start.html">start</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span>, moduleName <span class="op">=</span> <span class="st">"speciesAbundance"</span>, </span>
+<span>                           eventType <span class="op">=</span> <span class="st">"SimulAbund"</span><span class="op">)</span></span>
+<span>      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">scheduleEvent</span><span class="op">(</span><span class="va">sim</span>, eventTime <span class="op">=</span> <span class="fu">P</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">$</span><span class="va">.plotInitialTime</span>, </span>
+<span>                           moduleName <span class="op">=</span> <span class="st">"speciesAbundance"</span>, eventType <span class="op">=</span> <span class="st">"abundPlot"</span>,</span>
+<span>                           eventPriority <span class="op">=</span> <span class="fu">.normal</span><span class="op">(</span><span class="op">)</span><span class="op">+</span><span class="fl">0.5</span><span class="op">)</span></span>
+<span>    <span class="op">}</span>,</span>
+<span>    SimulAbund <span class="op">=</span> <span class="op">{</span></span>
+<span>      <span class="co">## do stuff for this event</span></span>
+<span>      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">abundanceSim</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span></span>
+<span>      </span>
+<span>      <span class="co">## schedule future event(s)</span></span>
+<span>      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">scheduleEvent</span><span class="op">(</span><span class="va">sim</span>, eventTime <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/time.html">time</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">+</span> <span class="fu">P</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">$</span><span class="va">simulationTimeStep</span>, </span>
+<span>                           moduleName <span class="op">=</span> <span class="st">"speciesAbundance"</span>, eventType <span class="op">=</span> <span class="st">"SimulAbund"</span><span class="op">)</span></span>
+<span>    <span class="op">}</span>,</span>
+<span>    abundPlot <span class="op">=</span> <span class="op">{</span></span>
+<span>      <span class="co">## do stuff for this event</span></span>
+<span>      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">abundancePlot</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span></span>
+<span>      </span>
+<span>      <span class="co">## schedule future event(s)</span></span>
+<span>      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">scheduleEvent</span><span class="op">(</span><span class="va">sim</span>, eventTime <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/time.html">time</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">+</span> <span class="fu">P</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">$</span><span class="va">.plotInterval</span>, </span>
+<span>                           moduleName <span class="op">=</span> <span class="st">"speciesAbundance"</span>, eventType <span class="op">=</span> <span class="st">"abundPlot"</span>, </span>
+<span>                           eventPriority <span class="op">=</span> <span class="fu">.normal</span><span class="op">(</span><span class="op">)</span><span class="op">+</span><span class="fl">0.5</span><span class="op">)</span></span>
+<span>    <span class="op">}</span>,</span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/warning.html">warning</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="st">"Undefined event type: '"</span>, <span class="fu">current</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>, <span class="st">"eventType"</span>, with <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>,</span>
+<span>                  <span class="st">"' in module '"</span>, <span class="fu">current</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>, <span class="st">"moduleName"</span>, with <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>, <span class="st">"'"</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
@@ -601,9 +649,8 @@ Figure&nbsp;1.1: Inputs and outputs in SpaDES: Object A comes from outside of th
 <p>The first event is, obviously, <code>init</code> - again <strong>its name cannot be changed</strong>.</p>
 <p>In <code>init</code> we run the initialisation event function (<code>abundanceInit</code>) - optional - and schedule the first occurrence of all other events (here, the abundance simulation, <code>SimulAbund</code>, and plotting, <code>abundPlot</code>, events). Because the <code>init</code> is the only event that <code>SpaDES</code> always executes at the start of the simulation, if no events are scheduled during <code>init</code>, no events will be executed after the <code>init</code>. Notice two things:</p>
 <ol type="1">
-<li>The <code>SimulAbund</code> event is scheduled at <code>start(sim)</code> (i.e.&nbsp;at the first time step of the simulation), which means that it will run after the <code>init</code> event, but still in the same “year”.</li>
-<li>
-<code>init</code> schedules the first plotting event to be executed at the time defined by the <code>.plotInitialTime</code> parameter, which is stored in the <code>sim</code> object (and obtained using <code>SpaDES.core::P(sim)</code>), but with a slightly lower event priority <code>eventPriority = .normal()+0.5</code> (see <code>?priority</code>).</li>
+<li><p>The <code>SimulAbund</code> event is scheduled at <code>start(sim)</code> (i.e.&nbsp;at the first time step of the simulation), which means that it will run after the <code>init</code> event, but still in the same “year”.</p></li>
+<li><p><code>init</code> schedules the first plotting event to be executed at the time defined by the <code>.plotInitialTime</code> parameter, which is stored in the <code>sim</code> object (and obtained using <code>SpaDES.core::P(sim)</code>), but with a slightly lower event priority <code>eventPriority = .normal()+0.5</code> (see <code>?priority</code>).</p></li>
 </ol></section><section id="simulabund" class="level5" data-number="1.2.2.3.2"><h5 data-number="1.2.2.3.2" class="anchored" data-anchor-id="simulabund">
 <span class="header-section-number">1.2.2.3.2</span> <strong>SimulAbund</strong>
 </h5>
@@ -620,59 +667,75 @@ Figure&nbsp;1.1: Inputs and outputs in SpaDES: Object A comes from outside of th
 <p>As a rule of thumb, default inputs should be created in a way that allows their values to be overridden by the user (by supplying a named list of objects via <code>simInit(objects = ...)</code>) or by any other modules that produce these objects. For this, we rely on the <code><a href="https://spades-core.predictiveecology.org/reference/suppliedElsewhere.html">SpaDES.core::suppliedElsewhere</a></code> function, which detects if a given object has already been supplied by the user or if it will be supplied by another module.</p>
 <p>Note that <code>suppliedElsewhere</code> does not know whether the module that supplies the object will be executed <em>before</em> the present module, as it is blind to module scheduling order. When modules are relatively simple and have an approximately linear flow of interdependencies, <code>SpaDES</code> is usually able to tell the order in which modules need to be executed. In more complex cases it is a good idea to pass a vector of module names to <code>simInit(loadOrder = ...)</code> definining the order of module execution.</p>
 <p>Here’s an example of how to do this (the commented instructions have been deleted):</p>
-<div class="cell" data-hash="Part1_DummyModel_cache/html/abund_model6_df713b85fa88415402d9a77a0cab6f42">
+<div class="cell">
 <details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">.inputObjects</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu">suppliedElsewhere</span><span class="op">(</span><span class="st">"r"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>        <span class="co">## make template raster if not supplied elsewhere.</span></span>
-<span>        <span class="va">sim</span><span class="op">$</span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/rast.html">rast</a></span><span class="op">(</span>nrows <span class="op">=</span> <span class="fl">100</span>, ncols <span class="op">=</span> <span class="fl">100</span>, xmin <span class="op">=</span> <span class="op">-</span><span class="fl">50</span>, xmax <span class="op">=</span> <span class="fl">50</span>,</span>
-<span>            ymin <span class="op">=</span> <span class="op">-</span><span class="fl">50</span>, ymax <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span>
-<span>    <span class="op">}</span></span>
-<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu">suppliedElsewhere</span><span class="op">(</span><span class="st">"r"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="co">## make template raster if not supplied elsewhere.</span></span>
+<span>    <span class="va">sim</span><span class="op">$</span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html">rast</a></span><span class="op">(</span>nrows <span class="op">=</span> <span class="fl">100</span>, ncols <span class="op">=</span> <span class="fl">100</span>, xmin <span class="op">=</span> <span class="op">-</span><span class="fl">50</span>, xmax <span class="op">=</span> <span class="fl">50</span>, ymin <span class="op">=</span> <span class="op">-</span><span class="fl">50</span>, ymax <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>If we choose to supply the default <code>r</code> in <code>.inputObjects</code>, then we need to remove its creation from the <code>abundanceInit</code> function and add <code>r</code> to the metadata as an input. We have done this, so that <code>abundanceInit</code> only creates a storage list for the outputs:</p>
-<div class="cell" data-hash="Part1_DummyModel_cache/html/abund_model7_f554b625e4bf99415832957b3f49b900">
+<div class="cell">
 <details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">abundanceInit</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="co">## create storage list of species abundance</span></span>
-<span>    <span class="va">sim</span><span class="op">$</span><span class="va">abundRasters</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="op">)</span></span>
-<span></span>
-<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="co">## create storage list of species abundance</span></span>
+<span>  <span class="va">sim</span><span class="op">$</span><span class="va">abundRasters</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>It is good practice to provide default input objects to all remaining modules, so that they can work stand-alone. We have done this below.</p>
-<p><strong>/!\ ATTENTION /!\</strong></p>
-<p><em>If <code>r</code> becomes an input with defaults it must be <strong>added to the module metadata</strong> inside an <code>expectsInput</code> call.</em></p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If <code>r</code> becomes an module input with defaults it must be <em>added to the module metadata</em> inside an <code>expectsInput</code> call.</p>
+</div>
+</div>
 </section><section id="additional-module-functions" class="level4" data-number="1.2.2.5"><h4 data-number="1.2.2.5" class="anchored" data-anchor-id="additional-module-functions">
 <span class="header-section-number">1.2.2.5</span> <strong>Additional module functions</strong>
 </h4>
 <p>Events can also rely on other functions that can either be sourced from other scripts, or defined at the end of the module script (e.g.&nbsp;usually before <code>.inputObjects</code>, although the order is irrelevant). This is the case for the species abundances generator function, which we coded in a separate script called <code>abundance_model.R</code>. Scripts with accessory functions like these go into module’s <code>R/</code> folder.</p>
 <p>Functions should also be accompanied by metadata. Here we provide a description of the function, its parameters, returning value and what other package functions it relies on using the <code>roxygen2</code> documentation style (indicated by <code>#'</code>).</p>
-<div class="cell" data-hash="Part1_DummyModel_cache/html/abund_module8_7052b1f6f69659d091562602965074f2">
-<details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">#' Accessory function to speciesAbundance module</span></span>
+<div class="cell">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">#' Accessory function to speciesAbundance module</span></span>
 <span><span class="co">#' </span></span>
 <span><span class="co">#' @param ras a raster layer used as template.</span></span>
 <span><span class="co">#' @return a fake abundance SpatRaster generated as a Gaussian map with scale = 100 and variance = 0.01</span></span>
 <span><span class="co">#' @importFrom NLMR nlm_mpd</span></span>
 <span><span class="co">#' @importFrom terra rast</span></span>
 <span><span class="va">abundance_model</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">ras</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="va">abund_ras</span> <span class="op">&lt;-</span> <span class="fu">NLMR</span><span class="fu">::</span><span class="fu"><a href="https://ropensci.github.io/NLMR/reference/nlm_mpd.html">nlm_mpd</a></span><span class="op">(</span>ncol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html">ncol</a></span><span class="op">(</span><span class="va">ras</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html">nrow</a></span><span class="op">(</span><span class="va">ras</span><span class="op">)</span>,</span>
-<span>        resolution <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/unique.html">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html">res</a></span><span class="op">(</span><span class="va">ras</span><span class="op">)</span><span class="op">)</span>, roughness <span class="op">=</span> <span class="fl">0.5</span>, rand_dev <span class="op">=</span> <span class="fl">100</span>,</span>
-<span>        rescale <span class="op">=</span> <span class="cn">TRUE</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>        <span class="fu"><a href="https://rdrr.io/pkg/terra/man/rast.html">rast</a></span><span class="op">(</span><span class="op">)</span></span>
-<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">abund_ras</span><span class="op">)</span></span>
+<span>  <span class="va">abund_ras</span> <span class="op">&lt;-</span> <span class="fu">NLMR</span><span class="fu">::</span><span class="fu"><a href="https://ropensci.github.io/NLMR/reference/nlm_mpd.html">nlm_mpd</a></span><span class="op">(</span></span>
+<span>    ncol <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html">ncol</a></span><span class="op">(</span><span class="va">ras</span><span class="op">)</span>,</span>
+<span>    nrow <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html">nrow</a></span><span class="op">(</span><span class="va">ras</span><span class="op">)</span>,</span>
+<span>    resolution <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/unique.html">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html">res</a></span><span class="op">(</span><span class="va">ras</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    roughness <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>    rand_dev <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>    rescale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html">rast</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">abund_ras</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <hr></section></section><section id="creating-and-adding-additional-modules-the-temperature-module" class="level3" data-number="1.2.3"><h3 data-number="1.2.3" class="anchored" data-anchor-id="creating-and-adding-additional-modules-the-temperature-module">
 <span class="header-section-number">1.2.3</span> Creating and adding additional modules: the <em>temperature</em> module</h3>
-<p>The order in which modules are first executed (i.e.&nbsp;their <code>init</code> events) can be automatically determined by inter-module dependencies (i.e.&nbsp;module inputs that are the outputs of other modules). If there are no inter-module dependencies this order is determined by the order in which the modules are listed in the <code>Part1_DummyModel.R</code> script, or via the <code>simInit(loadOrder = ...)</code> argument.</p>
+<p>The order in which modules are first executed (i.e.&nbsp;their <code>init</code> events) can be automatically determined by inter-module dependencies (i.e. module inputs that are the outputs of other modules). If there are no inter-module dependencies this order is determined by the order in which the modules are listed in the <code>Part1_DummyModel.R</code> script, or via the <code>simInit(loadOrder = ...)</code> argument.</p>
 <p>After the <code>init</code> event, the module execution order follows the order of events. This means that a module’s events can be scheduled before and after another module’s events within the same simulation time step. However, keep in mind that this can make the simulation flow hard to follow, debug and change when additional modules are added.</p>
 <p>The second module we created generates yearly temperatures. Apart from different objects and functions names, this module also has the template raster <code>r</code> as required input object. Recall that <code>r</code> is created during the <code>.inputObjects</code> of the <em>speciesAbundance</em> module. When the two modules are linked, this object will not be created twice because <code>suppliedElsewhere("r")</code> will tell the <em>temperature</em> module that `r` will be supplied by another module. This may appear trivial in this example, but it can be extremely useful when inuts are heavy objects that require lengthy computations to be produces.</p>
 <p>This is how we set up the <code>temperature.R</code> script looks like:</p>
-<div class="cell" data-hash="Part1_DummyModel_cache/html/temp_module_88fc190196d725cf792746be4e276072">
-<details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span></span>
+<div class="cell">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span></span>
 <span><span class="co"># Everything in this file gets sourced during simInit, and all functions and objects</span></span>
 <span><span class="co"># are put into the simList.</span></span>
 <span><span class="fu">defineModule</span><span class="op">(</span><span class="va">sim</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
@@ -725,10 +788,10 @@ Figure&nbsp;1.1: Inputs and outputs in SpaDES: Object A comes from outside of th
 <span>    <span class="op">}</span>,</span>
 <span>    SimulTemp <span class="op">=</span> <span class="op">{</span></span>
 <span>      <span class="co">## do stuff for this event</span></span>
-<span>      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/update.html">update</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span></span>
+<span>      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/update.html">update</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span></span>
 <span>      </span>
 <span>      <span class="co">## schedule future event(s)</span></span>
-<span>      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">scheduleEvent</span><span class="op">(</span><span class="va">sim</span>, eventTime <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/time.html">time</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">+</span> <span class="fu">P</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">$</span><span class="va">simulationTimeStep</span>, moduleName <span class="op">=</span> <span class="st">"temperature"</span>, </span>
+<span>      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">scheduleEvent</span><span class="op">(</span><span class="va">sim</span>, eventTime <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/time.html">time</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">+</span> <span class="fu">P</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">$</span><span class="va">simulationTimeStep</span>, moduleName <span class="op">=</span> <span class="st">"temperature"</span>, </span>
 <span>                           eventType <span class="op">=</span> <span class="st">"SimulTemp"</span><span class="op">)</span></span>
 <span>    <span class="op">}</span>,</span>
 <span>    tempPlot <span class="op">=</span> <span class="op">{</span></span>
@@ -736,7 +799,7 @@ Figure&nbsp;1.1: Inputs and outputs in SpaDES: Object A comes from outside of th
 <span>      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">plotting</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span></span>
 <span>      </span>
 <span>      <span class="co">## schedule future event(s)</span></span>
-<span>      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">scheduleEvent</span><span class="op">(</span><span class="va">sim</span>, eventTime <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/time.html">time</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">+</span> <span class="fu">P</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">$</span><span class="va">.plotInterval</span>, moduleName <span class="op">=</span> <span class="st">"temperature"</span>, </span>
+<span>      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">scheduleEvent</span><span class="op">(</span><span class="va">sim</span>, eventTime <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/time.html">time</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">+</span> <span class="fu">P</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">$</span><span class="va">.plotInterval</span>, moduleName <span class="op">=</span> <span class="st">"temperature"</span>, </span>
 <span>                           eventType <span class="op">=</span> <span class="st">"tempPlot"</span>, eventPriority <span class="op">=</span> <span class="fu">.normal</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0.5</span><span class="op">)</span></span>
 <span>    <span class="op">}</span>,</span>
 <span>    <span class="kw"><a href="https://rdrr.io/r/base/warning.html">warning</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="st">"Undefined event type: '"</span>, <span class="fu">current</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>, <span class="st">"eventType"</span>, with <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>,</span>
@@ -756,7 +819,7 @@ Figure&nbsp;1.1: Inputs and outputs in SpaDES: Object A comes from outside of th
 <span><span class="co">## This is the temperature simulation event function</span></span>
 <span><span class="va">update</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="co">## Generate temperature - our "updated data"</span></span>
-<span>  <span class="va">sim</span><span class="op">$</span><span class="va">tempRasters</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/time.html">time</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu">temperature_model</span><span class="op">(</span>ras <span class="op">=</span> <span class="va">sim</span><span class="op">$</span><span class="va">r</span><span class="op">)</span></span>
+<span>  <span class="va">sim</span><span class="op">$</span><span class="va">tempRasters</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/time.html">time</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu">temperature_model</span><span class="op">(</span>ras <span class="op">=</span> <span class="va">sim</span><span class="op">$</span><span class="va">r</span><span class="op">)</span></span>
 <span>  </span>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
@@ -765,7 +828,7 @@ Figure&nbsp;1.1: Inputs and outputs in SpaDES: Object A comes from outside of th
 <span><span class="va">plotting</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="co">## plot temperature</span></span>
 <span>  <span class="va">plotTitle</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="st">"Temperature\nat time"</span>,</span>
-<span>                     <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">sim</span><span class="op">$</span><span class="va">tempRasters</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">sim</span><span class="op">$</span><span class="va">tempRasters</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span>                     <span class="fu"><a href="https://rspatial.github.io/terra/reference/names.html">names</a></span><span class="op">(</span><span class="va">sim</span><span class="op">$</span><span class="va">tempRasters</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">sim</span><span class="op">$</span><span class="va">tempRasters</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
 <span>  <span class="va">tempPlot</span> <span class="op">&lt;-</span> <span class="va">sim</span><span class="op">$</span><span class="va">tempRasters</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">sim</span><span class="op">$</span><span class="va">tempRasters</span><span class="op">)</span><span class="op">]</span><span class="op">]</span> </span>
 <span>  <span class="fu"><a href="https://quickplot.predictiveecology.org/reference/Plot.html">Plot</a></span><span class="op">(</span><span class="va">tempPlot</span>, </span>
 <span>       title <span class="op">=</span> <span class="va">plotTitle</span>, </span>
@@ -777,26 +840,32 @@ Figure&nbsp;1.1: Inputs and outputs in SpaDES: Object A comes from outside of th
 <span><span class="va">.inputObjects</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu">suppliedElsewhere</span><span class="op">(</span><span class="st">"r"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="co">## make template raster if not supplied elsewhere.</span></span>
-<span>    <span class="va">sim</span><span class="op">$</span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/rast.html">rast</a></span><span class="op">(</span>nrows <span class="op">=</span> <span class="fl">100</span>, ncols <span class="op">=</span> <span class="fl">100</span>, xmin <span class="op">=</span> <span class="op">-</span><span class="fl">50</span>, xmax <span class="op">=</span> <span class="fl">50</span>, ymin <span class="op">=</span> <span class="op">-</span><span class="fl">50</span>, ymax <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span>
+<span>    <span class="va">sim</span><span class="op">$</span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html">rast</a></span><span class="op">(</span>nrows <span class="op">=</span> <span class="fl">100</span>, ncols <span class="op">=</span> <span class="fl">100</span>, xmin <span class="op">=</span> <span class="op">-</span><span class="fl">50</span>, xmax <span class="op">=</span> <span class="fl">50</span>, ymin <span class="op">=</span> <span class="op">-</span><span class="fl">50</span>, ymax <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span>
 <span>  <span class="op">}</span></span>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>Again, we added an accessory <code>temperature_model</code> function in a separate script <code>R/temperature_model.R</code>:</p>
-<div class="cell" data-hash="Part1_DummyModel_cache/html/temp_module2_c03cb8c0ffefd90045dcc8044a0040e3">
-<details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">#' Accessory function to temperature module</span></span>
+<div class="cell">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">#' Accessory function to temperature module</span></span>
 <span><span class="co">#' </span></span>
 <span><span class="co">#' @param ras a raster layer used as template.</span></span>
 <span><span class="co">#' @return a fake temperature SpatRaster generated as a Gaussian map with scale = 100 and variance = 0.01</span></span>
 <span><span class="co">#' @importFrom NLMR nlm_mpd</span></span>
 <span><span class="co">#' @importFrom terra rast</span></span>
 <span><span class="va">temperature_model</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">ras</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="va">temp_ras</span> <span class="op">&lt;-</span> <span class="fu">NLMR</span><span class="fu">::</span><span class="fu"><a href="https://ropensci.github.io/NLMR/reference/nlm_mpd.html">nlm_mpd</a></span><span class="op">(</span>ncol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html">ncol</a></span><span class="op">(</span><span class="va">ras</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html">nrow</a></span><span class="op">(</span><span class="va">ras</span><span class="op">)</span>,</span>
-<span>        resolution <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/unique.html">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html">res</a></span><span class="op">(</span><span class="va">ras</span><span class="op">)</span><span class="op">)</span>, roughness <span class="op">=</span> <span class="fl">0.5</span>, rand_dev <span class="op">=</span> <span class="fl">10</span>,</span>
-<span>        rescale <span class="op">=</span> <span class="cn">FALSE</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>        <span class="fu"><a href="https://rdrr.io/pkg/terra/man/rast.html">rast</a></span><span class="op">(</span><span class="op">)</span></span>
-<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">temp_ras</span><span class="op">)</span></span>
+<span>  <span class="va">temp_ras</span> <span class="op">&lt;-</span> <span class="fu">NLMR</span><span class="fu">::</span><span class="fu"><a href="https://ropensci.github.io/NLMR/reference/nlm_mpd.html">nlm_mpd</a></span><span class="op">(</span></span>
+<span>    ncol <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html">ncol</a></span><span class="op">(</span><span class="va">ras</span><span class="op">)</span>,</span>
+<span>    nrow <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html">nrow</a></span><span class="op">(</span><span class="va">ras</span><span class="op">)</span>,</span>
+<span>    resolution <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/unique.html">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html">res</a></span><span class="op">(</span><span class="va">ras</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    roughness <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>    rand_dev <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>    rescale <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html">rast</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">temp_ras</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
@@ -812,8 +881,8 @@ Figure&nbsp;1.1: Inputs and outputs in SpaDES: Object A comes from outside of th
 <li><p>We have <strong>two additional functions</strong> in a separate script (<code>R/linear_model_functions.R</code>): the function fitting the linear model and a plotting function.</p></li>
 </ul>
 <p>Below is the full module script. Notice how the future events where scheduled to <code>P(sim)$statsTimestep + 0.1</code>, to force the statistical analyses to occur <strong>after</strong> the abundance and temperature rasters are ready.</p>
-<div class="cell" data-hash="Part1_DummyModel_cache/html/stats_module_b3249fd14e44767a8b500fa428a16f97">
-<details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span></span>
+<div class="cell">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span></span>
 <span><span class="co"># Everything in this file gets sourced during simInit, and all functions and objects</span></span>
 <span><span class="co"># are put into the simList.</span></span>
 <span><span class="fu">defineModule</span><span class="op">(</span><span class="va">sim</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
@@ -868,7 +937,7 @@ Figure&nbsp;1.1: Inputs and outputs in SpaDES: Object A comes from outside of th
 <span>      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">statsAnalysis</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span></span>
 <span>      </span>
 <span>      <span class="co">## schedule future event(s)</span></span>
-<span>      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">scheduleEvent</span><span class="op">(</span><span class="va">sim</span>, <span class="fu"><a href="https://rdrr.io/pkg/terra/man/time.html">time</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">+</span> <span class="fu">P</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">$</span><span class="va">statsTimestep</span>, <span class="st">"speciesTempLM"</span>, </span>
+<span>      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">scheduleEvent</span><span class="op">(</span><span class="va">sim</span>, <span class="fu"><a href="https://rspatial.github.io/terra/reference/time.html">time</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">+</span> <span class="fu">P</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">$</span><span class="va">statsTimestep</span>, <span class="st">"speciesTempLM"</span>, </span>
 <span>                           <span class="st">"stats"</span>, eventPriority <span class="op">=</span> <span class="fu">.normal</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">2</span><span class="op">)</span></span>
 <span>    <span class="op">}</span>,</span>
 <span>    statsPlot <span class="op">=</span> <span class="op">{</span></span>
@@ -876,7 +945,7 @@ Figure&nbsp;1.1: Inputs and outputs in SpaDES: Object A comes from outside of th
 <span>      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">statsPlot</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span></span>
 <span>      </span>
 <span>      <span class="co">## schedule future event(s)</span></span>
-<span>      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">scheduleEvent</span><span class="op">(</span><span class="va">sim</span>, <span class="fu"><a href="https://rdrr.io/pkg/terra/man/time.html">time</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">+</span> <span class="fu">P</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">$</span><span class="va">statsTimestep</span>, <span class="st">"speciesTempLM"</span>,</span>
+<span>      <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">scheduleEvent</span><span class="op">(</span><span class="va">sim</span>, <span class="fu"><a href="https://rspatial.github.io/terra/reference/time.html">time</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">+</span> <span class="fu">P</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">$</span><span class="va">statsTimestep</span>, <span class="st">"speciesTempLM"</span>,</span>
 <span>                           <span class="st">"statsPlot"</span>, eventPriority <span class="op">=</span> <span class="fu">.normal</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">2.5</span><span class="op">)</span></span>
 <span>    <span class="op">}</span>,</span>
 <span>    <span class="kw"><a href="https://rdrr.io/r/base/warning.html">warning</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="st">"Undefined event type: '"</span>, <span class="fu">current</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>, <span class="st">"eventType"</span>, with <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>,</span>
@@ -896,15 +965,15 @@ Figure&nbsp;1.1: Inputs and outputs in SpaDES: Object A comes from outside of th
 <span><span class="co">## Statistical analysis event</span></span>
 <span><span class="va">statsAnalysis</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="co">## get all species abundances data available</span></span>
-<span>  <span class="va">abundData</span> <span class="op">&lt;-</span> <span class="fu">as.data.table</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/rast.html">rast</a></span><span class="op">(</span><span class="va">sim</span><span class="op">$</span><span class="va">abundRasters</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="va">abundData</span><span class="op">[</span>, <span class="va">pixID</span> <span class="op">:=</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html">nrow</a></span><span class="op">(</span><span class="va">abundData</span><span class="op">)</span><span class="op">]</span></span>
+<span>  <span class="va">abundData</span> <span class="op">&lt;-</span> <span class="fu">as.data.table</span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html">rast</a></span><span class="op">(</span><span class="va">sim</span><span class="op">$</span><span class="va">abundRasters</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">abundData</span><span class="op">[</span>, <span class="va">pixID</span> <span class="op">:=</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html">nrow</a></span><span class="op">(</span><span class="va">abundData</span><span class="op">)</span><span class="op">]</span></span>
 <span>  <span class="va">abundData</span> <span class="op">&lt;-</span> <span class="fu">melt.data.table</span><span class="op">(</span><span class="va">abundData</span>, id.var <span class="op">=</span> <span class="st">"pixID"</span>,</span>
 <span>                               variable.name <span class="op">=</span> <span class="st">"year"</span>, value.name <span class="op">=</span> <span class="st">"abund"</span><span class="op">)</span></span>
 <span>  <span class="va">abundData</span><span class="op">[</span>, <span class="va">year</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html">sub</a></span><span class="op">(</span><span class="st">"X"</span>, <span class="st">""</span>, <span class="va">year</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
 <span>  </span>
 <span>  <span class="co">## get all temperature data available</span></span>
-<span>  <span class="va">tempData</span> <span class="op">&lt;-</span> <span class="fu">as.data.table</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/rast.html">rast</a></span><span class="op">(</span><span class="va">sim</span><span class="op">$</span><span class="va">tempRasters</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="va">tempData</span><span class="op">[</span>, <span class="va">pixID</span> <span class="op">:=</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html">nrow</a></span><span class="op">(</span><span class="va">tempData</span><span class="op">)</span><span class="op">]</span></span>
+<span>  <span class="va">tempData</span> <span class="op">&lt;-</span> <span class="fu">as.data.table</span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html">rast</a></span><span class="op">(</span><span class="va">sim</span><span class="op">$</span><span class="va">tempRasters</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">tempData</span><span class="op">[</span>, <span class="va">pixID</span> <span class="op">:=</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html">nrow</a></span><span class="op">(</span><span class="va">tempData</span><span class="op">)</span><span class="op">]</span></span>
 <span>  <span class="va">tempData</span> <span class="op">&lt;-</span> <span class="fu">melt.data.table</span><span class="op">(</span><span class="va">tempData</span>, id.var <span class="op">=</span> <span class="st">"pixID"</span>,</span>
 <span>                              variable.name <span class="op">=</span> <span class="st">"year"</span>, value.name <span class="op">=</span> <span class="st">"temp"</span><span class="op">)</span></span>
 <span>  <span class="va">tempData</span><span class="op">[</span>, <span class="va">year</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html">sub</a></span><span class="op">(</span><span class="st">"X"</span>, <span class="st">""</span>, <span class="va">year</span><span class="op">)</span><span class="op">)</span><span class="op">]</span> </span>
@@ -914,13 +983,13 @@ Figure&nbsp;1.1: Inputs and outputs in SpaDES: Object A comes from outside of th
 <span>  <span class="fu">setkey</span><span class="op">(</span><span class="va">tempData</span>, <span class="va">pixID</span>, <span class="va">year</span><span class="op">)</span></span>
 <span>  <span class="va">sim</span><span class="op">$</span><span class="va">outputdata</span> <span class="op">&lt;-</span> <span class="va">abundData</span><span class="op">[</span><span class="va">tempData</span><span class="op">]</span></span>
 <span>  </span>
-<span>  <span class="va">sim</span><span class="op">$</span><span class="va">outputLM</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/time.html">time</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu">linearModel</span><span class="op">(</span>Data <span class="op">=</span> <span class="va">sim</span><span class="op">$</span><span class="va">outputdata</span><span class="op">)</span></span>
+<span>  <span class="va">sim</span><span class="op">$</span><span class="va">outputLM</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/time.html">time</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu">linearModel</span><span class="op">(</span>Data <span class="op">=</span> <span class="va">sim</span><span class="op">$</span><span class="va">outputdata</span><span class="op">)</span></span>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="co">## Plotting event</span></span>
 <span><span class="va">statsPlot</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">model</span> <span class="op">&lt;-</span> <span class="va">sim</span><span class="op">$</span><span class="va">outputLM</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/time.html">time</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">]</span></span>
+<span>  <span class="va">model</span> <span class="op">&lt;-</span> <span class="va">sim</span><span class="op">$</span><span class="va">outputLM</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/time.html">time</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">]</span></span>
 <span>  </span>
 <span>  <span class="va">modelPlot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">sim</span><span class="op">$</span><span class="va">outputdata</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">temp</span>, y <span class="op">=</span> <span class="va">abund</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -966,8 +1035,8 @@ Figure&nbsp;1.1: Inputs and outputs in SpaDES: Object A comes from outside of th
 </details>
 </div>
 <p>And the script with the accessory functions:</p>
-<div class="cell" data-hash="Part1_DummyModel_cache/html/stats_module2_63a21c2659051bf0810a60702c7af2d0">
-<details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Accessory functions to speciesTempLM module</span></span>
+<div class="cell">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Accessory functions to speciesTempLM module</span></span>
 <span></span>
 <span><span class="co">#' Accessory function to speciesTempLM module that calculates a</span></span>
 <span><span class="co">#'  linear regression between species abundances and temperature</span></span>
@@ -978,16 +1047,16 @@ Figure&nbsp;1.1: Inputs and outputs in SpaDES: Object A comes from outside of th
 <span><span class="co">#' @return a linear model (\code{lm}) object fitted with the formula:</span></span>
 <span><span class="co">#'  \code{abund ~ temp}</span></span>
 <span></span>
-<span><span class="va">linearModel</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">Data</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="va">lm1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">abund</span> <span class="op">~</span> <span class="va">temp</span>, data <span class="op">=</span> <span class="va">Data</span><span class="op">)</span></span>
-<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">lm1</span><span class="op">)</span></span>
+<span><span class="va">linearModel</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">Data</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="va">lm1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">abund</span> <span class="op">~</span> <span class="va">temp</span>, data <span class="op">=</span> <span class="va">Data</span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">lm1</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<hr></section><section id="simulation" class="level3" data-number="1.2.5"><h3 data-number="1.2.5" class="anchored" data-anchor-id="simulation">
-<span class="header-section-number">1.2.5</span> Simulation</h3>
-<section id="simulation-setup-in-a-global-script" class="level4" data-number="1.2.5.1"><h4 data-number="1.2.5.1" class="anchored" data-anchor-id="simulation-setup-in-a-global-script">
-<span class="header-section-number">1.2.5.1</span> Simulation setup in a “global” script</h4>
+<hr></section><section id="the-workflow" class="level3" data-number="1.2.5"><h3 data-number="1.2.5" class="anchored" data-anchor-id="the-workflow">
+<span class="header-section-number">1.2.5</span> The workflow</h3>
+<section id="sec-setup" class="level4" data-number="1.2.5.1"><h4 data-number="1.2.5.1" class="anchored" data-anchor-id="sec-setup">
+<span class="header-section-number">1.2.5.1</span> Workflow setup in a “global” script</h4>
 <p>We can now go back to our <code>Part1_DummyModel.R</code> script and set the simulation up.</p>
 <p>The function <code>simInit</code> needs a few arguments listing simulation folder directories, parameters, simulation times, modules and, optionally, input objects supplied by the user. <code>simInit</code> will prepare a simulation object that can later be run by the <code>spades</code> function:</p>
 <ul>
@@ -996,42 +1065,83 @@ Figure&nbsp;1.1: Inputs and outputs in SpaDES: Object A comes from outside of th
 <li><p><code>parameters</code> is a named list of named lists, containing parameters values passed to each module. Note that because the module metadata will (or should) contain default parameter values, here we pass only parameters which we want to change with respect to their defaults. For instance, <code>.plotInterval</code> is used and defined in the <em>speciesAbundance</em> and <em>temperature</em> modules, but not passed to the <code>simInit</code> function because we want to use the default value. As a developer providing a reproducible example, we may also chose to list important and useful parameters, even if the value is the same as the default. Here we chose to list <code>.plotInitialTime</code> (a parameter used and defined in the <em>speciesAbundance</em> and <em>temperature</em> modules), but provide the default value (we experimenting with it by changing its value in the <code>Part1_DummyModel.R</code>).</p></li>
 <li><p><code>paths</code> contains the folder directory paths that we set earlier.</p></li>
 </ul>
-<div class="cell" data-hash="Part1_DummyModel_cache/html/globalscript2_e3943a67b58c8dcec0a5ef20731ba345">
-<details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## list the modules to use</span></span>
-<span><span class="va">simModules</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">"speciesAbundance"</span>, <span class="st">"temperature"</span>, <span class="st">"speciesTempLM"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">## Set simulation and module parameters</span></span>
-<span><span class="va">simTimes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>start <span class="op">=</span> <span class="fl">1</span>, end <span class="op">=</span> <span class="fl">10</span>, timeunit <span class="op">=</span> <span class="st">"year"</span><span class="op">)</span></span>
-<span><span class="va">simParams</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>speciesAbundance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>simulationTimeStep <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>    .plotInitialTime <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, temperature <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>simulationTimeStep <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>    .plotInitialTime <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, speciesTempLM <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>statsTimestep <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">## make a list of directory paths</span></span>
-<span><span class="va">simPaths</span> <span class="op">&lt;-</span> <span class="fu">getPaths</span><span class="op">(</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">## Simulation setup</span></span>
-<span><span class="va">mySim</span> <span class="op">&lt;-</span> <span class="fu">simInit</span><span class="op">(</span>times <span class="op">=</span> <span class="va">simTimes</span>, params <span class="op">=</span> <span class="va">simParams</span>, modules <span class="op">=</span> <span class="va">simModules</span>,</span>
-<span>    paths <span class="op">=</span> <span class="va">simPaths</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>setupProject</code> can be used to create all of these while also making sure all package dependencies are installed. It will also create an <a href="https://support.posit.co/hc/en-us/articles/200526207-Using-RStudio-Projects">RStudio Project</a> and, if <code>setupProject(..., Restart = TRUE)</code> it will open a new RStudio window using that project.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<code>setupProject(..., Restart = TRUE)</code>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>We highly recommend using this feature so that an R session is properly started before running a SpaDES workflow. This means that the working directory is set to the root of the project folder, R package libraries (<code>.libPaths</code>) are pointing to the right directories and the global environment is as clean as possible (i.e.&nbsp;from pre-loaded packages or any objects)<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>.</p>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">setupProject</span><span class="op">(</span></span>
+<span>  paths <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>projectPath <span class="op">=</span> <span class="st">"~/SpaDES4Dummies_Part1"</span>,</span>
+<span>               packagePath <span class="op">=</span> <span class="st">"packages"</span><span class="op">)</span>,</span>
+<span>  Restart <span class="op">=</span> <span class="cn">TRUE</span>,   <span class="co">## will open a new RStudio using the newly created RStudio Project</span></span>
+<span>  modules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"speciesAbundance"</span>,</span>
+<span>              <span class="st">"temperature"</span>,</span>
+<span>              <span class="st">"speciesTempLM"</span><span class="op">)</span>,</span>
+<span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>speciesAbundance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>simulationTimeStep <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>                                        .plotInitialTime <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
+<span>                temperature <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>simulationTimeStep <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>                                   .plotInitialTime <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
+<span>                speciesTempLM <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>statsTimestep <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  times <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>start <span class="op">=</span> <span class="fl">1</span>, end <span class="op">=</span> <span class="fl">10</span>, timeunit <span class="op">=</span> <span class="st">"year"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p>Finally, we highlight that <code>simInit</code> also executes all <code>.inputObjects</code> functions, and schedules the <code>init</code> events, but does not execute them:</p>
-<div class="cell" data-hash="Part1_DummyModel_cache/html/scheduled-events_c20adc90c322cb279e13b25284e3b337">
-<details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">events</span><span class="op">(</span><span class="va">mySim</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Checkout the contents of <code>out</code> and see how they correspond to the arguments of <code>simInit()</code>:</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">out</span><span class="op">$</span><span class="va">paths</span></span>
+<span><span class="va">out</span><span class="op">$</span><span class="va">params</span></span>
+<span><span class="va">out</span><span class="op">$</span><span class="va">times</span></span>
+<span><span class="va">out</span><span class="op">$</span><span class="va">modules</span></span>
+<span></span>
+<span><span class="fu">formalArgs</span><span class="op">(</span><span class="fu">SpaDES.core</span><span class="fu">::</span><span class="va"><a href="https://spades-core.predictiveecology.org/reference/simInit.html">simInit</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="op">?</span><span class="fu">SpaDES.core</span><span class="fu">::</span><span class="va"><a href="https://spades-core.predictiveecology.org/reference/simInit.html">simInit</a></span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-</section><section id="checking-the-simulation-setup" class="level4" data-number="1.2.5.2"><h4 data-number="1.2.5.2" class="anchored" data-anchor-id="checking-the-simulation-setup">
-<span class="header-section-number">1.2.5.2</span> Checking the simulation setup</h4>
+<p>We now pass the <code>out</code> list entries to <code>simInit()</code> arguments</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## create simList (initialise the workflow)</span></span>
+<span><span class="va">mySim</span> <span class="op">&lt;-</span> <span class="fu">SpaDES.core</span><span class="fu">::</span><span class="fu"><a href="https://spades-core.predictiveecology.org/reference/simInit.html">simInit</a></span><span class="op">(</span>paths <span class="op">=</span> <span class="va">out</span><span class="op">$</span><span class="va">paths</span>,</span>
+<span>                              modules <span class="op">=</span> <span class="va">out</span><span class="op">$</span><span class="va">modules</span>,</span>
+<span>                              times <span class="op">=</span> <span class="va">out</span><span class="op">$</span><span class="va">times</span>,</span>
+<span>                              params <span class="op">=</span> <span class="va">out</span><span class="op">$</span><span class="va">params</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>or, more simply, use the wrapper function <code>simInit2()</code></p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## create simList (initialise the workflow)</span></span>
+<span><span class="va">mySim</span> <span class="op">&lt;-</span> <span class="fu">SpaDES.core</span><span class="fu">::</span><span class="fu"><a href="https://spades-core.predictiveecology.org/reference/simInit.html">simInit2</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p><code>simInit</code> will execute all <code>.inputObjects</code> functions, and schedules (but not execute) the <code>init</code> events:</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">SpaDES.core</span><span class="fu">::</span><span class="fu"><a href="https://spades-core.predictiveecology.org/reference/simList-accessors-events.html">events</a></span><span class="op">(</span><span class="va">mySim</span><span class="op">)</span></span>
+<span><span class="fu">SpaDES.core</span><span class="fu">::</span><span class="fu"><a href="https://spades-core.predictiveecology.org/reference/simList-accessors-events.html">completed</a></span><span class="op">(</span><span class="va">mySim</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section><section id="checking-the-workflow-setup" class="level4" data-number="1.2.5.2"><h4 data-number="1.2.5.2" class="anchored" data-anchor-id="checking-the-workflow-setup">
+<span class="header-section-number">1.2.5.2</span> Checking the workflow setup</h4>
 <p>Before starting the simulations we should check if the modules were linked correctly.</p>
 <p><strong>Module diagram</strong></p>
 <p><code>moduleDiagram</code> (<a href="#fig-moduleDiagram" class="quarto-xref">Figure&nbsp;<span>1.2</span></a> ) is a useful function that shows module inter-dependencies as a network diagram. The direction of the arrows indicates an output to input flow. You can see that <em>speciesAbundance</em> and <em>temperature</em> inputs (specifically our `r` raster) are supplied by an external source (<em>INPUT</em>) - the user or <code>.inputObjects</code>. Whereas the inputs to the <em>speciesTempLM</em> module are outputs of the <em>speciesAbundance</em> and <em>temperature</em> modules.</p>
-<div class="cell" data-hash="Part1_DummyModel_cache/html/fig-moduleDiagram_3e3f0cf17dbea6fcb8302a503efe8d25">
-<details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">moduleDiagram</span><span class="op">(</span><span class="va">mySim</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">SpaDES.core</span><span class="fu">::</span><span class="fu"><a href="https://spades-core.predictiveecology.org/reference/moduleDiagram.html">moduleDiagram</a></span><span class="op">(</span><span class="va">mySim</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details><div class="cell-output-display">
-<div id="fig-moduleDiagram" class="quarto-figure quarto-figure-center anchored" width="576">
+<div id="fig-moduleDiagram" class="quarto-figure quarto-figure-center quarto-float anchored">
 <figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-moduleDiagram-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="Part1_DummyModel_files/figure-html/fig-moduleDiagram-1.png" class="img-fluid figure-img" width="576">
 </div>
-<figcaption class="figure quarto-float-caption quarto-float-fig" id="fig-moduleDiagram-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-moduleDiagram-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;1.2: Diagram of module connections.
 </figcaption></figure>
 </div>
@@ -1039,56 +1149,59 @@ Figure&nbsp;1.2: Diagram of module connections.
 </div>
 <p><strong>Object diagram</strong></p>
 <p><code>objectDiagram</code> (<a href="#fig-objectDiagram" class="quarto-xref">Figure&nbsp;<span>1.3</span></a>) provides another way of checking module linkages. It explicitly shows module inter-dependencies by depicting the objects that establish links between modules.</p>
-<div class="cell" data-hash="Part1_DummyModel_cache/html/objectDiagramCode_cb145a192bb2477245c917391f1c9baf">
-<details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">objectDiagram</span><span class="op">(</span><span class="va">mySim</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">SpaDES.core</span><span class="fu">::</span><span class="fu"><a href="https://spades-core.predictiveecology.org/reference/objectDiagram.html">objectDiagram</a></span><span class="op">(</span><span class="va">mySim</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div class="cell" data-layout-align="center" data-hash="Part1_DummyModel_cache/html/fig-objectDiagram_340ac3e676480b4463a9624b4d232930">
+<div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<div id="fig-objectDiagram" class="quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<div id="fig-objectDiagram" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-objectDiagram-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="D:/GitHub/SpaDES4Dummies/figures/Part1_objectDiagram.png" class="img-fluid quarto-figure-center figure-img">
+<img src="C:/Users/cbarros/GitHub/SpaDES4Dummies/figures/Part1_objectDiagram.png" class="img-fluid quarto-figure quarto-figure-center figure-img">
 </div>
-<figcaption class="figure quarto-float-caption quarto-float-fig" id="fig-objectDiagram-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-objectDiagram-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;1.3: Module diagram showing module inter-dependencies with object names.
 </figcaption></figure>
 </div>
 </div>
 </div>
-</section><section id="running-spades" class="level4" data-number="1.2.5.3"><h4 data-number="1.2.5.3" class="anchored" data-anchor-id="running-spades">
-<span class="header-section-number">1.2.5.3</span> Running <code>SpaDES</code>
-</h4>
-<p>We run the simulation using the <code>spades</code> function, which takes the output of the <code>simInit</code>, executes the already scheduled <code>init</code> events, which schedule the remainder of the events. We passed <code>debug = TRUE</code> so that <code>spades</code> prints the events as they are being executed. In case something fails, this helps diagnosing where the issue occurred.</p>
-<div class="cell" data-hash="Part1_DummyModel_cache/html/spadesrun_10a19af6125eaf26ba86ed327571fb6b">
-<details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## run simulation</span></span>
-<span><span class="fu"><a href="https://quickplot.predictiveecology.org/reference/dev.html">dev</a></span><span class="op">(</span><span class="op">)</span>  <span class="co"># on Windows and Mac, this opens external device if using Rstudio, it is faster</span></span>
+</section><section id="running-the-workflow" class="level4" data-number="1.2.5.3"><h4 data-number="1.2.5.3" class="anchored" data-anchor-id="running-the-workflow">
+<span class="header-section-number">1.2.5.3</span> Running the workflow</h4>
+<p>We run the workflow using the <code>spades</code> function.</p>
+<p><code>spades</code> output of the <code>simInit</code> (the <code>simList</code>) and executes the already scheduled <code>init</code> events. In turn, these schedule the remainder of the events and <code>spades</code> executes them until the end time (<code>end(sim)</code>) is reached.</p>
+<p>We use <code>debug = TRUE</code> so that <code>spades</code> prints the events as they are being executed. In case something fails, this helps diagnosing where the issue occurred.</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb29"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## run workflow</span></span>
+<span><span class="fu"><a href="https://quickplot.predictiveecology.org/reference/dev.html">dev</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># on Windows and Mac, this opens external device if using Rstudio, it is faster</span></span>
 <span><span class="fu"><a href="https://quickplot.predictiveecology.org/reference/clearPlot.html">clearPlot</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">mySim2</span> <span class="op">&lt;-</span> <span class="fu">spades</span><span class="op">(</span><span class="va">mySim</span>, debug <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="va">mySim2</span> <span class="op">&lt;-</span> <span class="fu">SpaDES.core</span><span class="fu">::</span><span class="fu"><a href="https://spades-core.predictiveecology.org/reference/spades.html">spades</a></span><span class="op">(</span><span class="va">mySim</span>, debug <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div class="cell" data-layout-align="center" data-hash="Part1_DummyModel_cache/html/figSimulationFig_7f92dcc8b87f0f63107ec7332595e3b0">
+<div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
-<figure class="figure"><p><img src="D:/GitHub/SpaDES4Dummies/figures/simul_plot.png" class="img-fluid figure-img" style="width:80.0%"></p>
-<figcaption>Simulation plots: Final plot of the simulation</figcaption></figure>
+<figure class="figure"><p><img src="C:/Users/cbarros/GitHub/SpaDES4Dummies/figures/simul_plot.png" class="img-fluid figure-img" style="width:80.0%"></p>
+<figcaption>Final plot of the workflow</figcaption></figure>
 </div>
 </div>
 </div>
 <p>We suggest experimenting with changing parameter values and trying to create and add other modules to further explore all the <code>SpaDES</code> flexibility. The more complex the project gets, the more advantageous it is to use <code>SpaDES</code> to turn modules <em>on</em> or <em>off</em>, swapping modules to run, e.g., different statistical analyses, or to include different data.</p>
 <hr></section></section><section id="additional-notes" class="level3" data-number="1.2.6"><h3 data-number="1.2.6" class="anchored" data-anchor-id="additional-notes">
 <span class="header-section-number">1.2.6</span> Additional notes</h3>
-<p><code>SpaDES</code> is an extremely powerful package, whose potential goes well beyond what has been discussed in this dummy example. If you want to explore it further, we recommend following <a href="./Part2_SDMs.html">Chapter 2</a> for a more realistic (but still simple) <code>SpaDES</code> application.</p>
-<p>Also, do go to the <a href="https://spades.predictiveecology.org/"><code>SpaDES</code> webpage</a> to find further information about the platform, as well as upcoming workshops and publications and to the <a href="https://github.com/PredictiveEcology/">Predictive Ecology Github repository</a> to see all the <code>SpaDES</code> modules and SpaDES-related packages that we maintain at the <a href="https://predictiveecology.org">Predictive Ecology Lab</a>.</p>
+<p><code>SpaDES</code> is an extremely powerful family of <code>R</code> packages, and its potential goes well beyond what has been discussed here.</p>
+<p>We recommend going to the <a href="https://predictiveecology.org/"><code>SpaDES</code> webpage</a> and the <a href="https://predictiveecology.org/training/_book/">Robust and nimble scientific workflows, using SpaDES</a> book to learn more.<br><br>
+See also the <a href="https://predictiveecology.org/">Predictive Ecology Community</a> website for news, upcoming SpaDES workshops, a list of packages, and publications, as well as the <a href="#0" style="font-size: 13pt;">Predictive Ecology Github repository</a> for all available <code>SpaDES</code> modules and <code>SpaDES</code>-related packages that we maintain.</p>
 <hr>
 <center>
 <strong>Happy SpaDESing!</strong>
 </center>
 
 
-</section></section><aside id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><hr>
+</section></section><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><hr>
 <ol>
-<li id="fn1"><p>The full R script to run this example <a href="appendices/Part1_Rscript.html" class="quarto-xref"><span>Appendix&nbsp;A</span></a> .<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-</ol></aside></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+<li id="fn1"><p>The full R script to run this example <a href="appendices/Part1_Rscript.html" class="quarto-xref"><span>Appendix A</span></a>.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Please see <strong>Turn off R diagnostics</strong> and <strong>Turn off previous R session reloading</strong> sections <a href="https://predictiveecology.org/training/_book/TroubleshootingPackageInstallation.html#potential-solutions">here</a> for instructions on how to prevent R/RStudio from pre-loading packages and objects.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol></section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
     const mode = bsSheetEl.getAttribute("data-mode");
@@ -1311,6 +1424,24 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
   function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
@@ -1345,7 +1476,11 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
-      return note.innerHTML;
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
     });
   }
   const xrefs = window.document.querySelectorAll('a.quarto-xref');
@@ -1360,38 +1495,28 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       }
     }
     stripColumnClz(note)
-    const typesetMath = (el) => {
-      if (window.MathJax) {
-        // MathJax Typeset
-        window.MathJax.typeset([el]);
-      } else if (window.katex) {
-        // KaTeX Render
-        var mathElements = el.getElementsByClassName("math");
-        var macros = [];
-        for (var i = 0; i < mathElements.length; i++) {
-          var texText = mathElements[i].firstChild;
-          if (mathElements[i].tagName == "SPAN") {
-            window.katex.render(texText.data, mathElements[i], {
-              displayMode: mathElements[i].classList.contains('display'),
-              throwOnError: false,
-              macros: macros,
-              fleqn: false
-            });
-          }
-        }
-      }
-    }
     if (id === null || id.startsWith('sec-')) {
       // Special case sections, only their first couple elements
       const container = document.createElement("div");
       if (note.children && note.children.length > 2) {
-        for (let i = 0; i < 2; i++) {
-          container.appendChild(note.children[i].cloneNode(true));
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
         }
-        typesetMath(container);
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
         return container.innerHTML
       } else {
-        typesetMath(note);
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
         return note.innerHTML;
       }
     } else {
@@ -1400,8 +1525,15 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (anchorLink) {
         anchorLink.remove();
       }
-      typesetMath(note);
-      return note.innerHTML;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
     }
   }
   for (var i=0; i<xrefs.length; i++) {
@@ -1622,12 +1754,12 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script><nav class="page-navigation"><div class="nav-page nav-page-previous">
-      <a href="./index.html" class="pagination-link  aria-label=" preface="">
+      <a href="./index.html" class="pagination-link" aria-label="Preface">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Preface</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./Part2_SDMs.html" class="pagination-link" aria-label="<span class='chapter-number'>2</span>&nbsp; <span class='chapter-title'>A more realistic example of `SpaDES`</span>">
+      <a href="./Part2_SDMs.html" class="pagination-link" aria-label="A more realistic example of `SpaDES`">
         <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">A more realistic example of <code>SpaDES</code></span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>

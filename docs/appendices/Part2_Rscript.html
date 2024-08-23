@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.489">
+<meta name="generator" content="quarto-1.4.553">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>SpaDES For Dummies - Appendix B — Complete R script to Chapter 2</title>
 <style>
@@ -92,12 +92,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
     "search-submit-button-title": "Submit",
     "search-label": "Search"
   }
 }</script><style>html{ scroll-behavior: smooth; }</style>
-<link rel="stylesheet" href="../css/style.css">
 <meta name="twitter:title" content="SpaDES For Dummies - Appendix B — Complete R script to Chapter 2">
 <meta name="twitter:card" content="summary">
 </head>
@@ -223,229 +223,182 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   
 
 
-</header><div class="cell" data-hash="Part2_Rscript_cache/html/unnamed-chunk-1_8be320add61c6d866454cb9603e81925">
-<details open="" class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span>repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"https://predictiveecology.r-universe.dev/"</span>, </span>
-<span>                  CRAN <span class="op">=</span> <span class="st">"https://cloud.r-project.org"</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric_version.html">getRversion</a></span><span class="op">(</span><span class="op">)</span> <span class="op">&lt;</span> <span class="st">"4.2.1"</span><span class="op">)</span> <span class="op">{</span></span>
+</header><div class="cell">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric_version.html">getRversion</a></span><span class="op">(</span><span class="op">)</span> <span class="op">&lt;</span> <span class="st">"4.2.1"</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/warning.html">warning</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="st">"dismo::maxent may create a fatal error"</span>,</span>
 <span>                <span class="st">"when using R version &lt; v4.2.1 and from RStudio.\n"</span>, </span>
 <span>                <span class="st">"Please upgrade R, or run this script outside of RStudio.\n"</span>,</span>
 <span>                <span class="st">"See https://github.com/rspatial/dismo/issues/13"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
+<span><span class="va">repos</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"https://predictiveecology.r-universe.dev/"</span>,</span>
+<span>           <span class="st">"https://cloud.r-project.org"</span>,</span>
+<span>           <span class="fu"><a href="https://rdrr.io/r/base/options.html">getOption</a></span><span class="op">(</span><span class="st">"repos"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SpaDES.project"</span>, <span class="st">"SpaDES.core"</span><span class="op">)</span>, repos <span class="op">=</span> <span class="va">repos</span><span class="op">)</span></span>
+<span></span>
 <span><span class="co">## decide where you're working</span></span>
-<span><span class="va">mainPath</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="st">"~/SpaDES4Dummies_Part2"</span><span class="op">)</span></span>
-<span><span class="va">pkgPath</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">mainPath</span>, <span class="st">"packages"</span>, <span class="va">version</span><span class="op">$</span><span class="va">platform</span>,</span>
-<span>                     <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="va">version</span><span class="op">$</span><span class="va">major</span>, <span class="st">"."</span>, <span class="fu"><a href="https://rdrr.io/r/base/strsplit.html">strsplit</a></span><span class="op">(</span><span class="va">version</span><span class="op">$</span><span class="va">minor</span>, <span class="st">"[.]"</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/files2.html">dir.create</a></span><span class="op">(</span><span class="va">pkgPath</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/libPaths.html">.libPaths</a></span><span class="op">(</span><span class="va">pkgPath</span>, include.site <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="co">## install packages in project library (proj-lib)</span></span>
-<span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="st">"remotes"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/installed.packages.html">installed.packages</a></span><span class="op">(</span>lib.loc <span class="op">=</span> <span class="va">pkgPath</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="st">"Require"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/installed.packages.html">installed.packages</a></span><span class="op">(</span>lib.loc <span class="op">=</span> <span class="va">pkgPath</span><span class="op">)</span> <span class="op">||</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span><span class="op">(</span><span class="st">"Require"</span>, lib.loc <span class="op">=</span> <span class="va">pkgPath</span><span class="op">)</span> <span class="op">&lt;</span> <span class="st">"0.3.1.9015"</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"PredictiveEcology/Require@55ec169e654214d86be62a0e13e9a2157f1aa966"</span>,</span>
-<span>                          upgrade <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="co">## Notes: </span></span>
-<span><span class="co">## 1) if you are working from RStudio and have an older version of base packages like `Rcpp`, `rlang` </span></span>
-<span><span class="co">## (and others) installed, you may  need to run the following lines (and code above) directly from R</span></span>
-<span><span class="co">## in order to update these base packages</span></span>
-<span><span class="co">## 2) Please ensure the appropriate Rtools version is installed (see)</span></span>
-<span></span>
-<span><span class="co">## there seems to be a problem with `ragg` and a forced install solves it</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="st">"ragg"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/installed.packages.html">installed.packages</a></span><span class="op">(</span>lib.loc <span class="op">=</span> <span class="va">pkgPath</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"ragg"</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="fu">Require</span><span class="fu">::</span><span class="fu"><a href="https://Require.predictiveecology.org/reference/Require.html">Require</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"PredictiveEcology/SpaDES.project@transition (HEAD)"</span>, </span>
-<span>                   <span class="st">"PredictiveEcology/SpaDES.core@master (HEAD)"</span>,</span>
-<span>                   <span class="co">## these will be needed later on:</span></span>
-<span>                   <span class="st">"ggpubr"</span>,</span>
-<span>                   <span class="st">"SpaDES.tools"</span>,</span>
-<span>                   <span class="st">"PredictiveEcology/SpaDES.experiment@75d917b70b892802fed0bbdb2a5e9f3c6772f0ba"</span><span class="op">)</span>,</span>
-<span>                 require <span class="op">=</span> <span class="cn">FALSE</span>,  <span class="co">## don't load packages yet </span></span>
-<span>                 upgrade <span class="op">=</span> <span class="cn">FALSE</span>, standAlone <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span></span>
-<span><span class="fu">Require</span><span class="fu">::</span><span class="fu"><a href="https://Require.predictiveecology.org/reference/Require.html">Require</a></span><span class="op">(</span><span class="st">"SpaDES.core"</span>, install <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>  <span class="co">## load only</span></span>
-<span><span class="fu">setPaths</span><span class="op">(</span>cachePath <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">mainPath</span>, <span class="st">"cache"</span><span class="op">)</span>,</span>
-<span>         inputPath <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">mainPath</span>, <span class="st">"inputs"</span><span class="op">)</span>,</span>
-<span>         modulePath <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">mainPath</span>, <span class="st">"modules"</span><span class="op">)</span>,</span>
-<span>         outputPath <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">mainPath</span>, <span class="st">"outputs"</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">simPaths</span> <span class="op">&lt;-</span> <span class="fu">getPaths</span><span class="op">(</span><span class="op">)</span> <span class="co">## check that this is what you wanted</span></span>
+<span><span class="va">projPath</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="st">"~/SpaDES4Dummies_Part2"</span><span class="op">)</span></span>
+<span><span class="va">modPath</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">projPath</span>, <span class="st">"modules"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">## Let's create a self-contained module that will simulate the species' abundance for any given period of time and frequency.</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/files2.html">dir.exists</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">simPaths</span><span class="op">$</span><span class="va">modulePath</span>, <span class="st">"speciesAbundanceData"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu">newModule</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"speciesAbundanceData"</span>, path <span class="op">=</span> <span class="va">simPaths</span><span class="op">$</span><span class="va">modulePath</span><span class="op">)</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/files2.html">dir.exists</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">modPath</span>, <span class="st">"speciesAbundanceData"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu">SpaDES.core</span><span class="fu">::</span><span class="fu"><a href="https://spades-core.predictiveecology.org/reference/newModule.html">newModule</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"speciesAbundanceData"</span>, path <span class="op">=</span> <span class="va">modPath</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/files2.html">dir.exists</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">simPaths</span><span class="op">$</span><span class="va">modulePath</span>, <span class="st">"climateData"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu">newModule</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"climateData"</span>, path <span class="op">=</span> <span class="va">simPaths</span><span class="op">$</span><span class="va">modulePath</span><span class="op">)</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/files2.html">dir.exists</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">modPath</span>,<span class="st">"climateData"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu">SpaDES.core</span><span class="fu">::</span><span class="fu"><a href="https://spades-core.predictiveecology.org/reference/newModule.html">newModule</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"climateData"</span>, path <span class="op">=</span> <span class="va">modPath</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/files2.html">dir.exists</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">simPaths</span><span class="op">$</span><span class="va">modulePath</span>, <span class="st">"projectSpeciesDist"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu">newModule</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"projectSpeciesDist"</span>, path <span class="op">=</span> <span class="va">simPaths</span><span class="op">$</span><span class="va">modulePath</span><span class="op">)</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/files2.html">dir.exists</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">modPath</span>, <span class="st">"projectSpeciesDist"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu">SpaDES.core</span><span class="fu">::</span><span class="fu"><a href="https://spades-core.predictiveecology.org/reference/newModule.html">newModule</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"projectSpeciesDist"</span>, path <span class="op">=</span> <span class="va">modPath</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="co">## now, let's pretend you've created your modules and each sources a series of other packages</span></span>
-<span><span class="co">## it's a good idea to always make sure all necessary module dependencies are installed</span></span>
-<span><span class="co">## this is a particularly useful line when sharing your packages with someone else.</span></span>
-<span><span class="va">outs</span> <span class="op">&lt;-</span> <span class="fu">SpaDES.project</span><span class="fu">::</span><span class="fu"><a href="http://spades-project.predictiveecology.org/reference/metadata.html">packagesInModules</a></span><span class="op">(</span>modulePath <span class="op">=</span> <span class="va">simPaths</span><span class="op">$</span><span class="va">modulePath</span><span class="op">)</span>  <span class="co">## gets list of module dependencies</span></span>
-<span><span class="fu">Require</span><span class="fu">::</span><span class="fu"><a href="https://Require.predictiveecology.org/reference/Require.html">Require</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unname.html">unname</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span><span class="va">outs</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>                   <span class="st">"DiagrammeR"</span><span class="op">)</span>, </span>
-<span>                 require <span class="op">=</span> <span class="cn">FALSE</span>,   <span class="co">## don't load packages</span></span>
-<span>                 upgrade <span class="op">=</span> <span class="cn">FALSE</span>,   <span class="co">## don't upgrade dependencies</span></span>
-<span>                 standAlone <span class="op">=</span> <span class="cn">TRUE</span>, </span>
-<span>                 purge <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="co">## install all dependencies in proj-lib (ignore user/system lib)</span></span>
+<span><span class="co">## assuming you've created your modules and each sources a series of other packages</span></span>
+<span><span class="co">## we will use setupProject to install and prepare all inputs to initialise the workflow </span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://spades-project.predictiveecology.org/">SpaDES.project</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">## now load packages - SpaDES.core may have been loaded already, which is fine</span></span>
-<span><span class="fu">Require</span><span class="fu">::</span><span class="fu"><a href="https://Require.predictiveecology.org/reference/Require.html">Require</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"reproducible"</span>, <span class="st">"SpaDES.core"</span>, <span class="st">"SpaDES.experiment"</span><span class="op">)</span>, </span>
-<span>                 install <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> </span>
+<span><span class="va">mySimMaxEnt</span> <span class="op">&lt;-</span> <span class="fu"><a href="http://spades-project.predictiveecology.org/reference/setupProject.html">setupProject</a></span><span class="op">(</span>paths <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">"packagePath"</span> <span class="op">=</span> <span class="st">"packages/"</span>,</span>
+<span>                                         <span class="st">"projectPath"</span> <span class="op">=</span> <span class="va">projPath</span><span class="op">)</span>,</span>
+<span>                            Restart <span class="op">=</span> <span class="cn">TRUE</span>,  <span class="co">## RStudio will restart. You have to run the code above and this call again</span></span>
+<span>                            modules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"speciesAbundanceData"</span>, <span class="st">"climateData"</span>, <span class="st">"projectSpeciesDist"</span><span class="op">)</span>,</span>
+<span>                            options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>reproducible.useCache <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                                           reproducible.cachePath <span class="op">=</span> <span class="va">paths</span><span class="op">$</span><span class="va">cachePath</span>,  <span class="co">## you can use "paths" which is the first argument (and become an internal object). See ?setupProject</span></span>
+<span>                                           reproducible.destinationPath <span class="op">=</span> <span class="va">paths</span><span class="op">$</span><span class="va">inputPath</span>, <span class="co">## all downloaded and pre-processed layers go here</span></span>
+<span>                                           spades.moduleCodeChecks <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>                                           repos <span class="op">=</span> <span class="va">repos</span><span class="op">)</span>,</span>
+<span>                            packages <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="co">## the following packages are needed outside the modules</span></span>
+<span>                              <span class="st">"DiagrammeR"</span>,</span>
+<span>                              <span class="st">"ggpubr"</span>,</span>
+<span>                              <span class="st">"SpaDES.experiment"</span>,</span>
+<span>                              <span class="st">"SpaDES.tools"</span></span>
+<span>                            <span class="op">)</span>,</span>
+<span>                            params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
+<span>                              <span class="st">"speciesAbundanceData"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
+<span>                                <span class="st">".plots"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"png"</span><span class="op">)</span>,</span>
+<span>                                <span class="st">".useCache"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">".inputObjects"</span>, <span class="st">"init"</span><span class="op">)</span> </span>
+<span>                              <span class="op">)</span>,</span>
+<span>                              <span class="st">"climateData"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
+<span>                                <span class="st">".plots"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"png"</span><span class="op">)</span>,</span>
+<span>                                <span class="st">".useCache"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">".inputObjects"</span>, <span class="st">"init"</span><span class="op">)</span></span>
+<span>                              <span class="op">)</span>,</span>
+<span>                              <span class="st">"projectSpeciesDist"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
+<span>                                <span class="st">"statModel"</span> <span class="op">=</span> <span class="st">"MaxEnt"</span>,</span>
+<span>                                <span class="st">".plots"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"png"</span><span class="op">)</span>,</span>
+<span>                                <span class="st">".useCache"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">".inputObjects"</span>, <span class="st">"init"</span><span class="op">)</span></span>
+<span>                              <span class="op">)</span></span>
+<span>                            <span class="op">)</span>,</span>
+<span>                            times <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>start <span class="op">=</span> <span class="fl">1</span>, end <span class="op">=</span> <span class="fl">5</span>, timeunit <span class="op">=</span> <span class="st">"year"</span><span class="op">)</span>,</span>
+<span>                            studyAreaRas <span class="op">=</span> <span class="op">{</span></span>
+<span>                              <span class="va">studyArea</span> <span class="op">&lt;-</span> <span class="fu">SpaDES.tools</span><span class="fu">::</span><span class="fu"><a href="https://spades-tools.predictiveecology.org/reference/randomStudyArea.html">randomStudyArea</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">1e10</span>, seed <span class="op">=</span> <span class="fl">123</span><span class="op">)</span></span>
+<span>                              <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/rasterize.html">rasterize</a></span><span class="op">(</span><span class="va">studyArea</span>,</span>
+<span>                                               <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html">rast</a></span><span class="op">(</span>extent <span class="op">=</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/ext.html">ext</a></span><span class="op">(</span><span class="va">studyArea</span><span class="op">)</span>,</span>
+<span>                                                           crs <span class="op">=</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/crs.html">crs</a></span><span class="op">(</span><span class="va">studyArea</span>, proj <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>                                                           resolution <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
+<span>                            <span class="op">}</span>,</span>
+<span>                            sideEffects <span class="op">=</span> <span class="op">{</span></span>
+<span>                              <span class="co">## dismo needs a few tweaks</span></span>
+<span>                              <span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">reproducible</span><span class="fu">::</span><span class="fu"><a href="https://reproducible.predictiveecology.org/reference/preProcess.html">preProcess</a></span><span class="op">(</span>targetFile <span class="op">=</span> <span class="st">"maxent.jar"</span>,</span>
+<span>                                                              url <span class="op">=</span> <span class="st">"https://github.com/mrmaxent/Maxent/blob/master/ArchivedReleases/3.4.4/maxent.jar?raw=true"</span>,</span>
+<span>                                                              destinationPath <span class="op">=</span> <span class="va">paths</span><span class="op">$</span><span class="va">inputPath</span>,</span>
+<span>                                                              fun <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></span>
+<span>                              <span class="fu"><a href="https://rdrr.io/r/base/files.html">file.copy</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">targetFilePath</span>, </span>
+<span>                                        <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"java"</span>, package <span class="op">=</span> <span class="st">"dismo"</span><span class="op">)</span>, <span class="st">"maxent.jar"</span><span class="op">)</span>,</span>
+<span>                                        overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>                            <span class="op">}</span></span>
+<span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">## dismo needs a few tweaks to run MaxEnt</span></span>
-<span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu">preProcess</span><span class="op">(</span>targetFile <span class="op">=</span> <span class="st">"maxent.jar"</span>,</span>
-<span>                  url <span class="op">=</span> <span class="st">"https://github.com/mrmaxent/Maxent/blob/master/ArchivedReleases/3.4.4/maxent.jar?raw=true"</span>,</span>
-<span>                  destinationPath <span class="op">=</span> <span class="va">simPaths</span><span class="op">$</span><span class="va">inputPath</span>,</span>
-<span>                  fun <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/files.html">file.copy</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">targetFilePath</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"java"</span>, package<span class="op">=</span><span class="st">"dismo"</span><span class="op">)</span>, <span class="st">"maxent.jar"</span><span class="op">)</span>,</span>
-<span>          overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">out</span> <span class="op">&lt;-</span> <span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="http://www.rforge.net/rJava/">rJava</a></span><span class="op">)</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="va">out</span><span class="op">)</span> <span class="op">{</span></span>
+<span><span class="co">## check that rJava can be loaded.</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="http://www.rforge.net/rJava/">rJava</a></span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="st">"Your Java installation may have problems, please check.\n"</span>, </span>
 <span>             <span class="st">"See https://www.java.com/en/download/manual.jsp for Java installation"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
-<span><span class="co">## a few important options:</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span>reproducible.useCache <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>        reproducible.cachePath <span class="op">=</span> <span class="va">simPaths</span><span class="op">$</span><span class="va">cachePath</span>,</span>
-<span>        reproducible.destinationPath <span class="op">=</span> <span class="va">simPaths</span><span class="op">$</span><span class="va">inputPath</span>, <span class="co">## all downloaded and pre-processed layers go here</span></span>
-<span>        reproducible.useTerra <span class="op">=</span> <span class="cn">TRUE</span>, <span class="co">## we want to use the terra R package</span></span>
-<span>        spades.moduleCodeChecks <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>        spades.useRequire <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>  </span>
 <span></span>
-<span><span class="co">## list the modules to use</span></span>
-<span><span class="va">simModules</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">"speciesAbundanceData"</span>, <span class="st">"climateData"</span>, <span class="st">"projectSpeciesDist"</span><span class="op">)</span></span>
+<span><span class="co">## check study area:</span></span>
+<span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html">plot</a></span><span class="op">(</span><span class="va">mySimMaxEnt</span><span class="op">$</span><span class="va">studyAreaRas</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">## Set simulation and module parameters</span></span>
-<span><span class="va">simTimes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>start <span class="op">=</span> <span class="fl">1</span>, end <span class="op">=</span> <span class="fl">5</span>, timeunit <span class="op">=</span> <span class="st">"year"</span><span class="op">)</span></span>
+<span><span class="co">## the GLM alternative only needs one parameter to be changed, so we can avoid </span></span>
+<span><span class="co">## repeating the `setupProject()` call</span></span>
+<span><span class="va">mySimGLM</span> <span class="op">&lt;-</span> <span class="va">mySimMaxEnt</span></span>
+<span><span class="va">mySimGLM</span><span class="op">$</span><span class="va">params</span><span class="op">$</span><span class="va">projectSpeciesDist</span><span class="op">$</span><span class="va">statModel</span> <span class="op">&lt;-</span> <span class="st">"GLM"</span></span>
 <span></span>
-<span><span class="co">## we create two lists of parameters, one using the default MaxEnt</span></span>
-<span><span class="co">## the other a GLM</span></span>
-<span><span class="va">simParamsMaxEnt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
-<span>  <span class="st">"speciesAbundanceData"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
-<span>    <span class="st">".plots"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"png"</span><span class="op">)</span>,</span>
-<span>    <span class="st">".useCache"</span> <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span>  <span class="op">)</span>,</span>
-<span>  <span class="st">"climateData"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
-<span>    <span class="st">".plots"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"png"</span><span class="op">)</span>,</span>
-<span>    <span class="st">".useCache"</span> <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span>  <span class="op">)</span>,</span>
-<span>  <span class="st">"projectSpeciesDist"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
-<span>    <span class="st">"statModel"</span> <span class="op">=</span> <span class="st">"MaxEnt"</span>,</span>
-<span>    <span class="st">".plots"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"png"</span><span class="op">)</span>,</span>
-<span>    <span class="st">".useCache"</span> <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">simParamsGLM</span> <span class="op">&lt;-</span> <span class="va">simParamsMaxEnt</span></span>
-<span><span class="va">simParamsGLM</span><span class="op">$</span><span class="va">projectSpeciesDist</span><span class="op">$</span><span class="va">statModel</span> <span class="op">&lt;-</span> <span class="st">"GLM"</span></span>
-<span></span>
-<span><span class="co">## make a random study area.</span></span>
-<span><span class="co">##  Here use seed to make sure the same study area is always generated</span></span>
-<span><span class="va">studyArea</span> <span class="op">&lt;-</span> <span class="fu">SpaDES.tools</span><span class="fu">::</span><span class="fu"><a href="https://spades-tools.predictiveecology.org/reference/randomStudyArea.html">randomStudyArea</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">1e10</span>, seed <span class="op">=</span> <span class="fl">123</span><span class="op">)</span></span>
-<span><span class="va">studyAreaRas</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/rasterize.html">rasterize</a></span><span class="op">(</span><span class="va">studyArea</span>, </span>
-<span>                                 <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/rast.html">rast</a></span><span class="op">(</span>extent <span class="op">=</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/ext.html">ext</a></span><span class="op">(</span><span class="va">studyArea</span><span class="op">)</span>, </span>
-<span>                                             crs <span class="op">=</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/crs.html">crs</a></span><span class="op">(</span><span class="va">studyArea</span>, proj <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, </span>
-<span>                                             resolution <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">simObjects</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
-<span>  <span class="st">"studyAreaRas"</span> <span class="op">=</span> <span class="va">studyAreaRas</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">## Simulation setup - create two simulations, one for MaxEnt another for GLM</span></span>
+<span><span class="co">## Simulation setup - create two "simulations", one for MaxEnt another for GLM</span></span>
 <span><span class="co">## SpaDES.experiment::experiment2, will take care of subdirectories to store outputs</span></span>
-<span><span class="va">mySimMaxEnt</span> <span class="op">&lt;-</span> <span class="fu">simInit</span><span class="op">(</span>times <span class="op">=</span> <span class="va">simTimes</span>, params <span class="op">=</span> <span class="va">simParamsMaxEnt</span>, </span>
-<span>                       modules <span class="op">=</span> <span class="va">simModules</span>, objects <span class="op">=</span> <span class="va">simObjects</span>, </span>
-<span>                       paths <span class="op">=</span> <span class="va">simPaths</span><span class="op">)</span></span>
-<span><span class="va">mySimGLM</span> <span class="op">&lt;-</span> <span class="fu">simInit</span><span class="op">(</span>times <span class="op">=</span> <span class="va">simTimes</span>, params <span class="op">=</span> <span class="va">simParamsGLM</span>, </span>
-<span>                    modules <span class="op">=</span> <span class="va">simModules</span>, objects <span class="op">=</span> <span class="va">simObjects</span>, </span>
-<span>                    paths <span class="op">=</span> <span class="va">simPaths</span><span class="op">)</span></span>
+<span><span class="va">simInitMaxEnt</span> <span class="op">&lt;-</span> <span class="fu">SpaDES.core</span><span class="fu">::</span><span class="fu"><a href="https://spades-core.predictiveecology.org/reference/simInit.html">simInit2</a></span><span class="op">(</span><span class="va">mySimMaxEnt</span><span class="op">)</span></span>
+<span><span class="va">simInitGLM</span> <span class="op">&lt;-</span> <span class="fu">SpaDES.core</span><span class="fu">::</span><span class="fu"><a href="https://spades-core.predictiveecology.org/reference/simInit.html">simInit2</a></span><span class="op">(</span><span class="va">mySimGLM</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">moduleDiagram</span><span class="op">(</span><span class="va">mySimMaxEnt</span><span class="op">)</span></span>
-<span><span class="fu">objectDiagram</span><span class="op">(</span><span class="va">mySimMaxEnt</span><span class="op">)</span></span>
+<span><span class="fu">SpaDES.core</span><span class="fu">::</span><span class="fu"><a href="https://spades-core.predictiveecology.org/reference/moduleDiagram.html">moduleDiagram</a></span><span class="op">(</span><span class="va">simInitMaxEnt</span><span class="op">)</span></span>
+<span><span class="fu">SpaDES.core</span><span class="fu">::</span><span class="fu"><a href="https://spades-core.predictiveecology.org/reference/objectDiagram.html">objectDiagram</a></span><span class="op">(</span><span class="va">simInitMaxEnt</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">## run simulation</span></span>
-<span><span class="fu">clearPlot</span><span class="op">(</span>force <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>   <span class="co">## this forces wiping the graphics device and opening a new window</span></span>
+<span><span class="fu">quickPlot</span><span class="fu">::</span><span class="fu"><a href="https://quickplot.predictiveecology.org/reference/clearPlot.html">clearPlot</a></span><span class="op">(</span>force <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>   <span class="co">## this forces wiping the graphics device and opening a new window</span></span>
 <span></span>
 <span><span class="co">## This runs one simulation and stores outputs in the main 'outputs' folder </span></span>
 <span><span class="co">## - not what we want, but good for testing</span></span>
-<span><span class="co"># mySimOut &lt;- spades(mySimMaxEnt, debug = TRUE)  </span></span>
+<span><span class="co"># mySimOut &lt;- SpaDES.core::spades(simInitMaxEnt, debug = TRUE)  </span></span>
 <span></span>
-<span><span class="co">## Better to use when spades runs error-free on the simLists</span></span>
-<span><span class="va">myExperiment</span> <span class="op">&lt;-</span> <span class="fu">SpaDES.experiment</span><span class="fu">::</span><span class="fu"><a href="http://spades-experiment.predictiveecology.org//reference/experiment2.html">experiment2</a></span><span class="op">(</span>MaxEnt <span class="op">=</span> <span class="va">mySimMaxEnt</span>, </span>
-<span>                                               GLM <span class="op">=</span> <span class="va">mySimGLM</span>, </span>
+<span><span class="co">## Better to use after checking that spades() runs error-free on both simLists</span></span>
+<span><span class="va">myExperiment</span> <span class="op">&lt;-</span> <span class="fu">SpaDES.experiment</span><span class="fu">::</span><span class="fu">experiment2</span><span class="op">(</span>MaxEnt <span class="op">=</span> <span class="va">simInitMaxEnt</span>, </span>
+<span>                                               GLM <span class="op">=</span> <span class="va">simInitGLM</span>, </span>
 <span>                                               debug <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>                                               replicates <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>                                               clearSimEnv <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>   <span class="co">## prevent removing objects from the simLists at the end</span></span>
-<span><span class="co">## save outputs</span></span>
-<span><span class="fu">qs</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/qs/man/qsave.html">qsave</a></span><span class="op">(</span><span class="va">myExperiment</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">simPaths</span><span class="op">$</span><span class="va">outputPath</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"myExperiment"</span>, <span class="st">".qs"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">## check models</span></span>
+<span><span class="co">## save outputs -- both simLists have the same output path, so we can use the first one</span></span>
+<span><span class="fu">qs</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/qs/man/qsave.html">qsave</a></span><span class="op">(</span><span class="va">myExperiment</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="fu">SpaDES.core</span><span class="fu">::</span><span class="fu"><a href="https://spades-core.predictiveecology.org/reference/simList-accessors-paths.html">outputPath</a></span><span class="op">(</span><span class="va">simInitMaxEnt</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"myExperiment"</span>, <span class="st">".qs"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## easily check models</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/conditions.html">tryCatch</a></span><span class="op">(</span><span class="va">myExperiment</span><span class="op">$</span><span class="va">MaxEnt_rep1</span><span class="op">$</span><span class="va">sdmOut</span><span class="op">)</span>   <span class="co">## this links to an html page</span></span>
-<span><span class="va">sets</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">myExperiment</span><span class="op">$</span><span class="va">MaxEnt_rep1</span><span class="op">$</span><span class="va">sdmOut</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">sets</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">myExperiment</span><span class="op">$</span><span class="va">GLM_rep1</span><span class="op">$</span><span class="va">sdmOut</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span><span class="op">(</span><span class="va">sets</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">## check validation results for the two models</span></span>
+<span><span class="co">## easily check validation results for the two models</span></span>
 <span><span class="va">myExperiment</span><span class="op">$</span><span class="va">MaxEnt_rep1</span><span class="op">$</span><span class="va">evalOut</span></span>
 <span><span class="va">myExperiment</span><span class="op">$</span><span class="va">GLM_rep1</span><span class="op">$</span><span class="va">evalOut</span></span>
 <span></span>
 <span></span>
-<span><span class="co">## Run with another climate scenario - the most contrasting scenario to SSP 585</span></span>
-<span><span class="co">## get the original table from one of the simulations and replace the climate scenario</span></span>
-<span><span class="va">projClimateURLs</span> <span class="op">&lt;-</span> <span class="fu">copy</span><span class="op">(</span><span class="va">mySimMaxEnt</span><span class="op">$</span><span class="va">projClimateURLs</span><span class="op">)</span></span>
-<span><span class="va">projClimateURLs</span><span class="op">[</span>, <span class="fu">`:=`</span><span class="op">(</span>URL <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"ssp585"</span>, <span class="st">"ssp126"</span>, <span class="va">URL</span><span class="op">)</span>,</span>
-<span>                       targetFile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"ssp585"</span>, <span class="st">"ssp126"</span>, <span class="va">targetFile</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">## Run with another climate scenario - the most contrasting scenario to SSP 585.</span></span>
+<span><span class="co">## Make copies of the outputs of setupProject, then get the original table from </span></span>
+<span><span class="co">## one of the simulations, and replace the climate scenario. </span></span>
+<span><span class="va">mySimMaxEnt2</span> <span class="op">&lt;-</span> <span class="va">mySimMaxEnt</span></span>
+<span><span class="va">mySimGLM2</span> <span class="op">&lt;-</span> <span class="va">mySimGLM</span></span>
+<span><span class="va">projClimateURLsNew</span> <span class="op">&lt;-</span> <span class="fu">copy</span><span class="op">(</span><span class="va">myExperiment</span><span class="op">$</span><span class="va">MaxEnt_rep1</span><span class="op">$</span><span class="va">projClimateURLs</span><span class="op">)</span></span>
+<span><span class="va">projClimateURLsNew</span><span class="op">[</span>, <span class="fu">`:=`</span><span class="op">(</span>URL <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"ssp585"</span>, <span class="st">"ssp126"</span>, <span class="va">URL</span><span class="op">)</span>,</span>
+<span>                          targetFile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"ssp585"</span>, <span class="st">"ssp126"</span>, <span class="va">targetFile</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
-<span><span class="co">## this time we pass the new table or URLs to the modules, so that climate layers are changed</span></span>
-<span><span class="va">simObjects2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
-<span>  <span class="st">"studyAreaRas"</span> <span class="op">=</span> <span class="va">studyAreaRas</span>,</span>
-<span>  <span class="st">"projClimateURLs"</span> <span class="op">=</span> <span class="va">projClimateURLs</span></span>
-<span><span class="op">)</span></span>
+<span><span class="va">mySimMaxEnt2</span><span class="op">$</span><span class="va">projClimateURLs</span> <span class="op">&lt;-</span> <span class="va">projClimateURLsNew</span></span>
+<span><span class="va">mySimGLM2</span><span class="op">$</span><span class="va">projClimateURLs</span> <span class="op">&lt;-</span> <span class="va">projClimateURLsNew</span></span>
 <span></span>
-<span><span class="va">mySimMaxEnt2</span> <span class="op">&lt;-</span> <span class="fu">simInit</span><span class="op">(</span>times <span class="op">=</span> <span class="va">simTimes</span>, params <span class="op">=</span> <span class="va">simParamsMaxEnt</span>, </span>
-<span>                        modules <span class="op">=</span> <span class="va">simModules</span>, objects <span class="op">=</span> <span class="va">simObjects2</span>, </span>
-<span>                        paths <span class="op">=</span> <span class="va">simPaths</span><span class="op">)</span></span>
-<span><span class="va">mySimGLM2</span> <span class="op">&lt;-</span> <span class="fu">simInit</span><span class="op">(</span>times <span class="op">=</span> <span class="va">simTimes</span>, params <span class="op">=</span> <span class="va">simParamsGLM</span>, </span>
-<span>                     modules <span class="op">=</span> <span class="va">simModules</span>, objects <span class="op">=</span> <span class="va">simObjects2</span>, </span>
-<span>                     paths <span class="op">=</span> <span class="va">simPaths</span><span class="op">)</span></span>
+<span><span class="co">## now initialise the new simulations/workflows with the new scenarios</span></span>
+<span><span class="va">simInitMaxEnt2</span> <span class="op">&lt;-</span> <span class="fu">SpaDES.core</span><span class="fu">::</span><span class="fu"><a href="https://spades-core.predictiveecology.org/reference/simInit.html">simInit2</a></span><span class="op">(</span><span class="va">mySimMaxEnt2</span><span class="op">)</span></span>
+<span><span class="va">simInitGLM2</span> <span class="op">&lt;-</span>  <span class="fu">SpaDES.core</span><span class="fu">::</span><span class="fu"><a href="https://spades-core.predictiveecology.org/reference/simInit.html">simInit2</a></span><span class="op">(</span><span class="va">mySimGLM2</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">myExperiment2</span> <span class="op">&lt;-</span> <span class="fu">experiment2</span><span class="op">(</span>MaxEnt <span class="op">=</span> <span class="va">mySimMaxEnt2</span>, </span>
-<span>                             GLM <span class="op">=</span> <span class="va">mySimGLM2</span>, </span>
+<span><span class="va">myExperiment2</span> <span class="op">&lt;-</span> <span class="fu">experiment2</span><span class="op">(</span>MaxEnt2 <span class="op">=</span> <span class="va">simInitMaxEnt2</span>, </span>
+<span>                             GLM2 <span class="op">=</span> <span class="va">simInitGLM2</span>, </span>
 <span>                             debug <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>                             replicates <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>                             clearSimEnv <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="co">## save outputs</span></span>
-<span><span class="fu">qs</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/qs/man/qsave.html">qsave</a></span><span class="op">(</span><span class="va">myExperiment2</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">simPaths</span><span class="op">$</span><span class="va">outputPath</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"myExperiment2"</span>, <span class="st">".qs"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">qs</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/qs/man/qsave.html">qsave</a></span><span class="op">(</span><span class="va">myExperiment2</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="fu">SpaDES.core</span><span class="fu">::</span><span class="fu"><a href="https://spades-core.predictiveecology.org/reference/simList-accessors-paths.html">outputPath</a></span><span class="op">(</span><span class="va">mySimMaxEnt2</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"myExperiment2"</span>, <span class="st">".qs"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">## MaxEnt predictions across time and for each climate scenario --------------</span></span>
 <span><span class="co">## combine plots from two distinct simulations in a single figure</span></span>
 <span><span class="co">## (the same can be done to compare MaxEnt and GLM, or plot all projections)</span></span>
 <span></span>
-<span><span class="co">## fetch the internal plotting function instead of repeating code here</span></span>
-<span><span class="va">plotFun</span> <span class="op">&lt;-</span> <span class="va">myExperiment</span><span class="op">$</span><span class="va">GLM_rep1</span><span class="op">@</span><span class="va">.envir</span><span class="op">$</span><span class="va">.mods</span><span class="op">$</span><span class="va">climateData</span><span class="op">$</span><span class="va">plotSpatRasterStk</span></span>
+<span><span class="co">## fetch the internal plotting function rom any of the two simulations,</span></span>
+<span><span class="co">## instead of repeating code here</span></span>
+<span><span class="va">plotFun</span> <span class="op">&lt;-</span> <span class="va">myExperiment</span><span class="op">$</span><span class="va">MaxEnt_rep1</span><span class="op">@</span><span class="va">.envir</span><span class="op">$</span><span class="va">.mods</span><span class="op">$</span><span class="va">climateData</span><span class="op">$</span><span class="va">plotSpatRasterStk</span></span>
 <span></span>
 <span><span class="co">## raw predictions exported by the module</span></span>
 <span><span class="va">sppDistProjMaxEnt</span> <span class="op">&lt;-</span> <span class="va">myExperiment</span><span class="op">$</span><span class="va">MaxEnt_rep1</span><span class="op">$</span><span class="va">sppDistProj</span></span>
-<span><span class="va">sppDistProjMaxEnt2</span> <span class="op">&lt;-</span> <span class="va">myExperiment2</span><span class="op">$</span><span class="va">MaxEnt_rep1</span><span class="op">$</span><span class="va">sppDistProj</span></span>
+<span><span class="va">sppDistProjMaxEnt2</span> <span class="op">&lt;-</span> <span class="va">myExperiment2</span><span class="op">$</span><span class="va">MaxEnt2_rep1</span><span class="op">$</span><span class="va">sppDistProj</span></span>
 <span></span>
 <span><span class="co">## we convert the raw predictions into presence absence</span></span>
 <span><span class="co">## using exported threshold</span></span>
 <span><span class="va">sppDistProjMaxEnt_PA</span> <span class="op">&lt;-</span> <span class="fu">as.int</span><span class="op">(</span><span class="va">myExperiment</span><span class="op">$</span><span class="va">MaxEnt_rep1</span><span class="op">$</span><span class="va">sppDistProj</span> <span class="op">&gt;</span> <span class="va">myExperiment</span><span class="op">$</span><span class="va">MaxEnt_rep1</span><span class="op">$</span><span class="va">thresh</span><span class="op">)</span></span>
-<span><span class="va">sppDistProjMaxEnt2_PA</span> <span class="op">&lt;-</span> <span class="fu">as.int</span><span class="op">(</span><span class="va">myExperiment2</span><span class="op">$</span><span class="va">MaxEnt_rep1</span><span class="op">$</span><span class="va">sppDistProj</span> <span class="op">&gt;</span> <span class="va">myExperiment2</span><span class="op">$</span><span class="va">MaxEnt_rep1</span><span class="op">$</span><span class="va">thresh</span><span class="op">)</span></span>
+<span><span class="va">sppDistProjMaxEnt2_PA</span> <span class="op">&lt;-</span> <span class="fu">as.int</span><span class="op">(</span><span class="va">myExperiment2</span><span class="op">$</span><span class="va">MaxEnt2_rep1</span><span class="op">$</span><span class="va">sppDistProj</span> <span class="op">&gt;</span> <span class="va">myExperiment2</span><span class="op">$</span><span class="va">MaxEnt2_rep1</span><span class="op">$</span><span class="va">thresh</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">## rename layers from plotting</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">sppDistProjMaxEnt</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">sppDistProjMaxEnt2</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"2001"</span>, <span class="st">"2021-2040"</span>, <span class="st">"2041-2060"</span>, <span class="st">"2061-2080"</span>, <span class="st">"2081-2100"</span><span class="op">)</span></span>
@@ -486,7 +439,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span>                                                  y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expression.html">expression</a></span><span class="op">(</span><span class="fu">atop</span><span class="op">(</span><span class="fu">bold</span><span class="op">(</span><span class="st">""</span><span class="op">)</span>, <span class="st">""</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>                               <span class="fu">theme</span><span class="op">(</span>plot.margin <span class="op">=</span> <span class="fu">margin</span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span>,<span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span>, </span>
 <span>                             legend <span class="op">=</span> <span class="st">"right"</span>, common.legend <span class="op">=</span> <span class="cn">TRUE</span>, labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"a)"</span>, <span class="st">"b)"</span>, <span class="st">"c)"</span>, <span class="st">"d)"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">figDir</span> <span class="op">&lt;-</span> <span class="fu">checkPath</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">simPaths</span><span class="op">$</span><span class="va">outputPath</span>, <span class="st">"generalFigures"</span><span class="op">)</span>, create <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">figDir</span> <span class="op">&lt;-</span> <span class="fu">checkPath</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">mySimMaxEnt2</span><span class="op">$</span><span class="va">paths</span><span class="op">$</span><span class="va">outputPath</span>, <span class="st">"generalFigures"</span><span class="op">)</span>, create <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu">ggsave</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">figDir</span>, <span class="st">"MaxEntPredictions.png"</span><span class="op">)</span>, width <span class="op">=</span> <span class="fl">13.5</span>, height <span class="op">=</span> <span class="fl">5.5</span>, units <span class="op">=</span> <span class="st">"in"</span>, dpi <span class="op">=</span> <span class="fl">300</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
@@ -716,6 +669,24 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
   function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
@@ -750,7 +721,11 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
-      return note.innerHTML;
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
     });
   }
   const xrefs = window.document.querySelectorAll('a.quarto-xref');
@@ -765,38 +740,28 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       }
     }
     stripColumnClz(note)
-    const typesetMath = (el) => {
-      if (window.MathJax) {
-        // MathJax Typeset
-        window.MathJax.typeset([el]);
-      } else if (window.katex) {
-        // KaTeX Render
-        var mathElements = el.getElementsByClassName("math");
-        var macros = [];
-        for (var i = 0; i < mathElements.length; i++) {
-          var texText = mathElements[i].firstChild;
-          if (mathElements[i].tagName == "SPAN") {
-            window.katex.render(texText.data, mathElements[i], {
-              displayMode: mathElements[i].classList.contains('display'),
-              throwOnError: false,
-              macros: macros,
-              fleqn: false
-            });
-          }
-        }
-      }
-    }
     if (id === null || id.startsWith('sec-')) {
       // Special case sections, only their first couple elements
       const container = document.createElement("div");
       if (note.children && note.children.length > 2) {
-        for (let i = 0; i < 2; i++) {
-          container.appendChild(note.children[i].cloneNode(true));
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
         }
-        typesetMath(container);
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
         return container.innerHTML
       } else {
-        typesetMath(note);
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
         return note.innerHTML;
       }
     } else {
@@ -805,8 +770,15 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (anchorLink) {
         anchorLink.remove();
       }
-      typesetMath(note);
-      return note.innerHTML;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
     }
   }
   for (var i=0; i<xrefs.length; i++) {
@@ -1027,7 +999,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script><nav class="page-navigation"><div class="nav-page nav-page-previous">
-      <a href="../appendices/Part1_Rscript.html" class="pagination-link  aria-label=" r="" script="" to="" chapter="">
+      <a href="../appendices/Part1_Rscript.html" class="pagination-link" aria-label="Complete R script to Chapter 1">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Complete R script to Chapter 1</span></span>
       </a>          
   </div>

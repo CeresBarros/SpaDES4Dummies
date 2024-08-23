@@ -24,12 +24,8 @@ jobs:
       matrix:
         config:
           - {os: macOS-latest,   nosuggests: false, r: 'release'}
-          - {os: windows-latest, nosuggests: false, r: 'devel'}
           - {os: windows-latest, nosuggests: false, r: 'release'}
-          - {os: windows-latest, nosuggests: false, r: 'oldrel'}
-          # - {os: ubuntu-20.04,   nosuggests: false, r: 'devel'}
           - {os: ubuntu-20.04,   nosuggests: false, r: 'release'}
-          - {os: ubuntu-20.04,   nosuggests: false, r: 'oldrel'}
 
     env:
       _R_CHECK_DEPENDS_ONLY_: ${{ matrix.config.nosuggests }}
@@ -38,9 +34,9 @@ jobs:
       SPADES_USE_REQUIRE: false
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
           
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         with:
           distribution: "oracle"
           java-version: 17
@@ -54,20 +50,25 @@ jobs:
           Ncpus: 2
           r-version: ${{ matrix.config.r }}
           use-public-rspm: false
+          extra-repositories: 'https://cran-archive.r-project.org/'           
+
           
       - name: Install package dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          cache-version: 2
+          cache: "always"
+          cache-version: 1
           packages: |
             any::rJava
+            any::withr
+            any::SpaDES.tools
 
       - name: Run tutorials - Part 1
         run: |
-          source("test/Part1_DummyModel_test.R", echo = TRUE)
+          source("test/Part1_Rscript_test.R", echo = TRUE)
         shell: Rscript {0}
 
       - name: Run tutorials - Part 2
         run: |
-          source("test/Part2_SDMs_test.R", echo = TRUE)
+          source("test/Part2_Rscript_test.R", echo = TRUE)
         shell: Rscript {0}

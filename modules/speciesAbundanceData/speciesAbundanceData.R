@@ -12,13 +12,15 @@ defineModule(sim, list(
   authors = structure(list(list(given = c("Ceres"), family = "Barros", role = c("aut", "cre"), 
                                 email = "ceres.barros@ubc.ca", comment = NULL)), class = "person"),
   childModules = character(0),
-  version = list(speciesAbundanceData = "1.0.0"),
+  version = list(speciesAbundanceData = "1.0.1"),
   timeframe = as.POSIXlt(c(NA, NA)),
   timeunit = "year",
   citation = list("citation.bib"),
+  loadOrder = list(before = "projectSpeciesDist"),
   documentation = list("README.md", "speciesAbundanceData.Rmd"), ## same file
   reqdPkgs = list("SpaDES.core (>=2.0.2)",
-                  "httr", "terra", "ggplot2", "rasterVis"),
+                  "reproducible",
+                  "ggplot2", "httr", "rasterVis", "terra"),
   parameters = bindrows(
     #defineParameter("paramName", "paramClass", value, min, max, "parameter description"),
     defineParameter("sppAbundURL", "character", 
@@ -99,28 +101,12 @@ doEvent.speciesAbundanceData = function(sim, eventTime, eventType, debug = FALSE
 abundanceInit <- function(sim) {
   ## download data - prepInputs does all the heavy-lifting of dowloading and pre-processing the layer and caches.
   ## there seems to be an issue masking this particular raster with `terra` and `GDAL`, so we'll not use them here.
-  opts <- options("reproducible.useTerra" = FALSE,
-                  "reproducible.useGDAL" = FALSE)   
-  on.exit(options(opts), add = TRUE)
-
   httr::with_config(config = httr::config(ssl_verifypeer = 0L), {
     sppAbundanceRas <- prepInputs(targetFile = "NFI_MODIS250m_2001_kNN_Species_Pice_Gla_v1.tif",
                                   url = P(sim)$sppAbundURL,
-                                  # fun = "terra::rast",
-                                  # projectTo = sim$studyAreaRas,
-                                  # cropTo = sim$studyAreaRas,
-                                  # maskTo = sim$studyAreaRas,
-                                  rasterToMatch = raster::raster(sim$studyAreaRas),
-                                  maskWithRTM = TRUE,
-                                  overwrite = TRUE,
-                                  cacheRepo = cachePath(sim))
+                                  to = sim$studyAreaRas,
+                                  overwrite = TRUE)
   })
-  
-  options(opts)
-  
-  if (is(sppAbundanceRas, "RasterLayer")) {
-    sppAbundanceRas <- terra::rast(sppAbundanceRas)
-  }
   
   names(sppAbundanceRas) <- paste("year", time(sim), sep = "_")
   sppAbundanceDT <- as.data.table(as.data.frame(sppAbundanceRas, xy = TRUE, cells = TRUE))
@@ -138,7 +124,7 @@ abundanceInit <- function(sim) {
 abundancePlot <- function(sim) {
   ## plot species abundance
   Plots(sim$sppAbundanceRas, fn = plotSpatRaster, types = P(sim)$.plots,
-        usePlot = TRUE, filename = file.path(outputPath(sim), "figures", "speciesAbundance"), 
+        usePlot = TRUE, filename = "speciesAbundance", 
         plotTitle = "Species abundance data", xlab = "Longitude", ylab = "Latitude")
   
   return(invisible(sim))

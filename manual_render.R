@@ -1,14 +1,13 @@
 ## ---------------------------------------
 ## SPADES4DUMMIES RENDERING SCRIPT
 ## ---------------------------------------
-
 ## Sets up project library and renders book
 options(repos = c("https://predictiveecology.r-universe.dev/", 
                   CRAN = "https://cloud.r-project.org"))
 
-## note that "rmarkdown", "bookdown", "htmlwidgets" need to be installed in the default
-## libraries, because each .Rmd starts from a clean R session
-needPkgs <- c("rmarkdown", "bookdown", "htmlwidgets", "tinytex", "git2r")
+## note that "rmarkdown", "quarto", "htmlwidgets" need to be installed in the default
+## libraries, because each .qmd starts from a clean R session
+needPkgs <- c("rmarkdown", "quarto", "htmlwidgets", "tinytex", "git2r")
 needPkgs <- needPkgs[!needPkgs %in% installed.packages()] 
 for (pkg in needPkgs) {
   install.packages(pkg, dependencies = TRUE)
@@ -16,31 +15,14 @@ for (pkg in needPkgs) {
 
 tinytex::install_tinytex()
 
+## note that pkgPath is defined in _common.R
 pkgPath <- normalizePath(file.path("packages", version$platform,
                                    paste0(version$major, ".", strsplit(version$minor, "[.]")[[1]][1])),
                          winslash = "/")
 dir.create(pkgPath, recursive = TRUE)
 .libPaths(pkgPath, include.site = FALSE)
 
-## note that pkgPath is defined in common.R
-if (!"remotes" %in% installed.packages(lib.loc = pkgPath))
-  install.packages("remotes")
-
-if (!"Require" %in% installed.packages(lib.loc = pkgPath) ||
-    packageVersion("Require", lib.loc = pkgPath) < "0.3.1") {
-  remotes::install_github("PredictiveEcology/Require@55ec169e654214d86be62a0e13e9a2157f1aa966",
-                          upgrade = FALSE)
-}
-
-## use binary linux packages if on Ubuntu
-Require::setLinuxBinaryRepo()
-
-Require::Require(c("bookdown", "htmlwidgets", "geodata", "SpaDES",
-                   "PredictiveEcology/SpaDES.experiment@75d917b70b892802fed0bbdb2a5e9f3c6772f0ba",
-                   "ggpubr", "rmarkdown", "rsvg"), 
-                 require = FALSE,   ## don't load packages
-                 upgrade = FALSE,   ## don't upgrade dependencies
-                 standAlone = TRUE) 
+install.packages("Require")
 
 if (FALSE) { ## not needed anymore but may come in handy
   ## before rendering, delete zips, re-zip and push
@@ -60,16 +42,70 @@ if (FALSE) { ## not needed anymore but may come in handy
 ## create .nojekyll file
 file.create(".nojekyll")
 
-bookdown::render_book(output_format = "all", envir = new.env())
-
+quarto::quarto_render(output_format = "all", as_job = FALSE)
 
 ## make test scripts for GHA
-rScripts <- c("Part1_DummyModel.R", "Part2_SDMs.R")
+rScripts <- c("appendices/Part1_Rscript.R", "appendices/Part2_Rscript.R")
 for (f in rScripts) {
+  if (!requireNamespace("functionMap")) {
+    remotes::install_github("MangoTheCat/functionMap")
+    requireNamespace("functionMap")
+  }
+
   scriptLines <- readLines(f)
-  mainPathLine <- grep("mainPath <-", scriptLines)
-  scriptLines[mainPathLine] <- "mainPath <- '.'"
-  ff <- sub("\\.R", "_test\\.R", f)
-  writeLines(scriptLines, ff)
+  
+  fCalls <- functionMap:::parse_r_script(f)[[1]]
+  startSP <- fCalls[fCalls$to == "setupProject",]$line
+  
+  endSP <- startSP + 1  
+  
+  allFuns <- functionMap:::get_funcs_from_r_script(f)
+  SPcall <- sapply(allFuns, function(x) {
+    attributes(x)$src$line1[1] == startSP}
+  )
+  SPcall <- allFuns[[which(SPcall)]]
+  endSP <- tail(attr(SPcall, "src")$line1, 1)
+  
+  ## replace
+  SPcall <- scriptLines[startSP:endSP]
+  
+  modulesStart <- grep("modules =", SPcall)
+  
+  modulesLines <- SPcall[modulesStart:length(SPcall)]
+  modulesEnd <- grep("),$", modulesLines)[1]
+  modulesLines <- modulesLines[1:modulesEnd]
+  
+  modulesLines <- gsub("(\")([[:alpha:]]*)(\")", "\\1CeresBarros/SpaDES4Dummies@master/modules/\\2\\3", modulesLines)
+  
+  SPcall[modulesStart:(modulesStart+modulesEnd-1)] <- modulesLines
+  
+  ## add overwrite = TRUE if not there
+  SPcall2 <- SPcall
+  SPcall2[1] <- sub("(.*)(<-)(.*)", "\\3", SPcall2[1])
+  SPcall2 <- parse(text = SPcall2) |> as.list() |> _[[1]] |> as.call()   ## as.list()[[1]] removes the `expression` part.
+  
+  overwritexists <- any(names(as.list(SPcall2)) == "overwrite")
+  
+  if (overwritexists) {
+    SPcall2list <- as.list(SPcall2)
+    if (isFALSE(SPcall2list$overwrite)) {
+      SPcall2list$overwrite <- TRUE
+      SPcall2 <- as.call(SPcall2list) |>
+        deparse()
+    }
+  } else {
+    SPcall2 <- as.call(append(as.list(SPcall2), list("overwrite" = TRUE))) |> 
+      deparse()
+  }
+  
+  ## add assignment
+  assignBit <- sub("(.*)(<-)(.*)", "\\1\\2", SPcall[1])
+  SPcall2[1] <- paste(assignBit, SPcall2[1])
+  beforeSP <- scriptLines[1:(startSP-1)]
+  afterSP <- scriptLines[(endSP+1):length(scriptLines)]
+  scriptLines <- c(beforeSP, "", SPcall2, "", afterSP)
+  
+  ff <- sub("\\.R", "_test\\.R", basename(f))
+  writeLines(scriptLines, file.path("test", ff))
 }
 

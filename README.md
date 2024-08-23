@@ -6,17 +6,21 @@ This guide is an introduction to the `SpaDES` `R` modelling platform. It covers 
 
 The guide can be accessed [here](https://ceresbarros.github.io/SpaDES4Dummies/), and it is divided in two parts.
 
-Part 1 is very minimal, and uses only randomly generated data (no dowloading necessary). It is meant to introduce users creating and linking `SpaDES` modules, introducing the different parts of a module and how a `SpaDES` model (i.e. group of linked modules) works.
+Part 1 is very minimal, and uses only randomly generated data (no downloading necessary). It is meant to introduce users to creating and linking `SpaDES` modules, the different parts of a module and how a `SpaDES` workflow (i.e. group of linked modules) works.
 
-Part 2 uses real and freely available data (that is downloaded by the created modules), and provides a deeper look into several useful aspects of `SpaDES`, such as automatically downloading and pre-processing spatial data and caching. This example also covers several good practices in the context of developing and sharing models built with `SpaDES`.
+Part 2 uses real and freely available data, and provides a deeper look into several useful aspects of `SpaDES`, such as automatically downloading and pre-processing spatial data and caching, as part of module code. This example also covers several good practices in the context of developing and sharing models built with `SpaDES`.
 
 ## See also:
 
-[SpaDES installation](https://github.com/PredictiveEcology/SpaDES/wiki/Installation)
+[Predictive Ecology Community website](https://predictiveecology.org/)
 
-[caching and debugging](https://spades-workshops.predictiveecology.org/articles/09c-CachingAndDebugging.html)
+The [Robust and nimble scientific workflows, using SpaDES](https://predictiveecology.org/training/_book/) book
 
 ## News:
+
+**v2.0.0**
+- transition to use `SpaDES.project` to setup SpaDES workflows
+- updates to text and code following the above
 
 **v1.4.0**
 - transition to Quarto
